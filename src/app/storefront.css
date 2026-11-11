@@ -5519,7 +5519,7 @@ summary {
 /* No price yet: quiet text that never squeezes the name. */
 .info .price-soon {
   color: inherit;
-  opacity: 0.6;
+  opacity: 0.7;
   font-size: var(--text-xs);
   font-weight: 400;
   text-align: right;
