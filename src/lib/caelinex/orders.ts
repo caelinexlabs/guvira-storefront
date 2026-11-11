@@ -16,6 +16,7 @@ export type Shipment = {
 };
 
 export type OrderLine = {
+  productId?: string;
   name: string;
   variantName: string | null;
   imageUrl: string | null;
@@ -84,4 +85,10 @@ export const confirmRazorpayPayment = (
   storefront<Order>(`/orders/${encodeURIComponent(orderToken)}/payment`, {
     method: "POST",
     body: JSON.stringify(payment),
+  });
+
+/** Cancel an online order that is still unpaid, freeing its stock. Safe to repeat. */
+export const cancelOrder = (token: string): Promise<StorefrontResult<Order>> =>
+  storefront<Order>(`/orders/${encodeURIComponent(token)}/cancel`, {
+    method: "POST",
   });

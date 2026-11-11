@@ -41,7 +41,7 @@ import {
   quoteDelivery,
   type RateOption,
 } from "../delivery/actions";
-import { placeOrder } from "./actions";
+import { cancelWaitingOrder, placeOrder } from "./actions";
 import { describe, Field } from "./field";
 import { PaymentStep } from "./payment-step";
 import { PromoCode } from "./promo-code";
@@ -334,7 +334,16 @@ export function CheckoutForm({
   // The server can't see the bag, so until the browser has read it the page
   // shows nothing rather than "Your bag is empty".
   if (!bag.length && !busy && waitingOrder)
-    return <ResumePayment order={waitingOrder} notice={notice} />;
+    return (
+      <ResumePayment
+        order={waitingOrder}
+        notice={
+          returned?.kind === "failed"
+            ? `${returned.reason || "Your payment didn’t go through."} Nothing was charged.`
+            : "Payment cancelled. Nothing was charged."
+        }
+      />
+    );
   if (!bag.length && !busy && !restored) return <div className="co-loading" />;
   if (!bag.length && !busy) {
     return (
@@ -843,8 +852,21 @@ function ResumePayment({
   order: WaitingOrder;
   notice?: string;
 }) {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
   const money = (n: number) => formatMoney(n, order.currency as Currency);
+  const cancel = async () => {
+    setBusy(true);
+    setFailed(false);
+    if (await cancelWaitingOrder(order.token)) {
+      savePending(undefined);
+      router.push("/shop");
+      return;
+    }
+    setBusy(false);
+    setFailed(true);
+  };
   const pay = () => {
     setBusy(true);
     const d = loadDraft()?.details;
@@ -886,6 +908,19 @@ function ResumePayment({
       <PillButton tone="dark" className="wide" onClick={pay} disabled={busy}>
         {busy ? "Opening payment…" : `Pay ${money(order.total)}`}
       </PillButton>
+      <button
+        type="button"
+        className="text-btn"
+        onClick={cancel}
+        disabled={busy}
+      >
+        Cancel this order
+      </button>
+      {failed && (
+        <p className="field-error" role="alert">
+          We couldn’t cancel that order. Try again in a moment.
+        </p>
+      )}
     </section>
   );
 }
