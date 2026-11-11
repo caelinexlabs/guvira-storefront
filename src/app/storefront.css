@@ -4699,6 +4699,11 @@ fieldset.stepper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-4);
+  /* A hint or error under one field must not push its neighbour's input down. */
+  align-items: start;
+}
+.co-loading {
+  min-height: 320px;
 }
 .co-summary {
   position: sticky;
@@ -4733,6 +4738,15 @@ fieldset.stepper {
 }
 .co-summary .thumb {
   position: relative;
+  /* The bag thumbnail is not the product gallery's: the quantity badge sits on
+     its corner, so nothing is clipped or dimmed. */
+  overflow: visible;
+  opacity: 1;
+  cursor: default;
+  background: none;
+}
+.co-summary .thumb::after {
+  content: none;
 }
 .co-summary .thumb img {
   width: 64px;

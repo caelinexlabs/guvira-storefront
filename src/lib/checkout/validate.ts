@@ -61,3 +61,16 @@ export const validateDetails = (d: CheckoutDetails): FieldErrors => ({
 });
 
 export const CONTACT_KEYS = ["fullName", "email", "phone"] as const;
+
+/**
+ * The mobile number in international form, for Razorpay's prefill. A number
+ * typed with its own "+91" or "0091" keeps it, otherwise the country's dial
+ * code goes in front and any leading trunk zeros come off.
+ */
+export function internationalPhone(dialCode: string, phone: string) {
+  const text = phone.trim();
+  const digits = text.replace(/\D/g, "");
+  if (text.startsWith("+")) return `+${digits}`;
+  if (digits.startsWith("00")) return `+${digits.slice(2)}`;
+  return `${dialCode}${digits.replace(/^0+/, "")}`;
+}

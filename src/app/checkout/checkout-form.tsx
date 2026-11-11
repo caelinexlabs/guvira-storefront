@@ -27,6 +27,7 @@ import {
   type CheckoutDetails,
   EMPTY_DETAILS,
   type FieldErrors,
+  internationalPhone,
   validateAddress,
   validateContact,
 } from "@/lib/checkout/validate";
@@ -248,7 +249,9 @@ export function CheckoutForm({
       token: r.token,
       placedAt: new Date().toISOString(),
       email: details.email.trim(),
-      phone: `${country?.dialCode ?? ""} ${details.phone.trim()}`.trim(),
+      phone: details.phone.trim().startsWith("+")
+        ? details.phone.trim()
+        : `${country?.dialCode ?? ""} ${details.phone.trim()}`.trim(),
       name: details.fullName.trim(),
       address: addressLines(details),
       payment: paymentLabel(method),
@@ -318,12 +321,15 @@ export function CheckoutForm({
         {
           name: details.fullName.trim(),
           email: details.email.trim(),
-          contact: `${country?.dialCode ?? ""}${details.phone.trim()}`,
+          contact: internationalPhone(country?.dialCode ?? "", details.phone),
         },
       );
     });
   };
 
+  // The server can't see the bag, so until the browser has read it the page
+  // shows nothing rather than "Your bag is empty".
+  if (!bag.length && !busy && !restored) return <div className="co-loading" />;
   if (!bag.length && !busy) {
     return (
       <div className="empty-state">
