@@ -5,7 +5,7 @@ const api = process.env.CAELINEX_API_URL
   ? new URL(process.env.CAELINEX_API_URL)
   : undefined;
 
-// Headers every response carries. No Content-Security-Policy yet: the hosted
+// Headers every response carries. There is no Content-Security-Policy yet. The hosted
 // Razorpay redirect and the inline JSON-LD need a tested policy first.
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },

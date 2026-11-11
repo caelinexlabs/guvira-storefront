@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Do not open a public issue. Use GitHub's private reporting: Security tab -> Report a vulnerability. If that is unavailable, email caelixlabs@gmail.com with the steps to reproduce.
+Do not open a public issue. Use the Report a vulnerability button on the Security tab, which reports it privately. If that is unavailable, email caelixlabs@gmail.com with the steps to reproduce.
 
 We reply within three working days and tell you when a fix ships.
 
