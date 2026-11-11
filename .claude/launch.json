@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "guvira-storefront",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--dir",
+        "/Users/gunmandeep/Developer/Projects/Guvira/guvira-storefront",
+        "dev",
+        "--port",
+        "3100"
+      ],
+      "port": 3100
+    }
+  ]
+}
