@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+# Read-only by default; no job here needs more.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, typecheck and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      # The pnpm version comes from "packageManager" in package.json.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      # No real key here: the build runs with the API unreachable and the
+      # shop pages render their empty state.
+      - run: pnpm build
+        env:
+          CAELINEX_API_URL: http://127.0.0.1:9
+          CAELINEX_STOREFRONT_KEY: csk_ci_placeholder
+          NEXT_PUBLIC_SITE_URL: https://example.com
