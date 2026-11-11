@@ -44,6 +44,14 @@ export type Order = {
   shippingName: string | null;
   taxTotal: number;
   total: number;
+  /** For an online order still waiting to be paid; null once paid, or for cash on delivery. */
+  payment?: {
+    provider: string;
+    keyId: string;
+    razorpayOrderId: string;
+    amount: number;
+    currency: string;
+  } | null;
 };
 
 /**

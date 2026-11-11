@@ -33,6 +33,7 @@ import {
 } from "@/lib/checkout/validate";
 import { CURRENCY_META, formatMoney } from "@/lib/commerce/money";
 import { priceFor, totalPrices } from "@/lib/commerce/price";
+import type { Currency } from "@/lib/commerce/types";
 import { goToRazorpay } from "@/lib/razorpay-redirect";
 import { bagCount, useShop } from "@/lib/store/shop";
 import {
@@ -57,8 +58,11 @@ type Done = CheckoutDraft["done"];
 export function CheckoutForm({
   customer: initialCustomer,
   returned,
+  waiting: waitingOrder,
 }: {
   customer?: Customer;
+  /** An order from this shopper's last attempt that is still waiting for payment. */
+  waiting?: WaitingOrder;
   /** Coming back from Razorpay without having paid. */
   returned?: { kind: "failed" | "cancelled"; reason?: string };
 }) {
@@ -329,6 +333,8 @@ export function CheckoutForm({
 
   // The server can't see the bag, so until the browser has read it the page
   // shows nothing rather than "Your bag is empty".
+  if (!bag.length && !busy && waitingOrder)
+    return <ResumePayment order={waitingOrder} notice={notice} />;
   if (!bag.length && !busy && !restored) return <div className="co-loading" />;
   if (!bag.length && !busy) {
     return (
@@ -810,3 +816,76 @@ function addressLines(d: CheckoutDetails): string[] {
 /** The bag as a short signature, to tell whether it changed. */
 const bagKey = (bag: { id: string; qty: number }[]) =>
   bag.map((l) => `${l.id}:${l.qty}`).join(",");
+
+export type WaitingOrder = {
+  token: string;
+  number: string;
+  name: string;
+  currency: string;
+  total: number;
+  lines: {
+    name: string;
+    variantName: string | null;
+    quantity: number;
+    lineTotal: number;
+  }[];
+  payment: { keyId: string; razorpayOrderId: string };
+};
+
+/**
+ * The bag is empty but an order from the last attempt is still waiting for
+ * payment: show it and let the shopper pay it, instead of an empty page.
+ */
+function ResumePayment({
+  order,
+  notice,
+}: {
+  order: WaitingOrder;
+  notice?: string;
+}) {
+  const [busy, setBusy] = useState(false);
+  const money = (n: number) => formatMoney(n, order.currency as Currency);
+  const pay = () => {
+    setBusy(true);
+    const d = loadDraft()?.details;
+    const dial = d ? (countryByCode(d.country)?.dialCode ?? "") : "";
+    goToRazorpay(
+      order.payment,
+      { token: order.token, number: order.number },
+      {
+        name: order.name || d?.fullName.trim() || "",
+        email: d?.email.trim() ?? "",
+        contact: d ? internationalPhone(dial, d.phone) : "",
+      },
+    );
+  };
+  return (
+    <section className="co-resume" aria-labelledby="resume-h">
+      <h2 id="resume-h">Your order is waiting for payment</h2>
+      {notice && (
+        <p className="notice notice-error" role="alert">
+          {notice}
+        </p>
+      )}
+      <ul>
+        {order.lines.map((l) => (
+          <li key={`${l.name}-${l.variantName ?? ""}`}>
+            <span>
+              {l.name}
+              {l.variantName ? `, ${l.variantName}` : ""}
+              <small> × {l.quantity}</small>
+            </span>
+            <b>{money(l.lineTotal)}</b>
+          </li>
+        ))}
+      </ul>
+      <p className="co-resume-total">
+        <span>Total</span>
+        <b>{money(order.total)}</b>
+      </p>
+      <PillButton tone="dark" className="wide" onClick={pay} disabled={busy}>
+        {busy ? "Opening payment…" : `Pay ${money(order.total)}`}
+      </PillButton>
+    </section>
+  );
+}
