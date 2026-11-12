@@ -5464,7 +5464,7 @@ summary {
   grid-template-rows: 1fr;
   transition: grid-template-rows var(--dur-medium) var(--ease);
 }
-.nav.scrolled .nav-note {
+.nav.folded .nav-note {
   grid-template-rows: 0fr;
 }
 .nav-note > div {

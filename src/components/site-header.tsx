@@ -25,6 +25,7 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [folded, setFolded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
   const [me, setMe] = useState<Me>();
@@ -47,6 +48,8 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
     // scrolled up under it; elsewhere it turns solid on the first scroll.
     const hero = over ? document.querySelector(".vhero-frame") : null;
     const onScroll = () => {
+      // The announcement line folds away on the first scroll.
+      setFolded(scrollY > 8);
       if (!hero) return setScrolled(scrollY > 8);
       const h = ref.current?.offsetHeight ?? 0;
       setScrolled(hero.getBoundingClientRect().bottom <= h);
@@ -101,7 +104,12 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
   return (
     <header
       ref={ref}
-      className={clsx("nav", over && "over", scrolled && "scrolled")}
+      className={clsx(
+        "nav",
+        over && "over",
+        scrolled && "scrolled",
+        folded && "folded",
+      )}
     >
       {note && (
         <div className="nav-note">
