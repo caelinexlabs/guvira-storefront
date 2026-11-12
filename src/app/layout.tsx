@@ -63,9 +63,10 @@ export default async function RootLayout({
   ]);
   const note = settings.announcement;
   const href = note.link ? resolveLink(note.link) : undefined;
-  const pick = products.find(
-    (p) => p.images[0] && !p.images[0].src.endsWith("no-photo.svg"),
-  );
+  const hasPhoto = (p: (typeof products)[number]) =>
+    !!p.images[0] && !p.images[0].src.endsWith("no-photo.svg");
+  // The "New in" card: a piece with a photo if there is one, else the first piece.
+  const pick = products.find(hasPhoto) ?? products[0];
   const { features, productPage } = settings;
   return (
     <html
@@ -100,7 +101,11 @@ export default async function RootLayout({
                 slug: c.slug,
                 name: c.name,
                 count: c.count,
-                image: c.image?.src,
+                // The category's own photo, else its first piece with one.
+                image:
+                  c.image?.src ??
+                  products.find((p) => p.category === c.slug && hasPhoto(p))
+                    ?.images[0].src,
               })),
               featured: pick && {
                 slug: pick.slug,

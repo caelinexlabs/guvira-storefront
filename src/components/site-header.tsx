@@ -251,14 +251,6 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
           <div>
             <h2>Shop by type</h2>
             <ul className="mega-cats">
-              <li>
-                <Link href="/shop">
-                  <span className="mega-photo">
-                    <Icon name="spark" />
-                  </span>
-                  All jewellery
-                </Link>
-              </li>
               {menu_.categories.map((c) => (
                 <li key={c.slug}>
                   <Link href={`/shop/${c.slug}`}>
