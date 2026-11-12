@@ -5708,22 +5708,11 @@ summary {
 .nav.over {
   position: fixed;
   inset: 0 0 auto;
-  background: transparent;
+  /* One dark veil across the strip and the bar, the same tone as the film's scrim. */
+  background: rgb(var(--shade-rgb) / 0.4);
   transition:
     background-color var(--dur-medium) var(--ease),
     box-shadow var(--dur-medium) ease;
-}
-.nav.over::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 calc(-1 * var(--space-9));
-  background: linear-gradient(
-    180deg,
-    rgb(var(--shade-rgb) / 0.42),
-    rgb(var(--shade-rgb) / 0)
-  );
-  pointer-events: none;
-  transition: opacity var(--dur-medium) ease;
 }
 .nav.over > * {
   position: relative;
@@ -5734,11 +5723,7 @@ summary {
 .nav.over.scrolled {
   background: var(--emerald);
 }
-.nav.over.scrolled::before {
-  opacity: 0;
-}
 .nav.over:not(.scrolled) .nav-note p {
-  background: rgb(var(--shade-rgb) / 0.4);
   border-bottom-color: rgb(var(--on-dark-rgb) / 0.22);
 }
 .nav.over .logo {
