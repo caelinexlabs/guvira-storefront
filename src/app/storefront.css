@@ -5724,7 +5724,7 @@ summary {
   background: var(--emerald);
 }
 .nav.over:not(.scrolled) .nav-note p {
-  border-bottom-color: rgb(var(--on-dark-rgb) / 0.22);
+  border-bottom: 1px dotted rgb(var(--gold-rgb) / 0.7);
 }
 .nav.over .logo {
   color: var(--on-dark);
