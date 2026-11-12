@@ -18,8 +18,9 @@ type Me = { signedIn: boolean; name: string };
  * The emerald band: the owner's announcement line, then links on the left, the
  * logo in the middle and the tools on the right. The line folds away once the
  * page scrolls. Shop opens a panel with the categories and one featured piece.
+ * `over` floats it, transparent, on the home film until the page scrolls.
  */
-export function SiteHeader() {
+export function SiteHeader({ over = false }: { over?: boolean }) {
   const { nav, wishlist, search, logo, announcement, menu } = useShopConfig();
   const ref = useRef<HTMLElement>(null);
   const pathname = usePathname();
@@ -42,11 +43,11 @@ export function SiteHeader() {
   const firstName = me?.signedIn ? me.name.split(/[\s@]/)[0] : "";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(scrollY > 8);
+    const onScroll = () => setScrolled(scrollY > (over ? 40 : 8));
     onScroll();
     addEventListener("scroll", onScroll, { passive: true });
     return () => removeEventListener("scroll", onScroll);
-  }, []);
+  }, [over]);
 
   // A new page, or Escape, closes the Shop panel.
   // biome-ignore lint/correctness/useExhaustiveDependencies: close when the address changes
@@ -87,7 +88,10 @@ export function SiteHeader() {
   ) : null;
 
   return (
-    <header ref={ref} className={clsx("nav", scrolled && "scrolled")}>
+    <header
+      ref={ref}
+      className={clsx("nav", over && "over", scrolled && "scrolled")}
+    >
       {note && (
         <div className="nav-note">
           <div>
@@ -263,9 +267,9 @@ export function SiteHeader() {
                         <Image
                           src={c.image}
                           alt=""
-                          width={80}
-                          height={80}
-                          sizes="80px"
+                          width={100}
+                          height={100}
+                          sizes="100px"
                         />
                       ) : (
                         <span aria-hidden="true">{c.name.charAt(0)}</span>
@@ -290,9 +294,9 @@ export function SiteHeader() {
                 <Image
                   src={menu_.featured.image}
                   alt=""
-                  width={120}
-                  height={120}
-                  sizes="120px"
+                  width={150}
+                  height={150}
+                  sizes="150px"
                 />
                 <span>
                   <b>{menu_.featured.name}</b>

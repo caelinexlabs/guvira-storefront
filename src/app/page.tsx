@@ -29,7 +29,7 @@ export default async function Home() {
   const { hero } = settings;
   return (
     <>
-      <SiteHeader />
+      <SiteHeader over />
       <main id="main">
         <HeroVideo content={hero} />
         {s.categoryStrip.enabled && categories.length > 0 && (
