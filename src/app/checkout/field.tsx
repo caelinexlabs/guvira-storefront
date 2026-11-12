@@ -1,4 +1,4 @@
-/** Said wherever an email is asked for, when the shop sends bag reminders. */
+/** Shown wherever an email is asked for, when the shop sends bag reminders. */
 export const REMINDER_NOTE =
   "We’ll email you once if you leave without buying.";
 

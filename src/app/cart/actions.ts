@@ -46,9 +46,9 @@ export async function syncBag(lines: WantedLine[]): Promise<BagSyncResult> {
 }
 
 /**
- * Attach the shopper's email to their Caelinex cart, only when the shop sends
- * reminders. A bad address, or no cart yet, is quietly skipped: it never blocks
- * checkout.
+ * Attach the shopper's email to their Caelinex cart. Callers call it only when
+ * the shop sends reminders. A bad address or a missing cart is skipped, so it
+ * never blocks checkout.
  */
 export async function saveCartEmail(email: string): Promise<void> {
   const address = typeof email === "string" ? email.trim() : "";
@@ -64,9 +64,9 @@ export type RecoverResult =
 const SECRET = /^[\w.~-]{8,300}$/;
 
 /**
- * Open the cart a reminder email linked to. The secret works once, so this is
- * only ever called from a page that ran in a browser, never from a link
- * preview. The answer holds a new cart token: keep it, and hand back the bag.
+ * Open the cart a reminder email linked to. The secret works once, so call this
+ * only from a page that ran in a browser, never from a link preview. The answer
+ * holds a new cart token. Keep it, and hand back the bag.
  */
 export async function recoverBag(secret: string): Promise<RecoverResult> {
   if (typeof secret !== "string" || !SECRET.test(secret))

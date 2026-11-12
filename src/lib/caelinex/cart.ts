@@ -110,8 +110,8 @@ export const putCartEmail = (
   });
 
 /**
- * Opens the cart a reminder email linked to. The secret works once: the answer
- * carries a NEW cart token, and the old one stops working.
+ * Opens the cart a reminder email linked to. The secret works once. The answer
+ * carries a new cart token, and the old one stops working.
  */
 export const recoverCart = (
   secret: string,
