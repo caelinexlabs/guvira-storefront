@@ -4699,6 +4699,8 @@ fieldset.stepper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-4);
+  /* A hint or error under one field must not push its neighbour's input down. */
+  align-items: start;
 }
 .co-summary {
   position: sticky;
@@ -5613,4 +5615,13 @@ summary {
   display: block;
   height: 28px;
   width: auto;
+}
+
+/* The page a reminder email opens while the bag is put back. */
+.recover-status {
+  display: block;
+  min-height: 240px;
+  padding-block: var(--space-12);
+  text-align: center;
+  color: var(--soft);
 }

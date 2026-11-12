@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Icon } from "@/components/icons";
 import { Price } from "@/components/price";
+import { useShopConfig } from "@/components/shop-config";
 import { PillButton, PillLink } from "@/components/ui";
 import type { PromoCart } from "@/lib/caelinex/promo";
 import type { Customer } from "@/lib/caelinex/shopper";
@@ -32,15 +33,17 @@ import {
 } from "@/lib/checkout/validate";
 import { CURRENCY_META, formatMoney } from "@/lib/commerce/money";
 import { priceFor, totalPrices } from "@/lib/commerce/price";
+import { isEmail } from "@/lib/identity";
 import { goToRazorpay } from "@/lib/razorpay-redirect";
 import { bagCount, useShop } from "@/lib/store/shop";
+import { saveCartEmail } from "../cart/actions";
 import {
   type DeliveryQuote,
   quoteDelivery,
   type RateOption,
 } from "../delivery/actions";
 import { placeOrder } from "./actions";
-import { describe, Field } from "./field";
+import { describe, Field, REMINDER_NOTE } from "./field";
 import { PaymentStep } from "./payment-step";
 import { PromoCode } from "./promo-code";
 import { WhoStep } from "./who-step";
@@ -100,6 +103,16 @@ export function CheckoutForm({
   const [shipError, setShipError] = useState<string>();
   const [pending, start] = useTransition();
   const busy = pending;
+
+  // When the shop sends reminders, keep the shopper's email on their cart as
+  // soon as it is a valid address, so a bag left behind can be followed up.
+  const { cartReminders } = useShopConfig();
+  const cartEmail = details.email.trim();
+  useEffect(() => {
+    if (!cartReminders || !bag.length || !isEmail(cartEmail)) return;
+    const t = setTimeout(() => void saveCartEmail(cartEmail), 600);
+    return () => clearTimeout(t);
+  }, [cartReminders, cartEmail, bag.length]);
 
   // Coming back from a failed payment (or a refresh) picks up where it was.
   // Nothing is saved until this has run, so the empty first render can never
@@ -410,9 +423,14 @@ export function CheckoutForm({
               />
             </Field>
             <div className="co-row">
-              <Field id="email" label="Email" error={errorFor("email")}>
+              <Field
+                id="email"
+                label="Email"
+                hint={cartReminders ? REMINDER_NOTE : undefined}
+                error={errorFor("email")}
+              >
                 <input
-                  {...describe("email", errorFor("email"))}
+                  {...describe("email", errorFor("email"), cartReminders)}
                   type="email"
                   spellCheck={false}
                   autoComplete="email"
