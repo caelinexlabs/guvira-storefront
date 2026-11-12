@@ -4699,6 +4699,8 @@ fieldset.stepper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-4);
+  /* A hint or error under one field must not push its neighbour's input down. */
+  align-items: start;
 }
 .co-summary {
   position: sticky;
