@@ -43,10 +43,21 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
   const firstName = me?.signedIn ? me.name.split(/[\s@]/)[0] : "";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(scrollY > (over ? 40 : 8));
+    // On the home page the header stays transparent until the hero film has
+    // scrolled up under it; elsewhere it turns solid on the first scroll.
+    const hero = over ? document.querySelector(".vhero-frame") : null;
+    const onScroll = () => {
+      if (!hero) return setScrolled(scrollY > 8);
+      const h = ref.current?.offsetHeight ?? 0;
+      setScrolled(hero.getBoundingClientRect().bottom <= h);
+    };
     onScroll();
     addEventListener("scroll", onScroll, { passive: true });
-    return () => removeEventListener("scroll", onScroll);
+    addEventListener("resize", onScroll);
+    return () => {
+      removeEventListener("scroll", onScroll);
+      removeEventListener("resize", onScroll);
+    };
   }, [over]);
 
   // A new page, or Escape, closes the Shop panel.
