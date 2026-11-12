@@ -7,6 +7,7 @@ import { useShopConfig } from "@/components/shop-config";
 import { PillButton } from "@/components/ui";
 import type { Customer } from "@/lib/caelinex/shopper";
 import { isEmail } from "@/lib/identity";
+import { saveCartEmail } from "../cart/actions";
 import { type AccountState, checkoutAccount } from "./actions";
 import { describe, Field, REMINDER_NOTE } from "./field";
 
@@ -289,6 +290,15 @@ function GuestPanel({
   const [phone, setPhone] = useState(initial?.phone ?? "");
   const [tried, setTried] = useState(false);
   const { cartReminders } = useShopConfig();
+  // Keep the address on the cart as soon as it is valid, not only after the
+  // shopper presses Continue: someone who types it and leaves is who the
+  // reminder is for.
+  const typed = email.trim();
+  useEffect(() => {
+    if (!cartReminders || !isEmail(typed)) return;
+    const t = setTimeout(() => void saveCartEmail(typed), 600);
+    return () => clearTimeout(t);
+  }, [cartReminders, typed]);
   const errors = {
     email: isEmail(email.trim())
       ? undefined
