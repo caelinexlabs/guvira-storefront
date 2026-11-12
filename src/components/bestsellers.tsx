@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/lib/commerce/types";
-import { Icon } from "./icons";
 import { ProductCard } from "./product-card";
-import { Heading, PillLink } from "./ui";
+import { Heading } from "./ui";
 
 /** "All" plus the three categories with the most pieces in this set. */
 function tabsFor(products: Product[]) {
@@ -39,10 +38,7 @@ export function Bestsellers({
   const TABS = tabsFor(products);
   const [tab, setTab] = useState("all");
   const rail = useRef<HTMLDivElement>(null);
-  const bar = useRef<HTMLSpanElement>(null);
-  const [stopped, setStopped] = useState(!autoScroll);
-  const stoppedRef = useRef(false);
-  stoppedRef.current = stopped;
+  const stopped = !autoScroll;
   const shown = products.filter((p) => tab === "all" || p.category === tab);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-measure the loop when the filter changes the cards
@@ -78,7 +74,7 @@ export function Bestsellers({
       if (
         !setW ||
         reduce ||
-        stoppedRef.current ||
+        stopped ||
         hover ||
         focus ||
         !onScreen ||
@@ -98,10 +94,6 @@ export function Bestsellers({
         else if (el.scrollLeft <= 0) el.scrollLeft += setW;
         pos = el.scrollLeft;
       }
-      bar.current?.style.setProperty(
-        "--rp",
-        ((el.scrollLeft % setW) / setW).toFixed(3),
-      );
     };
     const hold = (ms: number) => {
       holdUntil = performance.now() + ms;
@@ -136,28 +128,13 @@ export function Bestsellers({
     ro.observe(el);
     measure();
     raf = requestAnimationFrame(frame);
-    (el as HTMLDivElement & { nudge?: (d: number) => void }).nudge = (
-      dir: number,
-    ) => {
-      hold(3500);
-      if (!setW) return;
-      const c = cards()[0];
-      const step = c ? c.offsetWidth + 20 : 300;
-      if (dir < 0 && el.scrollLeft < step) el.scrollLeft += setW;
-      el.scrollBy({ left: dir * step, behavior: reduce ? "auto" : "smooth" });
-    };
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
       ro.disconnect();
       for (const off of offs) off();
     };
-  }, [tab]);
-
-  const nudge = (d: number) =>
-    (
-      rail.current as (HTMLDivElement & { nudge?: (d: number) => void }) | null
-    )?.nudge?.(d);
+  }, [tab, stopped]);
 
   return (
     <section className="sec panel-wrap" id="bestsellers" aria-labelledby="bs-h">
@@ -197,40 +174,6 @@ export function Bestsellers({
               <ProductCard key={`${p.id}-clone`} product={p} clone />
             ))}
           </div>
-        </div>
-        <div className="rail-ctrl">
-          <span className="rail-progress" aria-hidden="true" ref={bar}>
-            <b />
-          </span>
-          <div className="rail-arrows">
-            <button
-              className="icon-btn rail-pause"
-              type="button"
-              aria-label={stopped ? "Resume scrolling" : "Pause scrolling"}
-              onClick={() => setStopped((v) => !v)}
-            >
-              <Icon name={stopped ? "play" : "pause"} />
-            </button>
-            <button
-              className="icon-btn"
-              type="button"
-              aria-label="Previous pieces"
-              onClick={() => nudge(-1)}
-            >
-              <Icon name="chev" style={{ transform: "scaleX(-1)" }} />
-            </button>
-            <button
-              className="icon-btn"
-              type="button"
-              aria-label="Next pieces"
-              onClick={() => nudge(1)}
-            >
-              <Icon name="chev" />
-            </button>
-          </div>
-          <PillLink href="/shop" className="rail-all">
-            Explore collection
-          </PillLink>
         </div>
       </div>
     </section>
