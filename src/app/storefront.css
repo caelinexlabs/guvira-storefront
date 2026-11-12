@@ -5614,3 +5614,12 @@ summary {
   height: 28px;
   width: auto;
 }
+
+/* The page a reminder email opens while the bag is put back. */
+.recover-status {
+  display: block;
+  min-height: 240px;
+  padding-block: var(--space-12);
+  text-align: center;
+  color: var(--soft);
+}

@@ -3,11 +3,12 @@
 import clsx from "clsx";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/icons";
+import { useShopConfig } from "@/components/shop-config";
 import { PillButton } from "@/components/ui";
 import type { Customer } from "@/lib/caelinex/shopper";
 import { isEmail } from "@/lib/identity";
 import { type AccountState, checkoutAccount } from "./actions";
-import { describe, Field } from "./field";
+import { describe, Field, REMINDER_NOTE } from "./field";
 
 type Path = "account" | "guest";
 
@@ -287,6 +288,7 @@ function GuestPanel({
   const [email, setEmail] = useState(initial?.email ?? "");
   const [phone, setPhone] = useState(initial?.phone ?? "");
   const [tried, setTried] = useState(false);
+  const { cartReminders } = useShopConfig();
   const errors = {
     email: isEmail(email.trim())
       ? undefined
@@ -315,10 +317,15 @@ function GuestPanel({
         <Field
           id="g-email"
           label="Email"
+          hint={cartReminders ? REMINDER_NOTE : undefined}
           error={tried ? errors.email : undefined}
         >
           <input
-            {...describe("g-email", tried ? errors.email : undefined)}
+            {...describe(
+              "g-email",
+              tried ? errors.email : undefined,
+              cartReminders,
+            )}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}

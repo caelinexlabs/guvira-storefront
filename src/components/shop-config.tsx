@@ -16,6 +16,8 @@ export type ShopConfig = {
   /** The owner's logo, or empty for the text wordmark. */
   logo: string;
   promises: { icon: string; title: string; text: string }[];
+  /** The shop emails a shopper once about a bag left behind, so ask for an email. */
+  cartReminders: boolean;
 };
 
 const OFF: ShopConfig = {
@@ -28,6 +30,7 @@ const OFF: ShopConfig = {
   sizeGuide: { enabled: false, text: "" },
   logo: "",
   promises: [],
+  cartReminders: false,
 };
 
 const Ctx = createContext<ShopConfig>(OFF);

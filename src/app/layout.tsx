@@ -83,6 +83,7 @@ export default async function RootLayout({
             },
             logo: settings.brand.logo.media,
             promises: settings.promises.items,
+            cartReminders: settings.cartReminders.enabled,
           }}
         >
           <Announcement {...settings.announcement} />
