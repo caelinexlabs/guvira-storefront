@@ -5451,7 +5451,7 @@ summary {
 }
 
 /* ---------- Shop dock: filters that stay within reach ---------- */
-/* On a phone the chat button rides above the dock instead of over it. */
+/* On a phone the chat button sits above the dock instead of over it. */
 @media (max-width: 720px) {
   body:has(.dock-wrap) .whatsapp {
     bottom: calc(
