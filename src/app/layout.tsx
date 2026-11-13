@@ -1,14 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Pinyon_Script, Urbanist } from "next/font/google";
 import { Toaster } from "sonner";
-import { Announcement } from "@/components/announcement";
 import { BagDrawer } from "@/components/bag-drawer";
 import { BagSync } from "@/components/bag-sync";
 import { CurrencyBoot } from "@/components/currency-boot";
 import { ShopConfigProvider } from "@/components/shop-config";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { getShopSettings } from "@/lib/caelinex/settings";
-import { getCurrencies } from "@/lib/commerce";
+import { getCurrencies, listCategories, listProducts } from "@/lib/commerce";
+import { isExternal, resolveLink } from "@/lib/link";
 import { getNavigation } from "@/lib/nav";
 import "./globals.css";
 
@@ -54,11 +54,19 @@ export const viewport: Viewport = { themeColor: "#fbf8f4" };
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [currencies, nav, settings] = await Promise.all([
+  const [currencies, nav, settings, categories, products] = await Promise.all([
     getCurrencies(),
     getNavigation(),
     getShopSettings(),
+    listCategories(),
+    listProducts(),
   ]);
+  const note = settings.announcement;
+  const href = note.link ? resolveLink(note.link) : undefined;
+  const hasPhoto = (p: (typeof products)[number]) =>
+    !!p.images[0] && !p.images[0].src.endsWith("no-photo.svg");
+  // The "New in" card: a piece with a photo if there is one, else the first piece.
+  const pick = products.find(hasPhoto) ?? products[0];
   const { features, productPage } = settings;
   return (
     <html
@@ -83,9 +91,31 @@ export default async function RootLayout({
             },
             logo: settings.brand.logo.media,
             promises: settings.promises.items,
+            announcement: {
+              text: note.enabled ? note.text : "",
+              href,
+              external: href ? isExternal(href) : false,
+            },
+            menu: {
+              categories: categories.map((c) => ({
+                slug: c.slug,
+                name: c.name,
+                count: c.count,
+                // The category's own photo, else its first piece with one.
+                image:
+                  c.image?.src ??
+                  products.find((p) => p.category === c.slug && hasPhoto(p))
+                    ?.images[0].src,
+              })),
+              featured: pick && {
+                slug: pick.slug,
+                name: pick.name,
+                line: pick.line,
+                image: pick.images[0].src,
+              },
+            },
           }}
         >
-          <Announcement {...settings.announcement} />
           {children}
         </ShopConfigProvider>
         <CurrencyBoot currencies={currencies} />
