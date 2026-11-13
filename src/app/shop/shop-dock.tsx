@@ -110,7 +110,7 @@ export function ShopDock({
                 aria-current={!current ? "page" : undefined}
               >
                 <span className="dock-photo">
-                  <Icon name="spark" />
+                  <span aria-hidden="true">all</span>
                 </span>
                 All
               </Link>
