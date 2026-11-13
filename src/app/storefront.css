@@ -5740,10 +5740,6 @@ summary {
   border-radius: 0 0 var(--radius-panel) var(--radius-panel);
 }
 
-.nav.over:not(.scrolled) .logo img {
-  filter: brightness(0) invert(0.94) sepia(0.12);
-}
-
 /* Over the film the bar stays clear. A soft, eased fade at the top edge of the
    picture (no box, no hard line) gives the cream text something to sit on. */
 .nav.over::before {

@@ -18,7 +18,8 @@ type Me = { signedIn: boolean; name: string };
  * The emerald band: the owner's announcement line, then links on the left, the
  * logo in the middle and the tools on the right. The line folds away once the
  * page scrolls. Shop opens a panel with the categories and one featured piece.
- * `over` floats it, transparent, on the home film until the page scrolls.
+ * `over` floats it, clear, on the home film. The announcement line folds on the
+ * first scroll, and the bar turns emerald once the film has scrolled under it.
  */
 export function SiteHeader({ over = false }: { over?: boolean }) {
   const { nav, wishlist, search, logo, announcement, menu } = useShopConfig();
