@@ -5464,7 +5464,7 @@ summary {
   grid-template-rows: 1fr;
   transition: grid-template-rows var(--dur-medium) var(--ease);
 }
-.nav.scrolled .nav-note {
+.nav.folded .nav-note {
   grid-template-rows: 0fr;
 }
 .nav-note > div {
@@ -5566,13 +5566,14 @@ summary {
   --focus: var(--emerald);
   position: absolute;
   top: 100%;
-  inset-inline: var(--edge);
-  max-width: var(--max);
-  margin: var(--space-2) auto 0;
+  inset-inline: var(--space-4);
+  max-width: calc(var(--canvas) - 2 * var(--space-4));
+  margin: var(--space-1-5) auto 0;
+  container-type: inline-size;
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: var(--space-8);
-  padding: var(--space-7) var(--space-8);
+  grid-template-columns: 1.7fr 1fr;
+  gap: var(--space-10);
+  padding: var(--space-8) var(--space-9) var(--space-7);
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
   background: var(--card);
@@ -5599,9 +5600,9 @@ summary {
   transition-delay: 0s;
 }
 .nav-mega h2 {
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-5);
   color: var(--soft);
-  font-size: var(--text-xs);
+  font-size: var(--text-md);
   font-weight: 600;
 }
 .mega-cats {
@@ -5609,15 +5610,16 @@ summary {
   margin: 0;
   padding: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-6);
+  flex-wrap: nowrap;
+  gap: clamp(var(--space-3), 2.4cqw, var(--space-8));
 }
 .mega-cats a {
+  --d: clamp(68px, 8.2cqw, 100px);
   display: grid;
   justify-items: center;
-  gap: var(--space-2);
-  width: 96px;
-  font-size: var(--text-xs);
+  gap: var(--space-2-5);
+  width: calc(var(--d) + var(--space-5));
+  font-size: clamp(var(--text-xs), 1.2cqw, var(--text-md));
   font-weight: 500;
   text-align: center;
   text-decoration: none;
@@ -5625,13 +5627,13 @@ summary {
 .mega-cats small {
   margin-top: calc(-1 * var(--space-1-5));
   color: var(--soft);
-  font-size: var(--text-3xs);
+  font-size: var(--text-2xs);
 }
 .mega-photo {
   display: grid;
   place-items: center;
-  width: 80px;
-  height: 80px;
+  width: var(--d);
+  height: var(--d);
   overflow: hidden;
   border-radius: 50%;
   background: var(--sand);
@@ -5663,35 +5665,36 @@ summary {
 }
 .mega-feat {
   display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: var(--space-4);
+  grid-template-columns: clamp(96px, 12cqw, 150px) 1fr;
+  gap: var(--space-5);
   align-items: center;
-  padding: var(--space-3-5);
-  border-radius: var(--radius-lg);
+  padding: var(--space-4-5);
+  border-radius: var(--radius-xl);
   background: var(--sand);
   text-decoration: none;
 }
 .mega-feat img {
-  width: 120px;
-  height: 120px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
   border-radius: var(--radius-md);
   object-fit: cover;
 }
 .mega-feat b {
   display: block;
-  font-size: var(--text-base);
+  font-size: clamp(var(--text-md), 1.5cqw, var(--text-xl));
   font-weight: 600;
   text-transform: capitalize;
 }
 .mega-feat small {
   display: block;
   color: var(--soft);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 .mega-feat u {
   display: inline-block;
   margin-top: var(--space-2);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 600;
   text-underline-offset: 3px;
 }
@@ -5699,4 +5702,68 @@ summary {
   .nav-mega {
     display: none;
   }
+}
+
+/* Home: the header floats over a full-bleed film, then becomes the band. */
+.nav.over {
+  position: fixed;
+  inset: 0 0 auto;
+  background: transparent;
+  transition:
+    background-color var(--dur-medium) var(--ease),
+    box-shadow var(--dur-medium) ease;
+}
+.nav.over > * {
+  position: relative;
+}
+.nav.over > .nav-mega {
+  position: absolute;
+}
+.nav.over.scrolled {
+  background: var(--emerald);
+}
+.nav.over:not(.scrolled) .nav-note p {
+  /* Only the announcement strip is dark; the bar under it stays clear. */
+  background: rgb(var(--shade-rgb) / 0.4);
+  border-bottom: 1px dotted rgb(var(--gold-rgb) / 0.7);
+}
+.nav.over .logo {
+  color: var(--on-dark);
+}
+.nav.over + main .vhero {
+  padding: 0;
+}
+.nav.over + main .vhero-frame {
+  height: max(560px, 100svh);
+  max-height: none;
+  max-width: none;
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+
+/* Over the film the bar stays clear. A soft, eased fade at the top edge of the
+   picture (no box, no hard line) gives the cream text something to sit on. */
+.nav.over::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 calc(-1 * var(--space-12));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--shade-rgb) / 0.34),
+    rgb(var(--shade-rgb) / 0.22) 38%,
+    rgb(var(--shade-rgb) / 0.09) 72%,
+    rgb(var(--shade-rgb) / 0)
+  );
+  pointer-events: none;
+  transition: opacity var(--dur-medium) var(--ease);
+}
+.nav.over.scrolled::before {
+  opacity: 0;
+}
+.nav.over:not(.scrolled) .links a,
+.nav.over:not(.scrolled) .links button {
+  color: var(--paper);
+  font-weight: 500;
+}
+.nav.over:not(.scrolled) .logo img {
+  filter: brightness(0) invert(0.97);
 }

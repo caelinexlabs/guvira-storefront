@@ -18,12 +18,15 @@ type Me = { signedIn: boolean; name: string };
  * The emerald band: the owner's announcement line, then links on the left, the
  * logo in the middle and the tools on the right. The line folds away once the
  * page scrolls. Shop opens a panel with the categories and one featured piece.
+ * `over` floats it, clear, on the home film. The announcement line folds on the
+ * first scroll, and the bar turns emerald once the film has scrolled under it.
  */
-export function SiteHeader() {
+export function SiteHeader({ over = false }: { over?: boolean }) {
   const { nav, wishlist, search, logo, announcement, menu } = useShopConfig();
   const ref = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [folded, setFolded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
   const [me, setMe] = useState<Me>();
@@ -42,11 +45,24 @@ export function SiteHeader() {
   const firstName = me?.signedIn ? me.name.split(/[\s@]/)[0] : "";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(scrollY > 8);
+    // On the home page the header stays transparent until the hero film has
+    // scrolled up under it; elsewhere it turns solid on the first scroll.
+    const hero = over ? document.querySelector(".vhero-frame") : null;
+    const onScroll = () => {
+      // The announcement line folds away on the first scroll.
+      setFolded(scrollY > 8);
+      if (!hero) return setScrolled(scrollY > 8);
+      const h = ref.current?.offsetHeight ?? 0;
+      setScrolled(hero.getBoundingClientRect().bottom <= h);
+    };
     onScroll();
     addEventListener("scroll", onScroll, { passive: true });
-    return () => removeEventListener("scroll", onScroll);
-  }, []);
+    addEventListener("resize", onScroll);
+    return () => {
+      removeEventListener("scroll", onScroll);
+      removeEventListener("resize", onScroll);
+    };
+  }, [over]);
 
   // A new page, or Escape, closes the Shop panel.
   // biome-ignore lint/correctness/useExhaustiveDependencies: close when the address changes
@@ -87,7 +103,15 @@ export function SiteHeader() {
   ) : null;
 
   return (
-    <header ref={ref} className={clsx("nav", scrolled && "scrolled")}>
+    <header
+      ref={ref}
+      className={clsx(
+        "nav",
+        over && "over",
+        scrolled && "scrolled",
+        folded && "folded",
+      )}
+    >
       {note && (
         <div className="nav-note">
           <div>
@@ -247,14 +271,6 @@ export function SiteHeader() {
           <div>
             <h2>Shop by type</h2>
             <ul className="mega-cats">
-              <li>
-                <Link href="/shop">
-                  <span className="mega-photo">
-                    <Icon name="spark" />
-                  </span>
-                  All jewellery
-                </Link>
-              </li>
               {menu_.categories.map((c) => (
                 <li key={c.slug}>
                   <Link href={`/shop/${c.slug}`}>
@@ -263,9 +279,9 @@ export function SiteHeader() {
                         <Image
                           src={c.image}
                           alt=""
-                          width={80}
-                          height={80}
-                          sizes="80px"
+                          width={100}
+                          height={100}
+                          sizes="100px"
                         />
                       ) : (
                         <span aria-hidden="true">{c.name.charAt(0)}</span>
@@ -290,9 +306,9 @@ export function SiteHeader() {
                 <Image
                   src={menu_.featured.image}
                   alt=""
-                  width={120}
-                  height={120}
-                  sizes="120px"
+                  width={150}
+                  height={150}
+                  sizes="150px"
                 />
                 <span>
                   <b>{menu_.featured.name}</b>
