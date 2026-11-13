@@ -5744,24 +5744,30 @@ summary {
   filter: brightness(0) invert(0.94) sepia(0.12);
 }
 
-/* Over the film the bar stays clear, so the text and icons carry their own soft shadow. */
+/* Over the film the bar stays clear. A soft, eased fade at the top edge of the
+   picture (no box, no hard line) gives the cream text something to sit on. */
+.nav.over::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 calc(-1 * var(--space-12));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--shade-rgb) / 0.34),
+    rgb(var(--shade-rgb) / 0.22) 38%,
+    rgb(var(--shade-rgb) / 0.09) 72%,
+    rgb(var(--shade-rgb) / 0)
+  );
+  pointer-events: none;
+  transition: opacity var(--dur-medium) var(--ease);
+}
+.nav.over.scrolled::before {
+  opacity: 0;
+}
 .nav.over:not(.scrolled) .links a,
 .nav.over:not(.scrolled) .links button {
   color: var(--paper);
-  font-weight: 600;
-  text-shadow:
-    0 0 14px rgb(var(--shade-rgb) / 0.8),
-    0 1px 3px rgb(var(--shade-rgb) / 0.75);
-}
-.nav.over:not(.scrolled) .tools .ico,
-.nav.over:not(.scrolled) .tools .search-pill {
-  color: var(--paper);
-  filter: drop-shadow(0 0 3px rgb(var(--shade-rgb) / 0.7))
-    drop-shadow(0 0 8px rgb(var(--shade-rgb) / 0.8))
-    drop-shadow(0 1px 1px rgb(var(--shade-rgb) / 0.5));
+  font-weight: 500;
 }
 .nav.over:not(.scrolled) .logo img {
-  filter: brightness(0) invert(1)
-    drop-shadow(0 0 10px rgb(var(--shade-rgb) / 0.8))
-    drop-shadow(0 1px 1px rgb(var(--shade-rgb) / 0.5));
+  filter: brightness(0) invert(0.97);
 }
