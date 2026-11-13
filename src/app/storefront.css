@@ -5730,18 +5730,19 @@ summary {
 .nav.over .logo {
   color: var(--on-dark);
 }
-/* The film keeps a fixed 24px gap at the sides and stops at the canvas width. */
+/* The film runs full width up to a 15" MacBook (1710px), then stops and centres. */
 .nav.over + main .vhero {
-  padding: 0 var(--space-6) var(--stack-fluid);
+  padding: 0 0 var(--stack-fluid);
 }
 .nav.over + main .vhero-frame {
+  max-width: 1710px;
   height: max(560px, 100svh);
   max-height: none;
   border-radius: 0 0 var(--radius-panel) var(--radius-panel);
 }
 /* The announcement strip lines up with the film's edges. */
 .nav.over:not(.scrolled) .nav-note {
-  margin-inline: max(var(--space-6), calc((100% - var(--canvas)) / 2));
+  margin-inline: max(0px, calc((100% - 1710px) / 2));
 }
 
 /* Over the film the bar stays clear. A soft, eased fade at the top edge of the
