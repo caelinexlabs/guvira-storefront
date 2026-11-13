@@ -5743,3 +5743,25 @@ summary {
 .nav.over:not(.scrolled) .logo img {
   filter: brightness(0) invert(0.94) sepia(0.12);
 }
+
+/* Over the film the bar stays clear, so the text and icons carry their own soft shadow. */
+.nav.over:not(.scrolled) .links a,
+.nav.over:not(.scrolled) .links button {
+  color: var(--paper);
+  font-weight: 600;
+  text-shadow:
+    0 0 14px rgb(var(--shade-rgb) / 0.8),
+    0 1px 3px rgb(var(--shade-rgb) / 0.75);
+}
+.nav.over:not(.scrolled) .tools .ico,
+.nav.over:not(.scrolled) .tools .search-pill {
+  color: var(--paper);
+  filter: drop-shadow(0 0 3px rgb(var(--shade-rgb) / 0.7))
+    drop-shadow(0 0 8px rgb(var(--shade-rgb) / 0.8))
+    drop-shadow(0 1px 1px rgb(var(--shade-rgb) / 0.5));
+}
+.nav.over:not(.scrolled) .logo img {
+  filter: brightness(0) invert(1)
+    drop-shadow(0 0 10px rgb(var(--shade-rgb) / 0.8))
+    drop-shadow(0 1px 1px rgb(var(--shade-rgb) / 0.5));
+}
