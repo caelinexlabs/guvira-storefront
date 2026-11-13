@@ -5635,10 +5635,10 @@ summary {
     )
     50%;
   translate: -50% 0;
-  width: min(920px, calc(100vw - 2 * var(--m)));
-  max-height: min(70vh, 560px);
+  width: min(900px, calc(100vw - 2 * var(--m)));
+  max-height: min(70vh, 420px);
   margin: 0;
-  padding: var(--space-6);
+  padding: var(--space-5) var(--space-6);
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
@@ -5655,9 +5655,10 @@ summary {
     display var(--dur-medium) allow-discrete;
 }
 .dock-sheet:popover-open {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-6) var(--space-8);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-5) var(--space-6);
   opacity: 1;
   transform: none;
 }
@@ -5676,29 +5677,33 @@ summary {
     max-height: none;
     opacity: 1;
     transform: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-6) var(--space-8);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-5) var(--space-8);
   }
   .dock-main {
     display: none;
   }
 }
+.dock-col {
+  flex: 0 1 auto;
+}
 .dock-col h3 {
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-2-5);
   color: var(--soft);
   font-size: var(--text-sm);
   font-weight: 600;
 }
 .dock-type {
-  grid-column: 1 / -1;
+  flex: 1 1 220px;
+  max-width: 240px;
 }
 .dock-types {
   display: flex;
-  gap: var(--space-5);
-  overflow-x: auto;
-  padding: var(--space-1) var(--space-1) var(--space-2);
-  scrollbar-width: none;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-2-5);
+  padding: var(--space-1);
 }
 .dock-types::-webkit-scrollbar {
   display: none;
@@ -5707,9 +5712,9 @@ summary {
   flex: none;
   display: grid;
   justify-items: center;
-  gap: var(--space-1-5);
-  min-width: 64px;
-  font-size: var(--text-xs);
+  gap: var(--space-1);
+  width: 64px;
+  font-size: var(--text-2xs);
   font-weight: 500;
   text-align: center;
   text-decoration: none;
@@ -5724,14 +5729,14 @@ summary {
 .dock-photo {
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   overflow: hidden;
   border-radius: 50%;
   background: var(--sand);
   color: var(--ink);
   font-family: var(--script);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   transition:
     box-shadow var(--dur-base) var(--ease),
     transform var(--dur-fast) var(--ease);
@@ -5753,15 +5758,17 @@ summary {
 .dock-types a:active .dock-photo {
   transform: scale(0.94);
 }
-@media (min-width: 861px) {
-  .dock-wide {
-    grid-column: span 2;
-  }
+.dock-wide {
+  flex: 1 1 250px;
+  max-width: 280px;
+}
+.dock-col:last-child {
+  flex: 0 0 188px;
 }
 .dock-orbs {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: var(--space-2-5) var(--space-1-5);
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: var(--space-2) var(--space-1);
 }
 .dock-orbs a {
   display: grid;
@@ -5774,7 +5781,7 @@ summary {
   text-decoration: none;
 }
 .dock-orbs .dock-orb {
-  --s: 40px;
+  --s: 32px;
   transition:
     box-shadow var(--dur-base) var(--ease),
     transform var(--dur-fast) var(--ease);
