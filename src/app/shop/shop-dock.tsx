@@ -35,7 +35,6 @@ export function ShopDock({
   query,
   facets,
   priceRange,
-  shown,
 }: {
   categories: Category[];
   current?: Category;
@@ -43,7 +42,6 @@ export function ShopDock({
   facets: Facet[];
   priceRange?: PriceRange;
   /** Pieces on show with the current filters. */
-  shown: number;
 }) {
   const active = filterCount(query);
   const swatches = facets.filter(hasSwatch);
@@ -88,14 +86,10 @@ export function ShopDock({
             ))}
           </div>
         )}
-        {shown === 0 ? (
+        {active > 0 && (
           <Link className="dock-cta" href={clear} scroll={false}>
             Clear filters
           </Link>
-        ) : (
-          <a className="dock-cta" href="#shop-results">
-            {`Show ${shown} ${shown === 1 ? "piece" : "pieces"}`}
-          </a>
         )}
       </nav>
 

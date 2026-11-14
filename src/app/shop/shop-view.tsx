@@ -137,7 +137,6 @@ export async function ShopView({
           query={query}
           facets={facets}
           priceRange={priceRange}
-          shown={products.length}
         />
       </main>
       <SiteFooter />
