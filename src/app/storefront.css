@@ -5456,7 +5456,7 @@ summary {
   body:has(.dock-wrap) .whatsapp {
     bottom: calc(
       var(--space-4) +
-      var(--space-16) +
+      var(--dock-h) +
       var(--space-3) +
       env(safe-area-inset-bottom, 0px)
     );
@@ -5517,6 +5517,7 @@ summary {
 
 /* The bar: Filters, quick colour dots, pieces on show. */
 .dock-wrap {
+  --dock-h: 52px;
   position: sticky;
   bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   z-index: var(--z-sticky);
@@ -5531,19 +5532,19 @@ summary {
   align-items: center;
   gap: var(--space-1-5);
   max-width: 100%;
-  padding: var(--space-2);
+  padding: var(--space-1-5);
   border-radius: var(--radius-pill);
-  background: rgb(var(--night-rgb) / 0.94);
+  background: rgb(var(--night-rgb) / 0.7);
   color: var(--on-dark);
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(16px) saturate(1.5);
 }
 .dock-main,
 .dock-cta {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  height: 48px;
+  height: 40px;
   border: 0;
   border-radius: var(--radius-pill);
   font: inherit;
@@ -5557,16 +5558,16 @@ summary {
     background-color var(--dur-base) ease;
 }
 .dock-main {
-  padding: 0 var(--space-4-5);
+  padding: 0 var(--space-3-5);
   background: rgb(var(--on-dark-rgb) / 0.12);
   color: inherit;
 }
 .dock-main .ico {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 .dock-cta {
-  padding: 0 var(--space-5);
+  padding: 0 var(--space-4);
   background: var(--on-dark);
   color: var(--night);
   font-weight: 700;
@@ -5597,14 +5598,49 @@ summary {
 .dock-dots a {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   transition: transform var(--dur-fast) var(--ease);
 }
+/* Colours rise into place one after another, then lift a little under the pointer. */
 .dock-dots .dock-orb {
-  --s: 22px;
-  transition: box-shadow var(--dur-base) var(--ease);
+  --s: 18px;
+  animation: dock-pop var(--dur-slow) var(--ease) backwards;
+  transition:
+    transform var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease);
+}
+.dock-dots a:nth-child(2) .dock-orb {
+  animation-delay: 60ms;
+}
+.dock-dots a:nth-child(3) .dock-orb {
+  animation-delay: 120ms;
+}
+.dock-dots a:nth-child(4) .dock-orb {
+  animation-delay: 180ms;
+}
+.dock-dots a:nth-child(5) .dock-orb {
+  animation-delay: 240ms;
+}
+.dock-dots a:nth-child(n + 6) .dock-orb {
+  animation-delay: 300ms;
+}
+@keyframes dock-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.6);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .dock-dots a:hover .dock-orb {
+    transform: scale(1.22);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dock-dots .dock-orb {
+    animation: none;
+  }
 }
 .dock-dots a[aria-current="true"] .dock-orb {
   box-shadow:
@@ -5629,7 +5665,7 @@ summary {
   inset: auto auto
     calc(
       var(--space-4) +
-      var(--space-16) +
+      var(--dock-h, 52px) +
       var(--space-2-5) +
       env(safe-area-inset-bottom, 0px)
     )
