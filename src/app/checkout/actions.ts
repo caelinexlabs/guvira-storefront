@@ -2,17 +2,20 @@
 
 import { checkoutCart } from "@/lib/caelinex/cart";
 import { forgetCart, syncCart } from "@/lib/caelinex/cart-sync";
+import { cancelOrder } from "@/lib/caelinex/orders";
 import {
   type Customer,
   getCustomer,
   requestSignInCode,
   verifySignInCode,
 } from "@/lib/caelinex/shopper";
+import { countryByCode } from "@/lib/checkout/countries";
 import { regionCode } from "@/lib/checkout/gst-state";
 import type { PaymentMethod } from "@/lib/checkout/payment";
 import {
   type CheckoutDetails,
   type FieldErrors,
+  internationalPhone,
   validateDetails,
 } from "@/lib/checkout/validate";
 import { cleanIdentifier, isEmail } from "@/lib/identity";
@@ -223,12 +226,17 @@ export async function placeOrder(
   }
 
   const name = details.fullName.trim();
+  // Caelinex stores the number with its country code, so send it that way.
+  const phone = internationalPhone(
+    countryByCode(details.country)?.dialCode ?? "",
+    details.phone,
+  );
   const r = await checkoutCart(
     cartToken,
     {
       email: details.email.trim(),
       name,
-      phone: details.phone.trim(),
+      phone,
       shippingAddress: {
         name,
         line1: details.line1.trim(),
@@ -237,7 +245,7 @@ export async function placeOrder(
         region: regionCode(details.country, details.region) || undefined,
         postalCode: details.postal.trim(),
         country: details.country,
-        phone: details.phone.trim(),
+        phone,
       },
       shippingRateId,
       paymentMethod: method === "cod" ? "COD" : "RAZORPAY",
@@ -264,4 +272,15 @@ export async function placeOrder(
   }
   await forgetCart();
   return { status: "created", ...placed };
+}
+
+/**
+ * Give up on an order that is waiting for payment. Caelinex cancels it and
+ * frees the stock at once, so the pieces can go back into a bag.
+ */
+export async function cancelWaitingOrder(token: string): Promise<boolean> {
+  if (!/^[\w-]{10,100}$/.test(token)) return false;
+  const r = await cancelOrder(token);
+  if (r.ok) await forgetCart();
+  return r.ok;
 }

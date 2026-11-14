@@ -3634,6 +3634,42 @@ select {
   opacity: 1;
   color: var(--soft);
 }
+.co-resume {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 480px;
+  margin: var(--space-8) auto;
+  padding: var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--paper);
+}
+.co-resume h2 {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 500;
+}
+.co-resume ul {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.co-resume li,
+.co-resume-total {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: 0;
+}
+.co-resume small {
+  color: var(--soft);
+}
+.co-resume-total {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
 .empty-state {
   display: grid;
   justify-items: center;
@@ -4605,6 +4641,11 @@ fieldset.stepper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-4);
+  /* A hint or error under one field must not push its neighbour's input down. */
+  align-items: start;
+}
+.co-loading {
+  min-height: 320px;
 }
 .co-summary {
   position: sticky;
@@ -4639,6 +4680,15 @@ fieldset.stepper {
 }
 .co-summary .thumb {
   position: relative;
+  /* The bag thumbnail is not the product gallery's: the quantity badge sits on
+     its corner, so nothing is clipped or dimmed. */
+  overflow: visible;
+  opacity: 1;
+  cursor: default;
+  background: none;
+}
+.co-summary .thumb::after {
+  content: none;
 }
 .co-summary .thumb img {
   width: 64px;
