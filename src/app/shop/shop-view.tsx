@@ -6,7 +6,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SortMenu } from "@/components/sort-menu";
 import { Heading, PillLink } from "@/components/ui";
 import { listProducts } from "@/lib/commerce";
-import { shopHref } from "@/lib/commerce/query";
+import { formatMoney } from "@/lib/commerce/money";
+import { shopHref, toggleChoice } from "@/lib/commerce/query";
 import type {
   Category,
   Facet,
@@ -15,7 +16,7 @@ import type {
   ShopQuery,
   Sort,
 } from "@/lib/commerce/types";
-import { FilterPanel } from "./filter-panel";
+import { filterCount, ShopDock } from "./shop-dock";
 
 const SORT_LABEL: Record<Sort, string> = {
   relevance: "Relevance",
@@ -76,30 +77,12 @@ export async function ShopView({
         </header>
 
         <div className="shop-tools">
-          <div className="filter-bar">
-            <nav className="chips chips-cat" aria-label="Category">
-              <Link
-                href={shopHref({ ...query, category: undefined })}
-                aria-current={!current ? "page" : undefined}
-              >
-                All
-              </Link>
-              {categories.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={shopHref({ ...query, category: c.slug })}
-                  aria-current={current?.slug === c.slug ? "page" : undefined}
-                >
-                  {c.name}
-                </Link>
-              ))}
-            </nav>
-            <FilterPanel
-              query={query}
-              facets={facets}
-              priceRange={priceRange}
-            />
-          </div>
+          <AppliedFilters
+            query={query}
+            facets={facets}
+            current={current}
+            priceRange={priceRange}
+          />
           <div className="results-row">
             <p className="result-count" aria-live="polite">
               {products.length > 0 && count}
@@ -116,7 +99,7 @@ export async function ShopView({
         </div>
 
         {products.length ? (
-          <ul className="shop-grid">
+          <ul className="shop-grid" id="shop-results">
             {products.map((p) => (
               <li key={p.id}>
                 <ProductCard
@@ -126,6 +109,20 @@ export async function ShopView({
               </li>
             ))}
           </ul>
+        ) : filterCount(query) > 0 ? (
+          <Empty
+            title={{ script: "nothing in", caps: "That mix" }}
+            text="No piece has all of those at once. Loosen the price or pick another colour."
+            action={{
+              href: shopHref({
+                category: query.category,
+                sort: query.sort,
+                attrs: {},
+              }),
+              label: "Clear all filters",
+            }}
+            picks={picks}
+          />
         ) : (
           <Empty
             title={{ script: "still being", caps: "Polished" }}
@@ -134,6 +131,13 @@ export async function ShopView({
             picks={picks}
           />
         )}
+        <ShopDock
+          categories={categories}
+          current={current}
+          query={query}
+          facets={facets}
+          priceRange={priceRange}
+        />
       </main>
       <SiteFooter />
     </>
@@ -177,5 +181,81 @@ function Empty({
         </div>
       )}
     </section>
+  );
+}
+
+/** What is switched on, each one a link that takes it off. */
+function AppliedFilters({
+  query,
+  facets,
+  current,
+  priceRange,
+}: {
+  query: ShopQuery;
+  facets: Facet[];
+  current?: Category;
+  priceRange?: PriceRange;
+}) {
+  const items: { key: string; label: string; href: string; swatch?: string }[] =
+    [];
+  if (current)
+    items.push({
+      key: "category",
+      label: current.name,
+      href: shopHref({ ...query, category: undefined }),
+    });
+  for (const f of facets)
+    for (const v of f.values)
+      if (v.selected)
+        items.push({
+          key: `${f.code}-${v.slug}`,
+          label: f.type === "BOOLEAN" ? f.name : v.label,
+          swatch: v.swatch,
+          href: shopHref(toggleChoice(query, f.code, v.slug)),
+        });
+  if (query.minPrice != null || query.maxPrice != null) {
+    const money = (n: number) => formatMoney(n, priceRange?.currency ?? "INR");
+    const { minPrice: lo, maxPrice: hi } = query;
+    items.push({
+      key: "price",
+      label:
+        lo != null && hi != null
+          ? `${money(lo)} to ${money(hi)}`
+          : lo != null
+            ? `From ${money(lo)}`
+            : `Up to ${money(hi ?? 0)}`,
+      href: shopHref({ ...query, minPrice: undefined, maxPrice: undefined }),
+    });
+  }
+  if (query.inStock)
+    items.push({
+      key: "stock",
+      label: "In stock",
+      href: shopHref({ ...query, inStock: undefined }),
+    });
+  if (!items.length) return null;
+  return (
+    <ul className="applied" aria-label="Filters on">
+      {items.map((i) => (
+        <li key={i.key}>
+          <Link
+            href={i.href}
+            scroll={false}
+            rel="nofollow"
+            aria-label={`Remove ${i.label}`}
+          >
+            {i.swatch && (
+              <i
+                className="dock-orb"
+                style={{ "--c": i.swatch } as React.CSSProperties}
+                aria-hidden="true"
+              />
+            )}
+            {i.label}
+            <Icon name="close" />
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }

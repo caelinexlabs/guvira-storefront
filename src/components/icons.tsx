@@ -28,6 +28,13 @@ const PATHS = {
   plus: <path d="M12 5v14M5 12h14" />,
   minus: <path d="M5 12h14" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
+  sliders: (
+    <>
+      <path d="M4 7h9M19 7h1M4 17h1M11 17h9" />
+      <circle cx="16" cy="7" r="2.2" />
+      <circle cx="8" cy="17" r="2.2" />
+    </>
+  ),
   check: <path d="m5 12 4.5 4.5L19 7" />,
   spark: (
     <path d="M12 3c.6 4.6 3.4 7.4 8 8-4.6.6-7.4 3.4-8 8-.6-4.6-3.4-7.4-8-8 4.6-.6 7.4-3.4 8-8Z" />
