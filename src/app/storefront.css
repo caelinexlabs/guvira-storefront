@@ -142,6 +142,7 @@
   --radius-round: 50%;
 
   /* ----- Layers ----- */
+  --band-h: 72px; /* the header band, without the announcement line */
   --z-above: 1;
   --z-badge: 2;
   --z-sticky: 30;
@@ -196,7 +197,7 @@ select {
 .foot,
 .news,
 .vhero,
-.nav.over:not(.solid) {
+.nav {
   --focus: var(--focus-on-dark);
 }
 ::selection {
@@ -357,82 +358,7 @@ select {
 }
 
 /* Nav */
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-header);
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: box-shadow var(--dur-medium) ease;
-}
-.nav.scrolled {
-  box-shadow: 0 1px 0 var(--line);
-}
 /* Home: the header floats over the video, then turns solid once you scroll past it. */
-.nav.over {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  padding-top: var(--edge);
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  color: var(--on-media);
-  transition:
-    background-color var(--dur-slow) ease,
-    color var(--dur-slow) ease,
-    padding var(--dur-slow) var(--ease),
-    box-shadow var(--dur-slow) ease;
-}
-.nav.over .nav-in {
-  padding-inline: clamp(8px, 1.6vw, 20px);
-}
-.nav.over .icon-btn,
-.nav.over .currency,
-.nav.over .search-pill {
-  background: rgb(var(--white-rgb) / 0.12);
-  border-color: rgb(var(--white-rgb) / 0.38);
-  color: var(--on-media);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition:
-    background-color var(--dur-slow) ease,
-    border-color var(--dur-slow) ease,
-    color var(--dur-slow) ease;
-}
-.nav.over .currency option {
-  color: var(--ink);
-}
-.nav.over:not(.solid) .links a {
-  text-shadow: 0 1px 12px rgb(var(--shade-rgb) / 0.5);
-}
-.nav.over:not(.solid) .icon-btn,
-.nav.over:not(.solid) .currency,
-.nav.over:not(.solid) .search-pill {
-  background: var(--glass);
-}
-.nav.over.solid {
-  padding-top: 0;
-  background: color-mix(in srgb, var(--paper) 90%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: var(--ink);
-  box-shadow: 0 1px 0 var(--line);
-}
-.nav.over.solid .nav-in {
-  padding-inline: 0;
-}
-.nav.over.solid .icon-btn,
-.nav.over.solid .currency,
-.nav.over.solid .search-pill {
-  background: var(--card);
-  border-color: var(--line);
-  color: var(--ink);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
 .nav-in {
   display: flex;
   align-items: center;
@@ -861,7 +787,10 @@ select {
 }
 .vhero-frame {
   position: relative;
-  height: max(560px, calc(100svh - 2 * clamp(12px, 1.7vw, 24px)));
+  height: max(
+    560px,
+    calc(100svh - 2 * clamp(12px, 1.7vw, 24px) - var(--band-h))
+  );
   border-radius: var(--radius-panel);
   overflow: hidden;
   background: var(--media-bg);
@@ -4985,10 +4914,6 @@ summary {
   padding-inline: var(--edge);
 }
 /* The floating header uses the same content column as the page. */
-.nav.over .nav-in,
-.nav.over.solid .nav-in {
-  padding-inline: 0;
-}
 
 /* The finishes band follows the same rhythm as the hero film and the dark
    panel: same edge gap, same rounding, and it stops at --canvas on big screens. */
@@ -5008,25 +4933,6 @@ summary {
    (phones keep at least 16px inside the band). */
 .finishes-band .wrap {
   width: min(var(--max), 100% + 2 * var(--edge) - 2 * var(--m), 100% - 32px);
-}
-
-/* Header: hides on scroll down, slides back on scroll up. The divider line
-   only appears once the header is solid, never over the hero film. */
-.nav,
-.nav.over {
-  transition:
-    transform var(--dur-slow) var(--ease),
-    background-color var(--dur-slow) ease,
-    color var(--dur-slow) ease,
-    padding var(--dur-slow) var(--ease),
-    box-shadow var(--dur-slow) ease;
-  will-change: transform;
-}
-.nav.hide {
-  transform: translateY(-105%);
-}
-.nav.over.scrolled:not(.solid) {
-  box-shadow: none;
 }
 
 /* ---------- Header: categories left, logo centred, tools right ---------- */
@@ -5109,54 +5015,6 @@ summary {
 }
 
 /* ---------- Header v2: plain wordmark, tracked caps, bare icons ---------- */
-.nav .logo {
-  padding: 0;
-  border: 0;
-  background: none;
-  font:
-    500 var(--text-2xl) / 1 var(--font-serif),
-    Georgia,
-    serif;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: inherit;
-  margin-right: -0.32em;
-}
-.nav.over:not(.solid) .logo {
-  text-shadow: 0 1px 12px rgb(var(--shade-rgb) / 0.5);
-}
-.nav .links {
-  font-weight: 500;
-  font-size: var(--text-2xs);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-.nav .icon-btn,
-.nav.over .icon-btn,
-.nav.over:not(.solid) .icon-btn,
-.nav.over.solid .icon-btn,
-.nav .currency,
-.nav.over .currency,
-.nav.over:not(.solid) .currency,
-.nav.over.solid .currency,
-.nav .search-pill:not(:hover):not(:focus-within),
-.nav.over:not(.solid) .search-pill:not(:hover):not(:focus-within),
-.nav.over.solid .search-pill:not(:hover):not(:focus-within) {
-  background: none;
-  border-color: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  color: inherit;
-}
-.nav.over:not(.solid) .icon-btn .ico {
-  filter: drop-shadow(0 1px 8px rgb(var(--shade-rgb) / 0.5));
-}
-@media (max-width: 560px) {
-  .nav .logo {
-    font-size: 20px;
-    letter-spacing: 0.26em;
-  }
-}
 
 /* ---------- Shop results row, footer currency ---------- */
 .results-row {
@@ -5187,13 +5045,6 @@ summary {
 
 /* ---------- Touch targets: at least 44px where fingers tap ---------- */
 @media (pointer: coarse), (max-width: 860px) {
-  .nav .logo {
-    padding-block: 12px;
-  }
-  .nav .icon-btn {
-    width: 44px;
-    height: 44px;
-  }
   .crumbs a,
   .foot nav a,
   .foot-help a,
@@ -5410,21 +5261,6 @@ summary {
 }
 
 /* Announcement bar and WhatsApp button, both owner-controlled */
-.announce {
-  padding: var(--space-2) var(--space-4);
-  background: var(--ink);
-  color: var(--paper);
-  font-size: var(--text-sm);
-  text-align: center;
-  /* One line always: the home header floats over this bar and assumes its height. */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.announce a {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 .whatsapp {
   position: fixed;
   right: var(--space-4);
@@ -5444,10 +5280,327 @@ summary {
 }
 
 /* An owner-uploaded logo replaces the text wordmark */
+
+/* ---------- Header: the emerald band ---------- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--emerald);
+  color: var(--on-dark);
+  transition: box-shadow var(--dur-medium) ease;
+}
+.nav.scrolled {
+  box-shadow: 0 10px 30px -18px rgb(var(--black-rgb) / 0.6);
+}
+/* The announcement line folds away once the page scrolls. */
+.nav-note {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--dur-medium) var(--ease);
+}
+.nav.folded .nav-note {
+  grid-template-rows: 0fr;
+}
+.nav-note > div {
+  overflow: hidden;
+}
+.nav-note p {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid rgb(var(--on-dark-rgb) / 0.12);
+  color: var(--gold-light);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.06em;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-note a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.nav .nav-in {
+  height: var(--band-h);
+  padding-block: 0;
+}
+.nav .logo {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gold-light);
+  font:
+    500 var(--text-2xl) / 1 var(--font-serif),
+    Georgia,
+    serif;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  margin-right: -0.32em;
+}
+/* The owner's logo is dark artwork; on the band it is drawn in champagne. */
 .nav .logo img {
+  filter: brightness(0) invert(0.92) sepia(0.25) saturate(1.4);
+}
+.nav .links {
+  font-weight: 500;
+  font-size: var(--text-2xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.links button {
+  position: relative;
+  padding: var(--space-1-5) 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.links button::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1.5px;
+  background: var(--gold-light);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-medium) var(--ease);
+}
+.nav .links a::after {
+  background: var(--gold-light);
+}
+.links button[aria-expanded="true"]::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+@media (hover: hover) and (pointer: fine) {
+  .links button:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+.nav .icon-btn,
+.nav .currency,
+.nav .search-pill:not(:hover):not(:focus-within) {
+  background: none;
+  border-color: transparent;
+  color: inherit;
+}
+@media (max-width: 560px) {
+  .nav .logo {
+    font-size: 20px;
+    letter-spacing: 0.26em;
+  }
+}
+
+/* The Shop panel: opens downward, closes on Escape or when the pointer leaves. */
+.nav-mega {
+  --focus: var(--emerald);
+  position: absolute;
+  top: 100%;
+  inset-inline: var(--space-4);
+  max-width: calc(var(--canvas) - 2 * var(--space-4));
+  margin: var(--space-1-5) auto 0;
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: var(--space-10);
+  padding: var(--space-8) var(--space-9) var(--space-7);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  clip-path: inset(0 0 100% 0 round var(--radius-xl));
+  transform: translateY(-6px);
+  transition:
+    opacity 140ms ease,
+    clip-path var(--dur-medium) var(--ease),
+    transform var(--dur-medium) var(--ease),
+    visibility 0s var(--dur-medium);
+}
+.nav-mega:not(:has(.mega-feat)) {
+  grid-template-columns: 1fr;
+}
+.nav-mega[data-open] {
+  opacity: 1;
+  visibility: visible;
+  clip-path: inset(0 0 0 0 round var(--radius-xl));
+  transform: none;
+  transition-delay: 0s;
+}
+.nav-mega h2 {
+  margin: 0 0 var(--space-5);
+  color: var(--soft);
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+.mega-cats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: clamp(var(--space-3), 2.4cqw, var(--space-8));
+}
+.mega-cats a {
+  --d: clamp(68px, 8.2cqw, 100px);
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2-5);
+  width: calc(var(--d) + var(--space-5));
+  font-size: clamp(var(--text-xs), 1.2cqw, var(--text-md));
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+}
+.mega-cats small {
+  margin-top: calc(-1 * var(--space-1-5));
+  color: var(--soft);
+  font-size: var(--text-2xs);
+}
+.mega-photo {
+  display: grid;
+  place-items: center;
+  width: var(--d);
+  height: var(--d);
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--sand);
+  color: var(--ink);
+  font-family: var(--script);
+  font-size: var(--text-3xl);
+  transition:
+    box-shadow var(--dur-base) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.mega-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mega-photo .ico {
+  width: 26px;
+  height: 26px;
+}
+.mega-cats a:active .mega-photo {
+  transform: scale(0.95);
+}
+@media (hover: hover) and (pointer: fine) {
+  .mega-cats a:hover .mega-photo {
+    box-shadow:
+      0 0 0 3px var(--card),
+      0 0 0 5px var(--gold);
+  }
+}
+.mega-feat {
+  display: grid;
+  grid-template-columns: clamp(96px, 12cqw, 150px) 1fr;
+  gap: var(--space-5);
+  align-items: center;
+  padding: var(--space-4-5);
+  border-radius: var(--radius-xl);
+  background: var(--sand);
+  text-decoration: none;
+}
+.mega-feat img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+.mega-feat b {
   display: block;
-  height: 28px;
-  width: auto;
+  font-size: clamp(var(--text-md), 1.5cqw, var(--text-xl));
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.mega-feat small {
+  display: block;
+  color: var(--soft);
+  font-size: var(--text-sm);
+}
+.mega-feat u {
+  display: inline-block;
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+@media (max-width: 1180px) {
+  .nav-mega {
+    display: none;
+  }
+}
+
+/* Home: the header floats over a full-bleed film, then becomes the band. */
+.nav.over {
+  position: fixed;
+  inset: 0 0 auto;
+  background: transparent;
+  transition:
+    background-color var(--dur-medium) var(--ease),
+    box-shadow var(--dur-medium) ease;
+}
+.nav.over > * {
+  position: relative;
+}
+.nav.over > .nav-mega {
+  position: absolute;
+}
+.nav.over.scrolled {
+  background: var(--emerald);
+}
+.nav.over:not(.scrolled) .nav-note p {
+  /* Only the announcement strip is dark; the bar under it stays clear. */
+  background: rgb(var(--shade-rgb) / 0.4);
+  border-bottom: 1px dotted rgb(var(--gold-rgb) / 0.7);
+}
+.nav.over .logo {
+  color: var(--on-dark);
+}
+.nav.over + main .vhero {
+  padding: 0;
+}
+.nav.over + main .vhero-frame {
+  height: max(560px, 100svh);
+  max-height: none;
+  max-width: none;
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+
+/* Over the film the bar stays clear. A soft, eased fade at the top edge of the
+   picture (no box, no hard line) gives the cream text something to sit on. */
+.nav.over::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 calc(-1 * var(--space-12));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--shade-rgb) / 0.34),
+    rgb(var(--shade-rgb) / 0.22) 38%,
+    rgb(var(--shade-rgb) / 0.09) 72%,
+    rgb(var(--shade-rgb) / 0)
+  );
+  pointer-events: none;
+  transition: opacity var(--dur-medium) var(--ease);
+}
+.nav.over.scrolled::before {
+  opacity: 0;
+}
+.nav.over:not(.scrolled) .links a,
+.nav.over:not(.scrolled) .links button {
+  color: var(--paper);
+  font-weight: 500;
+}
+.nav.over:not(.scrolled) .logo img {
+  filter: brightness(0) invert(0.97);
 }
 
 /* ---------- Shop dock: filters that stay within reach ---------- */
