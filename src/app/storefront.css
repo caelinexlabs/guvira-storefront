@@ -1429,60 +1429,6 @@ select {
 .rail.static [data-clone] {
   display: none;
 }
-/* One quiet row under the rail: progress, arrows, and the way into the shop. */
-.rail-ctrl {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  margin-top: var(--space-7);
-}
-.rail-arrows {
-  display: flex;
-  gap: var(--space-2);
-}
-.rail-all.pill {
-  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-5);
-  gap: var(--space-3);
-  border-color: transparent;
-}
-.rail-all .dot {
-  width: 36px;
-  height: 36px;
-}
-.rail-ctrl .icon-btn {
-  background: transparent;
-  border-color: rgb(var(--on-dark-rgb) / 0.24);
-  color: var(--on-dark);
-}
-@media (hover: hover) and (pointer: fine) {
-  .rail-ctrl .icon-btn:hover {
-    border-color: var(--on-dark);
-  }
-}
-/* Pause only matters while the rail is moving. */
-.rail.static ~ .rail-ctrl .rail-pause {
-  display: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .rail-pause {
-    display: none;
-  }
-}
-.rail-progress {
-  flex: 1;
-  height: 2px;
-  border-radius: var(--radius-2xs);
-  background: rgb(var(--on-dark-rgb) / 0.14);
-  overflow: hidden;
-}
-.rail-progress b {
-  display: block;
-  height: 100%;
-  width: 22%;
-  background: var(--on-dark);
-  transform: translateX(calc(var(--rp, 0) * 355%));
-}
-
 /* Promises: three reassurances after the bestsellers */
 .promise-strip {
   list-style: none;
@@ -2863,9 +2809,6 @@ select {
   .tiles > li {
     flex: 0 0 44%;
     scroll-snap-align: start;
-  }
-  .rail-arrows {
-    display: none;
   }
   .story-pin {
     height: auto;
