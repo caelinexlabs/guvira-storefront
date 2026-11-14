@@ -5660,7 +5660,11 @@ summary {
 
 /* The sheet is a native popover: it opens from the Filters button, closes on
    Escape or a click outside, and needs no script. */
+/* .dock-wrap lets clicks pass through its empty space, and the sheet inherits
+   that unless it opts back in. Without this a tile click lands on the product
+   card underneath. */
 .dock-sheet {
+  pointer-events: auto;
   position: fixed;
   inset: auto auto
     calc(
