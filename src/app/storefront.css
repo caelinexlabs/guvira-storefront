@@ -5570,7 +5570,7 @@ summary {
   padding: 0 var(--space-4);
   background: var(--on-dark);
   color: var(--night);
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .dock-main:active,
@@ -5588,7 +5588,7 @@ summary {
   background: var(--gold);
   color: var(--night);
   font-size: var(--text-2xs);
-  font-weight: 700;
+  font-weight: 600;
 }
 .dock-dots {
   display: flex;
