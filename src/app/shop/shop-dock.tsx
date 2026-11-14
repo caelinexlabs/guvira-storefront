@@ -88,11 +88,15 @@ export function ShopDock({
             ))}
           </div>
         )}
-        <a className="dock-cta" href="#shop-results">
-          {shown === 0
-            ? "No pieces match"
-            : `Show ${shown} ${shown === 1 ? "piece" : "pieces"}`}
-        </a>
+        {shown === 0 ? (
+          <Link className="dock-cta" href={clear} scroll={false}>
+            Clear filters
+          </Link>
+        ) : (
+          <a className="dock-cta" href="#shop-results">
+            {`Show ${shown} ${shown === 1 ? "piece" : "pieces"}`}
+          </a>
+        )}
       </nav>
 
       <section
