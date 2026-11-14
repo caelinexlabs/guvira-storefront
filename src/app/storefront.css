@@ -6139,3 +6139,21 @@ summary {
     max-width: none;
   }
 }
+
+/* The header logo is dark and heavy on every page, the hero film included.
+   The owner's artwork is a thin line drawing, so it is turned solid ink and
+   thickened by a hairline offset on each side, with a paper halo so it still
+   reads on the film's dark green frames. The text wordmark, used when no
+   logo is uploaded, gets the same ink and a heavier weight. */
+.nav .logo,
+.nav.over:not(.solid) .logo {
+  color: var(--ink);
+  font-weight: 600;
+  text-shadow: none;
+}
+.nav .logo img,
+.nav.over:not(.solid) .logo img {
+  filter: brightness(0) drop-shadow(0.4px 0 0 #000) drop-shadow(-0.4px 0 0 #000)
+    drop-shadow(0 0 3px rgb(249 246 240 / 0.95))
+    drop-shadow(0 0 10px rgb(249 246 240 / 0.8));
+}
