@@ -33,7 +33,7 @@ export function DockReopen({ sheetId }: { sheetId: string }) {
     try {
       const at = Number(sessionStorage.getItem(KEY));
       sessionStorage.removeItem(KEY);
-      // A click that stayed on the same page leaves a stale note: ignore it.
+      // A click that stayed on the same page leaves a stale note, so ignore it.
       if (!at || Date.now() - at > 5000) return;
     } catch {
       return;
