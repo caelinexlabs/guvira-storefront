@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Bestsellers } from "@/components/bestsellers";
 import { HeroVideo } from "@/components/hero-video";
 import {
@@ -13,6 +14,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getShopSettings } from "@/lib/caelinex/settings";
 import { listCategories, listProducts } from "@/lib/commerce";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 /**
  * The home page. Which blocks show, and what they say, is the owner's choice

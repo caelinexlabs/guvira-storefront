@@ -9,6 +9,7 @@ import type {
   PriceRange,
   ShopQuery,
 } from "@/lib/commerce/types";
+import { DockCategoryLink, DockReopen } from "./dock-category-link";
 import { DockPrice } from "./dock-price";
 
 const swatchOf = (hex: string) => ({ "--c": hex }) as CSSProperties;
@@ -33,7 +34,7 @@ export function ShopDock({
   categories,
   current,
   query,
-  facets,
+  facets: allFacets,
   priceRange,
 }: {
   categories: Category[];
@@ -41,8 +42,11 @@ export function ShopDock({
   query: ShopQuery;
   facets: Facet[];
   priceRange?: PriceRange;
-  /** Pieces on show with the current filters. */
 }) {
+  // A filter with one choice and nothing picked cannot narrow the list.
+  const facets = allFacets.filter(
+    (f) => f.values.length > 1 || f.values.some((v) => v.selected),
+  );
   const active = filterCount(query);
   const swatches = facets.filter(hasSwatch);
   // The dots on the bar come from the swatch filter with the most choices (colour).
@@ -64,6 +68,7 @@ export function ShopDock({
 
   return (
     <div className="dock-wrap">
+      <DockReopen sheetId="dock-sheet" />
       <nav className="dock" aria-label="Filters">
         <button type="button" className="dock-main" popoverTarget="dock-sheet">
           <Icon name="sliders" />
@@ -103,7 +108,7 @@ export function ShopDock({
           <section className="dock-col dock-type">
             <h3>Type</h3>
             <nav className="dock-types" aria-label="Category">
-              <Link
+              <DockCategoryLink
                 href={shopHref({ ...query, category: undefined })}
                 aria-current={!current ? "page" : undefined}
               >
@@ -111,9 +116,9 @@ export function ShopDock({
                   <span aria-hidden="true">all</span>
                 </span>
                 All
-              </Link>
+              </DockCategoryLink>
               {categories.map((c) => (
-                <Link
+                <DockCategoryLink
                   key={c.slug}
                   href={shopHref({ ...query, category: c.slug })}
                   aria-current={current?.slug === c.slug ? "page" : undefined}
@@ -133,7 +138,7 @@ export function ShopDock({
                   </span>
                   {c.name}
                   <small>{c.count}</small>
-                </Link>
+                </DockCategoryLink>
               ))}
             </nav>
           </section>

@@ -5970,3 +5970,19 @@ summary {
     transform: none;
   }
 }
+
+/* On a phone each group of the sheet takes the full width, one under another. */
+@media (max-width: 720px) {
+  .dock-sheet:popover-open {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  .dock-col,
+  .dock-type,
+  .dock-wide,
+  .dock-col:last-child {
+    flex: none;
+    width: 100%;
+    max-width: none;
+  }
+}
