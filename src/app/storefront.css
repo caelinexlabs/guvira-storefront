@@ -5514,7 +5514,10 @@ summary {
 .nav.over .logo {
   color: var(--on-dark);
 }
-/* The film runs full width up to a 15" MacBook (1710px), then stops and centres. */
+/* The film runs full width up to a 15" MacBook (1710px), then stops and centres.
+   On desktop it keeps the film's own 16:9 shape, so the hero is the same
+   picture at every window height. Tablets and phones keep a tall frame, since
+   16:9 would be too short there for the headline. */
 .nav.over + main .vhero {
   padding: 0 0 var(--stack-fluid);
 }
@@ -5523,6 +5526,12 @@ summary {
   height: max(560px, 100svh);
   max-height: none;
   border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+@media (min-width: 1024px) {
+  .nav.over + main .vhero-frame {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
 }
 /* The announcement strip lines up with the film's edges. */
 .nav.over:not(.scrolled) .nav-note {
