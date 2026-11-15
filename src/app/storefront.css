@@ -6102,3 +6102,32 @@ summary {
     max-width: none;
   }
 }
+
+/* Phones: "Explore collection" shrinks to its arrow and sits beside the
+   Bestsellers heading; the filter tabs take the row below. */
+@media (max-width: 560px) {
+  .panel .sec-tools {
+    display: contents;
+  }
+  .panel .rail-all {
+    order: 1;
+    padding: 0;
+    gap: 0;
+  }
+  .panel .rail-all .dot {
+    background: none;
+    color: var(--ink);
+  }
+  .panel .rail-all [data-label] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .panel .filter {
+    order: 2;
+    flex: 0 1 100%;
+  }
+}
