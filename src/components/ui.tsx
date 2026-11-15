@@ -19,7 +19,7 @@ export function Heading({
 }) {
   return (
     <Tag className={clsx("heading", className)} id={id}>
-      <span className="heading-script">{script}</span>
+      <span className="heading-script">{script}</span>{" "}
       <span className="heading-caps">{caps}</span>
     </Tag>
   );

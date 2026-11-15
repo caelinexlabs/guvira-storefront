@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: p.name,
     description: p.summary,
+    alternates: { canonical: `/products/${p.slug}` },
     openGraph: { images: [p.images[0].src] },
   };
 }
