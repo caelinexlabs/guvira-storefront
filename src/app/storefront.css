@@ -5338,6 +5338,14 @@ summary {
   border-color: transparent;
   color: inherit;
 }
+/* The bar is the same dark green as the badge, so the badge takes the gold
+   tint and sits on the bag's corner instead of floating beside it. */
+.nav .icon-btn .count {
+  top: 2px;
+  right: 0;
+  background: var(--gold-pale);
+  color: var(--ink);
+}
 @media (max-width: 560px) {
   .nav .logo {
     font-size: 20px;
