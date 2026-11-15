@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/lib/commerce/types";
 import { ProductCard } from "./product-card";
-import { Heading } from "./ui";
+import { Heading, PillLink } from "./ui";
 
 /** "All" plus the three categories with the most pieces in this set. */
 function tabsFor(products: Product[]) {
@@ -146,23 +146,28 @@ export function Bestsellers({
             className="on-dark"
             id="bs-h"
           />
-          <div
-            className="filter"
-            role="tablist"
-            aria-label="Filter bestsellers"
-          >
-            {TABS.map((t) => (
-              <button
-                key={t.k}
-                type="button"
-                role="tab"
-                aria-selected={tab === t.k}
-                tabIndex={tab === t.k ? 0 : -1}
-                onClick={() => setTab(t.k)}
-              >
-                {t.label}
-              </button>
-            ))}
+          <div className="sec-tools">
+            <div
+              className="filter"
+              role="tablist"
+              aria-label="Filter bestsellers"
+            >
+              {TABS.map((t) => (
+                <button
+                  key={t.k}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === t.k}
+                  tabIndex={tab === t.k ? 0 : -1}
+                  onClick={() => setTab(t.k)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <PillLink href="/shop" className="rail-all">
+              Explore collection
+            </PillLink>
           </div>
         </div>
         <div className="rail" ref={rail}>

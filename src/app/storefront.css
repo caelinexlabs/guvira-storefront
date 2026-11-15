@@ -1070,7 +1070,13 @@ select {
   color: var(--on-dark);
   border-radius: var(--radius-panel);
   padding: clamp(32px, 4.4vw, 64px) clamp(20px, 3.9vw, 56px)
-    clamp(28px, 3.9vw, 56px);
+    clamp(20px, 2.4vw, 32px);
+}
+.sec-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
 }
 .filter {
   display: inline-flex;
