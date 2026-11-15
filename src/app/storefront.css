@@ -5523,7 +5523,7 @@ summary {
 }
 .nav.over + main .vhero-frame {
   max-width: 1710px;
-  height: max(540px, 100svh);
+  height: max(560px, 100svh);
   max-height: none;
   border-radius: 0 0 var(--radius-panel) var(--radius-panel);
 }
