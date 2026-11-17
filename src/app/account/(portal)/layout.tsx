@@ -2,10 +2,9 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Heading } from "@/components/ui";
 import { getShopSettings } from "@/lib/caelinex/settings";
-import { listShopperOrders } from "@/lib/caelinex/shopper";
 import { signOut } from "../actions";
 import { AccountNav } from "./account-nav";
-import { getAccount } from "./session";
+import { getAccount, getOrders } from "./session";
 
 export default async function AccountLayout({
   children,
@@ -14,7 +13,7 @@ export default async function AccountLayout({
 }) {
   const { token, customer } = await getAccount();
   const [orders, settings] = await Promise.all([
-    listShopperOrders(token),
+    getOrders(token),
     getShopSettings(),
   ]);
   const name = customer.ok ? customer.value.name.split(" ")[0] : "";
@@ -33,13 +32,20 @@ export default async function AccountLayout({
               orders={orders.ok ? orders.value.total : undefined}
               wishlist={settings.features.wishlist}
             />
-            <form action={signOut}>
+            <form action={signOut} className="acct-out-side">
               <button type="submit" className="acct-out">
                 Sign out
               </button>
             </form>
           </aside>
-          <div className="acct-main">{children}</div>
+          <div>
+            {children}
+            <form action={signOut} className="acct-out-foot">
+              <button type="submit" className="acct-out">
+                Sign out
+              </button>
+            </form>
+          </div>
         </div>
       </main>
       <SiteFooter />

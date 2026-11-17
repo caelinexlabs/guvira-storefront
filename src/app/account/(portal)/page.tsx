@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { PillLink } from "@/components/ui";
-import { listShopperOrders } from "@/lib/caelinex/shopper";
 import { formatMoney } from "@/lib/commerce/money";
 import type { Currency } from "@/lib/commerce/types";
 import { orderDate, orderStage } from "./order-status";
 import { OrderThumb } from "./order-thumb";
-import { getAccount } from "./session";
+import { getAccount, getOrders } from "./session";
 
 export const metadata: Metadata = {
   title: "Your account",
@@ -18,14 +17,18 @@ const STEPS = ["Placed", "Being prepared", "Shipped"] as const;
 
 export default async function AccountOverview() {
   const { token, customer } = await getAccount();
-  const orders = await listShopperOrders(token);
-  const latest = orders.ok ? orders.value.orders[0] : undefined;
+  const orders = await getOrders(token);
+  const all = orders.ok ? orders.value.orders : [];
+  // The dark panel follows the newest order still on its way. A cancelled one
+  // gets a quiet note beside it instead of the spotlight.
+  const latest = all.find((o) => orderStage(o).stage !== "cancelled");
+  const cancelled =
+    all[0] && orderStage(all[0]).stage === "cancelled" ? all[0] : undefined;
   const who = customer.ok ? customer.value : undefined;
   const initial = (who?.name || who?.email || "G").charAt(0).toUpperCase();
   const stage = latest ? orderStage(latest) : undefined;
   // Placed is always done; the rest follow the order's progress.
-  const at =
-    stage?.stage === "shipped" ? 2 : stage?.stage === "cancelled" ? -1 : 1;
+  const at = stage?.stage === "shipped" ? 2 : 1;
 
   return (
     <div className="acct-stack">
@@ -38,18 +41,33 @@ export default async function AccountOverview() {
             <h2>{who?.name || "Your details"}</h2>
             <p>{[who?.email, who?.phone].filter(Boolean).join(" · ")}</p>
           </div>
-          <Link className="acct-ghost" href="/account/details">
-            Your details
+          <Link className="text-btn" href="/account/details">
+            Edit
           </Link>
         </section>
       ) : (
-        <output className="notice">
+        <p className="notice" role="alert">
           We couldn’t load your details just now. Refresh to try again.
-        </output>
+        </p>
+      )}
+
+      {cancelled && (
+        <p className="acct-card acct-quiet">
+          <span>
+            Order {cancelled.orderNumber} was cancelled. Placed{" "}
+            {orderDate(cancelled.placedAt)}.
+          </span>
+          <Link
+            className="text-btn"
+            href={`/account/orders/${cancelled.token}`}
+          >
+            View order
+          </Link>
+        </p>
       )}
 
       {!orders.ok ? (
-        <p className="acct-card">
+        <p className="acct-card" role="alert">
           We couldn’t load your orders just now. Refresh to try again.
         </p>
       ) : latest && stage ? (
@@ -79,19 +97,17 @@ export default async function AccountOverview() {
               </li>
             ))}
           </ul>
-          {stage.stage !== "cancelled" && (
-            <ol className="acct-track" aria-label="Order progress">
-              {STEPS.map((s, n) => (
-                <li
-                  key={s}
-                  className={n < at ? "done" : n === at ? "now" : undefined}
-                  aria-current={n === at ? "step" : undefined}
-                >
-                  {s}
-                </li>
-              ))}
-            </ol>
-          )}
+          <ol className="acct-track" aria-label="Order progress">
+            {STEPS.map((s, n) => (
+              <li
+                key={s}
+                className={n < at ? "done" : n === at ? "now" : undefined}
+                aria-current={n === at ? "step" : undefined}
+              >
+                {s}
+              </li>
+            ))}
+          </ol>
           <PillLink
             href={`/account/orders/${latest.token}`}
             className="acct-view"
@@ -101,8 +117,12 @@ export default async function AccountOverview() {
         </section>
       ) : (
         <section className="acct-card">
-          <h2>No orders yet</h2>
-          <p>Orders placed with your email or mobile show here.</p>
+          <h2>{cancelled ? "Nothing on its way" : "No orders yet"}</h2>
+          <p>
+            {cancelled
+              ? "Find your next piece in the shop."
+              : "Orders placed with your email or mobile show here."}
+          </p>
           <PillLink href="/shop">Browse jewellery</PillLink>
         </section>
       )}

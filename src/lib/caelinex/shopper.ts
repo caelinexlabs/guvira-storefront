@@ -191,3 +191,104 @@ export const signOutEverywhere = (token: string) =>
     method: "POST",
     headers: auth(token),
   });
+
+export type ShopperAddress = {
+  id: string;
+  name: string;
+  phone: string | null;
+  line1: string;
+  line2: string | null;
+  city: string;
+  /** The state, as at checkout. */
+  region: string | null;
+  postalCode: string;
+  /** A two-letter country code. */
+  country: string;
+  isDefault: boolean;
+};
+
+export type AddressInput = {
+  name: string;
+  phone?: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  region?: string;
+  postalCode: string;
+  country: string;
+  isDefault?: boolean;
+};
+
+type AddressList = { addresses: ShopperAddress[] };
+
+/** Saved delivery addresses, the default first. */
+export const listAddresses = (token: string) =>
+  storefront<AddressList>("/shopper/addresses", { headers: auth(token) });
+
+export const saveAddress = (token: string, input: AddressInput, id?: string) =>
+  storefront<AddressList>(
+    id ? `/shopper/addresses/${id}` : "/shopper/addresses",
+    {
+      method: id ? "PUT" : "POST",
+      headers: auth(token),
+      body: JSON.stringify(input),
+    },
+  );
+
+export const makeDefaultAddress = (token: string, id: string) =>
+  storefront<AddressList>(`/shopper/addresses/${id}/default`, {
+    method: "POST",
+    headers: auth(token),
+  });
+
+export const deleteAddress = (token: string, id: string) =>
+  storefront<AddressList>(`/shopper/addresses/${id}`, {
+    method: "DELETE",
+    headers: auth(token),
+  });
+
+type WishlistBody = { items: { product: { id: string } }[] };
+const wishIds = (
+  r: StorefrontResult<WishlistBody>,
+): StorefrontResult<string[]> =>
+  r.ok ? { ok: true, value: r.value.items.map((i) => i.product.id) } : r;
+
+/** The product ids on the account's wishlist, newest first. */
+export const listWishlistIds = async (token: string) =>
+  wishIds(
+    await storefront<WishlistBody>("/shopper/wishlist", {
+      headers: auth(token),
+    }),
+  );
+
+export const addToAccountWishlist = async (token: string, productId: string) =>
+  wishIds(
+    await storefront<WishlistBody>(`/shopper/wishlist/${productId}`, {
+      method: "PUT",
+      headers: auth(token),
+    }),
+  );
+
+export const removeFromAccountWishlist = async (
+  token: string,
+  productId: string,
+) =>
+  wishIds(
+    await storefront<WishlistBody>(`/shopper/wishlist/${productId}`, {
+      method: "DELETE",
+      headers: auth(token),
+    }),
+  );
+
+/** Join this device's saved pieces to the account's, at sign-in. */
+export const mergeAccountWishlist = async (
+  token: string,
+  productIds: string[],
+) =>
+  wishIds(
+    await storefront<WishlistBody>("/shopper/wishlist/merge", {
+      method: "POST",
+      headers: auth(token),
+      body: JSON.stringify({ productIds }),
+    }),
+  );

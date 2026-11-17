@@ -17,7 +17,9 @@ export default async function AccountWishlist() {
       <h2 className="acct-h" id="wish-h">
         Wishlist
       </h2>
-      <p className="acct-sub">Pieces you’ve saved on this device.</p>
+      <p className="acct-sub">
+        Pieces you’ve saved. They follow you to any device you sign in on.
+      </p>
       <WishlistGrid products={products} />
     </section>
   );

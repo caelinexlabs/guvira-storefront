@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { listAddresses } from "@/lib/caelinex/shopper";
 import { signOutAllDevices } from "../../actions";
 import { getAccount } from "../session";
+import { AddressBook } from "./address-book";
 import { ContactRow } from "./contact-row";
 import { NameForm } from "./name-form";
 
@@ -10,7 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default async function AccountDetails() {
-  const { customer } = await getAccount();
+  const { token, customer } = await getAccount();
+  const addresses = await listAddresses(token);
   const who = customer.ok ? customer.value : undefined;
   return (
     <div className="acct-stack">
@@ -48,10 +51,13 @@ export default async function AccountDetails() {
         <h2 className="acct-h" id="addr-h">
           Addresses
         </h2>
-        <p className="acct-sub">
-          Saved delivery addresses aren’t available yet. You can enter an
-          address at checkout.
-        </p>
+        {addresses.ok ? (
+          <AddressBook addresses={addresses.value.addresses} />
+        ) : (
+          <p className="acct-sub" role="alert">
+            We couldn’t load your addresses just now. Refresh to try again.
+          </p>
+        )}
       </section>
 
       <section className="acct-card acct-row">

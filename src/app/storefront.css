@@ -6345,7 +6345,7 @@ summary {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 40px;
+  min-height: 44px;
   color: var(--soft);
   font-size: var(--text-sm);
   text-underline-offset: 4px;
@@ -6408,7 +6408,10 @@ summary {
   scrollbar-width: none;
 }
 .acct-seg a {
-  padding: var(--space-2-5) var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-4);
   border-radius: var(--radius-pill);
   color: var(--ink);
   font-size: var(--text-xs);
@@ -6418,8 +6421,11 @@ summary {
 }
 .acct-seg a small {
   margin-left: var(--space-1);
-  opacity: 0.6;
+  color: var(--soft);
   font-weight: 500;
+}
+.acct-seg a[aria-current] small {
+  color: rgb(var(--on-dark-rgb) / 0.75);
 }
 .acct-seg a[aria-current] {
   background: var(--ink);
@@ -6636,4 +6642,120 @@ summary {
   .acct-edit-row {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* Account: focus, tap targets, addresses and small-screen sign out. */
+.acct-dark :focus-visible {
+  outline-color: var(--gold-light);
+}
+.acct .text-btn,
+.acct-out,
+.acct-ghost {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.acct .text-btn.is-quiet {
+  color: var(--soft);
+}
+.acct-unverified {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--soft);
+  font-size: var(--text-2xs);
+}
+.acct-quiet {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+}
+.acct-out-foot {
+  display: none;
+  margin-top: var(--space-6);
+}
+.acct-addrs {
+  display: grid;
+  gap: var(--space-4);
+}
+.acct-addrs .acct-sub {
+  margin: 0;
+}
+.acct-agrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.acct-addr {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+}
+.acct-addr:has(.acct-edit) {
+  grid-column: 1 / -1;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.acct-addr address {
+  display: grid;
+  gap: var(--space-1);
+  font-style: normal;
+  line-height: 1.5;
+}
+.acct-addr address span {
+  color: var(--soft);
+  font-size: var(--text-sm);
+}
+.acct-addr-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-5);
+  margin-top: auto;
+}
+.acct-badge {
+  align-self: flex-start;
+  padding: var(--space-1-5) var(--space-2-5);
+  border-radius: var(--radius-pill);
+  background: var(--gold-pale);
+  color: var(--note-ink);
+  font-size: var(--text-3xs);
+  font-weight: 600;
+}
+.acct-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  font-size: var(--text-sm);
+}
+@media (max-width: 960px) {
+  .acct-out-side {
+    display: none;
+  }
+  .acct-out-foot {
+    display: block;
+  }
+}
+@media (max-width: 560px) {
+  .acct-agrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .acct-nav {
+    gap: var(--space-1);
+  }
+  .acct-nav a {
+    padding: 0 var(--space-3);
+    min-height: 44px;
+  }
+}
+.acct-addrs > .acct-ghost {
+  justify-self: start;
 }

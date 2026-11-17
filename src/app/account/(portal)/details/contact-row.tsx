@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/icons";
 import { PillButton } from "@/components/ui";
 import { type ContactKind, type ContactState, changeContact } from "./actions";
@@ -36,7 +36,15 @@ export function ContactRow({
   verified?: boolean;
 }) {
   const c = COPY[kind];
+  const id = useId();
   const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
+  // When the form closes, focus goes back to the button that opened it.
+  useEffect(() => {
+    if (wasOpen.current && !open) trigger.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
   const [state, act, pending] = useActionState<ContactState, FormData>(
     async (prev, form) => {
       const r = await changeContact(prev, form);
@@ -54,22 +62,25 @@ export function ContactRow({
       <dt>{c.label}</dt>
       <dd>
         {value ?? "Not added"}
-        {value && verified && (
-          <small className="acct-ok">
-            <Icon name="check" />
-            Verified
-          </small>
-        )}
+        {value &&
+          (verified ? (
+            <small className="acct-ok">
+              <Icon name="check" />
+              Verified
+            </small>
+          ) : (
+            <small className="acct-unverified">Not verified</small>
+          ))}
       </dd>
-      {!open && (
-        <button
-          type="button"
-          className="text-btn"
-          onClick={() => setOpen(true)}
-        >
-          {value ? "Change" : "Add"}
-        </button>
-      )}
+      <button
+        ref={trigger}
+        type="button"
+        className="text-btn"
+        hidden={open}
+        onClick={() => setOpen(true)}
+      >
+        {value ? "Change" : "Add"}
+      </button>
       {open && (
         <form action={act} className="acct-edit" noValidate>
           <input type="hidden" name="kind" value={kind} />
@@ -88,11 +99,15 @@ export function ContactRow({
                   maxLength={6}
                   spellCheck={false}
                   className="otp"
+                  aria-invalid={Boolean(state.error) || undefined}
+                  aria-describedby={state.error ? `${id}-err` : undefined}
+                  // biome-ignore lint/a11y/noAutofocus: the step opens because the shopper asked for a code
+                  autoFocus
                   required
                 />
               </label>
               {state.error && (
-                <p className="field-error" role="alert">
+                <p className="field-error" id={`${id}-err`} role="alert">
                   {state.error}
                 </p>
               )}
@@ -132,12 +147,25 @@ export function ContactRow({
                   type={c.type}
                   autoComplete={c.auto}
                   defaultValue={state.step === "enter" ? state.value : ""}
+                  aria-invalid={
+                    (state.step === "enter" && Boolean(state.error)) ||
+                    undefined
+                  }
+                  aria-describedby={
+                    state.step === "enter" && state.error
+                      ? `${id}-hint ${id}-err`
+                      : `${id}-hint`
+                  }
+                  // biome-ignore lint/a11y/noAutofocus: the form opens because the shopper asked for it
+                  autoFocus
                   required
                 />
               </label>
-              <p className="field-note">{c.hint}</p>
+              <p className="field-note" id={`${id}-hint`}>
+                {c.hint}
+              </p>
               {state.step === "enter" && state.error && (
-                <p className="field-error" role="alert">
+                <p className="field-error" id={`${id}-err`} role="alert">
                   {state.error}
                 </p>
               )}

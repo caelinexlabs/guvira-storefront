@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PillLink } from "@/components/ui";
-import { listShopperOrders, type ShopperOrder } from "@/lib/caelinex/shopper";
+import type { ShopperOrder } from "@/lib/caelinex/shopper";
 import { formatMoney } from "@/lib/commerce/money";
 import type { Currency } from "@/lib/commerce/types";
 import { orderDate, orderStage } from "../order-status";
 import { OrderThumb } from "../order-thumb";
-import { getAccount } from "../session";
+import { getAccount, getOrders } from "../session";
 
 export const metadata: Metadata = {
   title: "Your orders",
@@ -36,7 +36,7 @@ export default async function AccountOrders({
 }) {
   const { token } = await getAccount();
   const { show } = await searchParams;
-  const orders = await listShopperOrders(token);
+  const orders = await getOrders(token);
   const key: Key = FILTERS.some((f) => f.key === show) ? (show as Key) : "all";
 
   return (
@@ -58,25 +58,29 @@ export default async function AccountOrders({
         </div>
       ) : (
         <>
-          <nav className="acct-seg" aria-label="Filter orders">
-            {FILTERS.map((f) => {
-              const n = orders.value.orders.filter((o) =>
-                inFilter(o, f.key),
-              ).length;
-              if (f.key !== "all" && n === 0) return null;
-              return (
-                <Link
-                  key={f.key}
-                  href={f.key === "all" ? "/account/orders" : `?show=${f.key}`}
-                  scroll={false}
-                  aria-current={f.key === key ? "page" : undefined}
-                >
-                  {f.label}
-                  <small>{n}</small>
-                </Link>
-              );
-            })}
-          </nav>
+          {orders.value.orders.length >= 3 && (
+            <nav className="acct-seg" aria-label="Filter orders">
+              {FILTERS.map((f) => {
+                const n = orders.value.orders.filter((o) =>
+                  inFilter(o, f.key),
+                ).length;
+                if (f.key !== "all" && n === 0) return null;
+                return (
+                  <Link
+                    key={f.key}
+                    href={
+                      f.key === "all" ? "/account/orders" : `?show=${f.key}`
+                    }
+                    scroll={false}
+                    aria-current={f.key === key ? "true" : undefined}
+                  >
+                    {f.label}
+                    <small>{n}</small>
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
           <ul className="acct-orders">
             {orders.value.orders
               .filter((o) => inFilter(o, key))

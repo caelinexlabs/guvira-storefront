@@ -11,7 +11,12 @@ import { getSessionToken } from "@/lib/session";
 
 const UNAVAILABLE = "We couldn’t reach our service. Try again in a minute.";
 
-export type NameState = { saved?: boolean; error?: string };
+export type NameState = {
+  saved?: boolean;
+  error?: string;
+  /** What was typed, so a mistake keeps the form. */
+  values?: { firstName: string; lastName: string };
+};
 
 export async function saveName(
   _prev: NameState,
@@ -21,9 +26,10 @@ export async function saveName(
   if (!token) return { error: "Sign in again to change your details." };
   const firstName = String(form.get("firstName") ?? "").trim();
   const lastName = String(form.get("lastName") ?? "").trim();
-  if (!firstName) return { error: "Enter your first name." };
+  const values = { firstName, lastName };
+  if (!firstName) return { error: "Enter your first name.", values };
   const r = await updateShopperName(token, { firstName, lastName });
-  if (!r.ok) return { error: r.message ?? UNAVAILABLE };
+  if (!r.ok) return { error: r.message ?? UNAVAILABLE, values };
   revalidatePath("/account", "layout");
   return { saved: true };
 }
