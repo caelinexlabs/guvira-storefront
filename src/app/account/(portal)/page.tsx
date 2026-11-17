@@ -6,6 +6,7 @@ import { listShopperOrders } from "@/lib/caelinex/shopper";
 import { formatMoney } from "@/lib/commerce/money";
 import type { Currency } from "@/lib/commerce/types";
 import { orderDate, orderStage } from "./order-status";
+import { OrderThumb } from "./order-thumb";
 import { getAccount } from "./session";
 
 export const metadata: Metadata = {
@@ -71,7 +72,7 @@ export default async function AccountOverview() {
           <ul className="acct-items">
             {latest.items.slice(0, 4).map((i) => (
               <li key={`${i.name}-${i.variantName}`} title={i.name}>
-                <span aria-hidden="true">{i.name.charAt(0)}</span>
+                <OrderThumb name={i.name} imageUrl={i.imageUrl} width={52} />
                 <span className="vh">
                   {i.name} × {i.quantity}
                 </span>

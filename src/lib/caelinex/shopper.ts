@@ -8,7 +8,15 @@ import {
 // Shopper sign-in and orders. The session token is shown once, kept in an
 // httpOnly cookie (lib/session.ts) and sent as X-Shopper-Token.
 
-export type Customer = { name: string; email?: string; phone?: string };
+export type Customer = {
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  emailVerified?: boolean;
+  phone?: string;
+  phoneVerified?: boolean;
+};
 
 /** True when the app can reach Caelinex with a storefront key. */
 export const caelinexConnected = storefrontConnected;
@@ -46,26 +54,79 @@ export async function verifySignInCode(
 }
 
 /** Who a token belongs to. A new shopper's name is null: we only know the email. */
+type ShopperBody = {
+  shopper: {
+    name: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    email: string | null;
+    emailVerified?: boolean;
+    phone: string | null;
+    phoneVerified?: boolean;
+  };
+};
+
+const toCustomer = (b: ShopperBody): Customer => {
+  const s = b.shopper;
+  return {
+    name: s.name ?? "",
+    firstName: s.firstName ?? undefined,
+    lastName: s.lastName ?? undefined,
+    email: s.email ?? undefined,
+    emailVerified: s.emailVerified,
+    phone: s.phone ?? undefined,
+    phoneVerified: s.phoneVerified,
+  };
+};
+
 export async function getCustomer(
   token: string,
 ): Promise<StorefrontResult<Customer>> {
-  const r = await storefront<{
-    shopper: {
-      name: string | null;
-      email: string | null;
-      phone: string | null;
-    };
-  }>("/shopper/me", { headers: auth(token) });
-  if (!r.ok) return r;
-  const s = r.value.shopper;
-  return {
-    ok: true,
-    value: {
-      name: s.name ?? "",
-      email: s.email ?? undefined,
-      phone: s.phone ?? undefined,
+  const r = await storefront<ShopperBody>("/shopper/me", {
+    headers: auth(token),
+  });
+  return r.ok ? { ok: true, value: toCustomer(r.value) } : r;
+}
+
+/** Change the name on the account. Email and mobile change by code instead. */
+export async function updateShopperName(
+  token: string,
+  name: { firstName: string; lastName: string },
+): Promise<StorefrontResult<Customer>> {
+  const r = await storefront<ShopperBody>("/shopper/me", {
+    method: "PATCH",
+    headers: auth(token),
+    body: JSON.stringify(name),
+  });
+  return r.ok ? { ok: true, value: toCustomer(r.value) } : r;
+}
+
+/** Send a code to the NEW email or mobile. Caelinex answers the same either way. */
+export const requestContactChange = (
+  token: string,
+  to: { email: string } | { phone: string },
+) =>
+  storefront<{ sent: true }>("/shopper/me/change-contact", {
+    method: "POST",
+    headers: auth(token),
+    body: JSON.stringify(to),
+  });
+
+/** Apply the change once the code from the new address or number is right. */
+export async function confirmContactChange(
+  token: string,
+  to: { email: string } | { phone: string },
+  code: string,
+): Promise<StorefrontResult<Customer>> {
+  const r = await storefront<ShopperBody>(
+    "/shopper/me/change-contact/confirm",
+    {
+      method: "POST",
+      headers: auth(token),
+      body: JSON.stringify({ ...to, code }),
     },
-  };
+  );
+  return r.ok ? { ok: true, value: toCustomer(r.value) } : r;
 }
 
 export const signOutShopper = (token: string) =>
@@ -85,7 +146,13 @@ export type ShopperOrder = {
   currency: string;
   total: number;
   itemCount: number;
-  items: { name: string; variantName: string | null; quantity: number }[];
+  items: {
+    name: string;
+    variantName: string | null;
+    quantity: number;
+    /** The line's own photo, an absolute URL, or null when it had none. */
+    imageUrl?: string | null;
+  }[];
   tracking: {
     carrier: string | null;
     trackingNumber: string | null;

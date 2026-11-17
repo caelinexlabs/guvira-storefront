@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { signOutAllDevices } from "../../actions";
 import { getAccount } from "../session";
+import { ContactRow } from "./contact-row";
+import { NameForm } from "./name-form";
 
 export const metadata: Metadata = {
   title: "Your details",
@@ -21,18 +23,21 @@ export default async function AccountDetails() {
         </p>
         {who ? (
           <dl className="acct-fields">
-            <div>
-              <dt>Name</dt>
-              <dd>{who.name || "Not added"}</dd>
-            </div>
-            <div>
-              <dt>Email</dt>
-              <dd>{who.email ?? "Not added"}</dd>
-            </div>
-            <div>
-              <dt>Mobile</dt>
-              <dd>{who.phone ?? "Not added"}</dd>
-            </div>
+            <NameForm
+              firstName={who.firstName}
+              lastName={who.lastName}
+              name={who.name}
+            />
+            <ContactRow
+              kind="email"
+              value={who.email}
+              verified={who.emailVerified}
+            />
+            <ContactRow
+              kind="phone"
+              value={who.phone}
+              verified={who.phoneVerified}
+            />
           </dl>
         ) : (
           <p>We couldn’t load your details just now. Refresh to try again.</p>

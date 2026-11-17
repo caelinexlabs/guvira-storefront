@@ -5,6 +5,7 @@ import { listShopperOrders, type ShopperOrder } from "@/lib/caelinex/shopper";
 import { formatMoney } from "@/lib/commerce/money";
 import type { Currency } from "@/lib/commerce/types";
 import { orderDate, orderStage } from "../order-status";
+import { OrderThumb } from "../order-thumb";
 import { getAccount } from "../session";
 
 export const metadata: Metadata = {
@@ -103,7 +104,11 @@ export default async function AccountOrders({
                             key={`${i.name}-${i.variantName}`}
                             aria-hidden="true"
                           >
-                            {i.name.charAt(0)}
+                            <OrderThumb
+                              name={i.name}
+                              imageUrl={i.imageUrl}
+                              width={56}
+                            />
                           </li>
                         ))}
                       </ul>
