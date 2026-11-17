@@ -117,3 +117,10 @@ export async function subscribeToNewsletter(
 
 /** Whether the newsletter form can take sign-ups in this build. */
 export const newsletterOpen = false;
+
+/** Sign this shopper out on every device, this one included. */
+export const signOutEverywhere = (token: string) =>
+  storefront<unknown>("/shopper/logout-all", {
+    method: "POST",
+    headers: auth(token),
+  });
