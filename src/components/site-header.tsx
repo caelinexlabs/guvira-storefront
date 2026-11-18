@@ -146,7 +146,7 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
           <Image
             src="/brand/guvira-logo-gold.png"
             alt="Guvira"
-            width={160}
+            width={175}
             height={44}
             priority
             unoptimized
