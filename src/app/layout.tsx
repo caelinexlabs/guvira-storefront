@@ -6,6 +6,7 @@ import { BagSync } from "@/components/bag-sync";
 import { CurrencyBoot } from "@/components/currency-boot";
 import { ShopConfigProvider } from "@/components/shop-config";
 import { WhatsAppButton } from "@/components/whatsapp-button";
+import { WishlistSync } from "@/components/wishlist-sync";
 import { getShopSettings } from "@/lib/caelinex/settings";
 import { getCurrencies, listCategories, listProducts } from "@/lib/commerce";
 import { isExternal, resolveLink } from "@/lib/link";
@@ -120,6 +121,7 @@ export default async function RootLayout({
         </ShopConfigProvider>
         <CurrencyBoot currencies={currencies} />
         <BagSync />
+        <WishlistSync />
         <BagDrawer />
         {features.whatsapp.enabled && features.whatsapp.number && (
           <WhatsAppButton
