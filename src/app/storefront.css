@@ -6363,13 +6363,14 @@ summary {
   border-color: var(--note-line);
   color: var(--note-ink);
 }
-.acct-chip.is-shipped {
+.acct-chip.is-shipped,
+.acct-chip.is-delivered {
   background: var(--emerald);
   color: var(--on-dark);
 }
 .acct-chip.is-cancelled {
   background: var(--sand);
-  color: var(--soft);
+  color: var(--ink);
 }
 .acct-dark .acct-chip {
   background: rgb(var(--on-dark-rgb) / 0.12);
@@ -7027,22 +7028,53 @@ summary {
     font-size: var(--text-2xs);
   }
 }
-.acct-chip.is-cancelled {
-  color: var(--ink);
-}
-
 /* Order page: delivery estimate, helpers, piece status, returns and help. */
-.ord-eta {
-  margin: calc(-1 * var(--space-2)) 0 0;
+.ord-status {
+  display: grid;
+  gap: var(--space-4);
+}
+.ord-eta,
+.ord-care {
+  margin: 0;
   text-align: center;
   color: var(--soft);
+}
+.ord-care {
+  max-inline-size: 46ch;
+  margin-inline: auto;
+  font-size: var(--text-sm);
+}
+.ord-void .ord-go {
+  justify-content: flex-start;
+  margin-top: var(--space-1);
+}
+.ord-track.is-delivered li:last-child::before {
+  border-color: var(--gold);
+  background: var(--gold);
+  box-shadow: 0 0 0 4px rgb(184 149 106 / 0.2);
 }
 .ord-tools {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0 var(--space-6);
-  margin-top: calc(-1 * var(--space-3));
+  gap: 0 var(--space-5);
+  margin-top: var(--space-1);
+}
+.ord-hist summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  cursor: pointer;
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.ord-hist summary span {
+  color: var(--soft);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+.ord-hist .ord-events {
+  margin-top: var(--space-3);
 }
 .ord .text-btn {
   display: inline-flex;
@@ -7055,8 +7087,18 @@ summary {
   font-style: normal;
 }
 .ord-name a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: inherit;
   text-underline-offset: 4px;
+}
+.ord-name b {
+  font-weight: 600;
+}
+.ord-side h3,
+.ord-hist summary {
+  font-size: var(--text-base);
 }
 .ord-returns,
 .ord-help {
@@ -7157,12 +7199,10 @@ summary {
     border-radius: var(--radius-lg);
   }
 }
-.ord-again {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--ink);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  text-underline-offset: 4px;
+
+/* The page has its own chat link, so the floating one stays off the prices on a phone. */
+@media (max-width: 720px) {
+  body:has(.ord-help a[href^="https://wa.me"]) .whatsapp {
+    display: none;
+  }
 }

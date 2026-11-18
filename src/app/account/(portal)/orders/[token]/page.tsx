@@ -34,6 +34,8 @@ export default async function AccountOrderPage({ params }: Props) {
       </Link>
       <OrderView
         order={r.value}
+        token={token}
+        backTo={`/account/orders/${token}`}
         askHref={askHref}
         actions={
           r.value.status !== "CANCELLED" ? (

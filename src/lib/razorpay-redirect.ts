@@ -11,6 +11,8 @@ export function goToRazorpay(
   payment: { keyId: string; razorpayOrderId: string },
   order: { token: string; number: string },
   prefill: { name: string; email: string; contact: string },
+  /** Pay from an order page: a cancelled or failed payment comes back there, not to checkout. */
+  backTo?: string,
 ) {
   const origin = window.location.origin;
   const fields: Record<string, string> = {
@@ -21,8 +23,10 @@ export function goToRazorpay(
     "prefill[name]": prefill.name,
     "prefill[email]": prefill.email,
     "prefill[contact]": prefill.contact,
-    callback_url: `${origin}/checkout/return?order=${encodeURIComponent(order.token)}`,
-    cancel_url: `${origin}/checkout?cancelled=${encodeURIComponent(order.token)}`,
+    callback_url: `${origin}/checkout/return?order=${encodeURIComponent(order.token)}${backTo ? "&back=order" : ""}`,
+    cancel_url: backTo
+      ? `${origin}${backTo}`
+      : `${origin}/checkout?cancelled=${encodeURIComponent(order.token)}`,
   };
   const form = document.createElement("form");
   form.method = "POST";

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /** Copies text to the clipboard and says so for a moment. */
-function CopyButton({ text, label }: { text: string; label: string }) {
+export function CopyButton({ text, label }: { text: string; label: string }) {
   const [done, setDone] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);

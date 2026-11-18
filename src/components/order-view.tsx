@@ -5,8 +5,9 @@ import type { Order } from "@/lib/caelinex/orders";
 import { countryByCode } from "@/lib/checkout/countries";
 import { CURRENCY_META, formatMoney } from "@/lib/commerce/money";
 import type { Currency } from "@/lib/commerce/types";
-import { orderDate, orderStage } from "@/lib/order-status";
-import { OrderTools } from "./order-tools";
+import { awaitingPayment, orderDate, orderStage } from "@/lib/order-status";
+import { PayNowButton, ReorderButton } from "./order-actions";
+import { CopyButton, OrderTools } from "./order-tools";
 import { PillLink } from "./ui";
 
 /** Whole amounts as the shop shows them; an amount with paise keeps them. */
@@ -68,25 +69,43 @@ export function OrderView({
   order: o,
   actions,
   askHref,
+  token,
+  backTo,
 }: {
   order: Order;
   /** Extra sections for the account page, such as returns. */
   actions?: ReactNode;
   /** A chat link that already quotes this order, when the shop has one. */
   askHref?: string;
+  /** The order's own key; with it an unpaid online order can be paid from here. */
+  token?: string;
+  /** Where Razorpay's cancel link returns to when paying from here. */
+  backTo?: string;
 }) {
   const uid = useId();
   const money = (n: number) => exact(n, o.currency as Currency);
   const { stage, label } = orderStage(o);
   const cancelled = stage === "cancelled";
+  const unpaid = awaitingPayment(o);
   const address = addressLines(o.shippingAddress);
   const pieces = o.lines.reduce((n, l) => n + l.quantity, 0);
-  const events = [...o.timeline].reverse();
   const tracked = o.shipments.filter((s) => s.trackingUrl);
-  // What the order's own history says about a cancellation and any refund.
-  const aftermath = o.timeline.filter(
-    (e) => e.kind === "CANCELLED" || e.kind === "REFUNDED",
-  );
+  // The order's history, newest first. A cancellation the history never
+  // recorded (older orders) is added from the date Caelinex kept.
+  const timeline =
+    cancelled &&
+    o.cancelledAt &&
+    !o.timeline.some((e) => e.kind === "CANCELLED")
+      ? [
+          ...o.timeline,
+          {
+            kind: "CANCELLED" as const,
+            message: "Order cancelled.",
+            at: o.cancelledAt,
+          },
+        ]
+      : o.timeline;
+  const events = [...timeline].reverse();
   const refunded =
     o.refundStatus === "REFUNDED" ||
     o.refundStatus === "PARTIAL" ||
@@ -138,6 +157,18 @@ export function OrderView({
         (sent.get(`${it.name}|${it.variantName ?? ""}`) ?? 0) + it.quantity,
       );
   const showPieceStatus = stage === "partial";
+  // What "Order again" puts back in the bag: every piece that still has a page.
+  const again = o.lines
+    .filter((l) => l.slug)
+    .map((l) => ({
+      slug: l.slug as string,
+      qty: l.quantity,
+      size: l.variantName,
+    }));
+  const canPay =
+    unpaid && token && o.payment?.razorpayOrderId
+      ? { token, payment: o.payment }
+      : null;
 
   return (
     <article className="ord" aria-labelledby={`${uid}-h`}>
@@ -149,8 +180,13 @@ export function OrderView({
             {pieces === 1 ? "piece" : "pieces"} · {money(o.total)}
             {!cancelled && ` · ${paymentLine(o)}`}
           </p>
+          <OrderTools
+            orderNumber={o.orderNumber}
+            trackingUrl={tracked[0]?.trackingUrl ?? undefined}
+            trackingNumber={tracked[0]?.trackingNumber}
+          />
         </div>
-        <span className={`acct-chip is-${stage}`}>
+        <span className={`acct-chip is-${delivered ? "delivered" : stage}`}>
           <i aria-hidden="true" />
           {label}
         </span>
@@ -163,26 +199,52 @@ export function OrderView({
             {o.cancelledAt ? ` on ${orderDate(o.cancelledAt)}` : ""}.
             {o.cancelReason ? ` ${o.cancelReason}.` : ""}
           </p>
-          {refundLine && <p>{refundLine}</p>}
-          {aftermath.map((e) => (
-            <p key={`${e.kind}-${e.at}`}>
-              {e.message} <small>{orderDate(e.at)}</small>
-            </p>
-          ))}
-          {o.paymentStatus === "PAID" && !refunded && (
-            <p>
-              This order was paid for. For a refund, please{" "}
-              <Link href="/help/contact">contact us</Link>.
-            </p>
+          {o.paymentStatus !== "PAID" ? (
+            <p>You weren’t charged.</p>
+          ) : refundLine ? (
+            <p>{refundLine}</p>
+          ) : (
+            !refunded && (
+              <p>
+                This order was paid for. For a refund, please{" "}
+                <Link href="/help/contact">contact us</Link>.
+              </p>
+            )
           )}
-          <PillLink href="/shop" className="sm">
-            Shop again
-          </PillLink>
+          <div className="ord-go">
+            {again.length > 0 ? (
+              <ReorderButton pieces={again} />
+            ) : (
+              <PillLink href="/shop" className="sm">
+                Shop again
+              </PillLink>
+            )}
+          </div>
+        </div>
+      ) : unpaid ? (
+        <div className="ord-void">
+          <p>We haven’t received your payment yet.</p>
+          <p>
+            {canPay
+              ? "Pay now to confirm this order. An order that stays unpaid is cancelled after a day."
+              : "If you’ve paid, this updates shortly. An order that stays unpaid is cancelled after a day."}
+          </p>
+          {canPay && (
+            <div className="ord-go">
+              <PayNowButton
+                token={canPay.token}
+                number={o.orderNumber}
+                payment={canPay.payment}
+                prefill={{ name: o.customerName ?? "", email: "", contact: "" }}
+                backTo={backTo ?? `/orders/${canPay.token}`}
+              />
+            </div>
+          )}
         </div>
       ) : (
-        <>
+        <div className="ord-status">
           <ol
-            className="ord-track"
+            className={`ord-track${delivered ? " is-delivered" : ""}`}
             aria-label="Order progress"
             style={{ "--n": steps.length } as CSSProperties}
           >
@@ -213,30 +275,36 @@ export function OrderView({
                 : `Expected by ${orderDate(expected as string)}.`}
             </p>
           )}
-          {tracked.length > 0 && (
-            <div className="ord-go">
-              {tracked.map((s, i) => (
-                <PillLink
-                  key={`${s.trackingNumber}-${s.shippedAt}`}
-                  href={s.trackingUrl ?? "#"}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  className="sm"
-                >
-                  {tracked.length > 1
-                    ? `Track parcel ${i + 1}`
-                    : "Track parcel"}
-                </PillLink>
-              ))}
-            </div>
+          {delivered && (
+            <p className="ord-care">
+              To keep the finish, wipe it dry after water and store it apart
+              from other pieces.
+            </p>
           )}
-        </>
+          {(!delivered && tracked.length > 0) ||
+          (delivered && again.length > 0) ? (
+            <div className="ord-go">
+              {delivered ? (
+                <ReorderButton pieces={again} />
+              ) : (
+                tracked.map((s, i) => (
+                  <PillLink
+                    key={`${s.trackingNumber}-${s.shippedAt}`}
+                    href={s.trackingUrl ?? "#"}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="sm"
+                  >
+                    {tracked.length > 1
+                      ? `Track parcel ${i + 1}`
+                      : "Track parcel"}
+                  </PillLink>
+                ))
+              )}
+            </div>
+          ) : null}
+        </div>
       )}
-      <OrderTools
-        orderNumber={o.orderNumber}
-        trackingUrl={tracked[0]?.trackingUrl ?? undefined}
-        trackingNumber={tracked[0]?.trackingNumber}
-      />
 
       <div className="ord-cols">
         <section className="ord-card" aria-labelledby={`${uid}-items`}>
@@ -269,11 +337,6 @@ export function OrderView({
                       .filter(Boolean)
                       .join(" · ")}
                   </small>
-                  {delivered && l.slug && (
-                    <Link className="ord-again" href={`/products/${l.slug}`}>
-                      Buy again
-                    </Link>
-                  )}
                   {showPieceStatus && (
                     <em className="ord-tag">
                       {(sent.get(`${l.name}|${l.variantName ?? ""}`) ?? 0) >=
@@ -350,12 +413,19 @@ export function OrderView({
               <p>
                 {s.items.map((it) => `${it.name} × ${it.quantity}`).join(", ")}
               </p>
-              {s.trackingNumber && <p>Tracking number {s.trackingNumber}</p>}
+              {s.trackingNumber && (
+                <p>
+                  Tracking number <b>{s.trackingNumber}</b>{" "}
+                  <CopyButton text={s.trackingNumber} label="Copy number" />
+                </p>
+              )}
             </section>
           ))}
 
-          <section aria-labelledby={`${uid}-hist`}>
-            <h3 id={`${uid}-hist`}>Order history</h3>
+          <details className="ord-hist">
+            <summary>
+              Order history <span>{events.length}</span>
+            </summary>
             <ol className="ord-events">
               {events.map((e, i) => (
                 <li key={`${i}-${e.kind}-${e.at}`}>
@@ -364,7 +434,7 @@ export function OrderView({
                 </li>
               ))}
             </ol>
-          </section>
+          </details>
         </div>
       </div>
 

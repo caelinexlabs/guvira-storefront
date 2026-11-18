@@ -63,6 +63,8 @@ export type Order = {
   cancelReason?: string | null;
   refundStatus?: "NONE" | "PENDING" | "PARTIAL" | "REFUNDED";
   refundedAmount?: number | null;
+  /** Only while the order waits for an online payment: what reopens Razorpay. */
+  payment?: { keyId: string; razorpayOrderId: string } | null;
 };
 
 /**
