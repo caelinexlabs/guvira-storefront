@@ -394,7 +394,7 @@ select {
 .logo img {
   display: block;
   width: auto;
-  height: 30px;
+  height: 44px;
 }
 .links {
   display: flex;
@@ -2873,7 +2873,7 @@ select {
     padding: 6px 16px 6px 12px;
   }
   .logo img {
-    height: 26px;
+    height: 34px;
   }
   .tools {
     gap: var(--space-1-5);
@@ -5213,18 +5213,6 @@ summary {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--gold-light);
-  font:
-    500 var(--text-2xl) / 1 var(--font-serif),
-    Georgia,
-    serif;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  margin-right: -0.32em;
-}
-/* The owner's logo is dark artwork; on the band it is drawn in champagne. */
-.nav .logo img {
-  filter: brightness(0) invert(0.92) sepia(0.25) saturate(1.4);
 }
 .nav .links {
   font-weight: 500;
@@ -5292,12 +5280,6 @@ summary {
   right: 0;
   background: var(--gold-pale);
   color: var(--ink);
-}
-@media (max-width: 560px) {
-  .nav .logo {
-    font-size: 20px;
-    letter-spacing: 0.26em;
-  }
 }
 
 /* The Shop panel: opens downward, closes on Escape or when the pointer leaves. */
@@ -5466,9 +5448,6 @@ summary {
   background: rgb(var(--shade-rgb) / 0.4);
   border-bottom: 1px dotted rgb(var(--gold-rgb) / 0.7);
 }
-.nav.over .logo {
-  color: var(--on-dark);
-}
 /* The film runs full width up to a 15" MacBook (1710px), then stops and centres.
    On desktop it keeps the film's own 16:9 shape, so the hero is the same
    picture at every window height. Tablets and phones keep a tall frame, since
@@ -5516,9 +5495,6 @@ summary {
 .nav.over:not(.scrolled) .links button {
   color: var(--paper);
   font-weight: 500;
-}
-.nav.over:not(.scrolled) .logo img {
-  filter: brightness(0) invert(0.97);
 }
 
 /* ---------- Shop dock: filters that stay within reach ---------- */
