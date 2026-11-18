@@ -7,7 +7,7 @@ import { CURRENCY_META, formatMoney } from "@/lib/commerce/money";
 import type { Currency } from "@/lib/commerce/types";
 import { awaitingPayment, orderDate, orderStage } from "@/lib/order-status";
 import { PayNowButton, ReorderButton } from "./order-actions";
-import { CopyButton, OrderTools } from "./order-tools";
+import { CopyButton, CopyOrderNumber, OrderTools } from "./order-tools";
 import { PillLink } from "./ui";
 
 /** Whole amounts as the shop shows them; an amount with paise keeps them. */
@@ -174,7 +174,9 @@ export function OrderView({
     <article className="ord" aria-labelledby={`${uid}-h`}>
       <header className="ord-head">
         <div>
-          <h2 id={`${uid}-h`}>Order {o.orderNumber}</h2>
+          <h2 id={`${uid}-h`}>
+            Order <CopyOrderNumber number={o.orderNumber} />
+          </h2>
           <p>
             Placed {orderDate(o.placedAt)} · {pieces}{" "}
             {pieces === 1 ? "piece" : "pieces"} · {money(o.total)}
@@ -194,23 +196,25 @@ export function OrderView({
 
       {cancelled ? (
         <div className="ord-void">
-          <p>
-            This order was cancelled
-            {o.cancelledAt ? ` on ${orderDate(o.cancelledAt)}` : ""}.
-            {o.cancelReason ? ` ${o.cancelReason}.` : ""}
-          </p>
-          {o.paymentStatus !== "PAID" ? (
-            <p>You weren’t charged.</p>
-          ) : refundLine ? (
-            <p>{refundLine}</p>
-          ) : (
-            !refunded && (
-              <p>
-                This order was paid for. For a refund, please{" "}
-                <Link href="/help/contact">contact us</Link>.
-              </p>
-            )
-          )}
+          <div className="ord-void-msg">
+            <p>
+              This order was cancelled
+              {o.cancelledAt ? ` on ${orderDate(o.cancelledAt)}` : ""}.
+              {o.cancelReason ? ` ${o.cancelReason}.` : ""}
+            </p>
+            {o.paymentStatus !== "PAID" ? (
+              <p>You weren’t charged.</p>
+            ) : refundLine ? (
+              <p>{refundLine}</p>
+            ) : (
+              !refunded && (
+                <p>
+                  This order was paid for. For a refund, please{" "}
+                  <Link href="/help/contact">contact us</Link>.
+                </p>
+              )
+            )}
+          </div>
           <div className="ord-go">
             {again.length > 0 ? (
               <ReorderButton pieces={again} />
@@ -223,12 +227,14 @@ export function OrderView({
         </div>
       ) : unpaid ? (
         <div className="ord-void">
-          <p>We haven’t received your payment yet.</p>
-          <p>
-            {canPay
-              ? "Pay now to confirm this order. An order that stays unpaid is cancelled after a day."
-              : "If you’ve paid, this updates shortly. An order that stays unpaid is cancelled after a day."}
-          </p>
+          <div className="ord-void-msg">
+            <p>We haven’t received your payment yet.</p>
+            <p>
+              {canPay
+                ? "Pay now to confirm this order. An order that stays unpaid is cancelled after a day."
+                : "If you’ve paid, this updates shortly. An order that stays unpaid is cancelled after a day."}
+            </p>
+          </div>
           {canPay && (
             <div className="ord-go">
               <PayNowButton
