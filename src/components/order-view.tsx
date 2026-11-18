@@ -87,7 +87,24 @@ export function OrderView({
   const aftermath = o.timeline.filter(
     (e) => e.kind === "CANCELLED" || e.kind === "REFUNDED",
   );
-  const refunded = o.timeline.some((e) => e.kind === "REFUNDED");
+  const refunded =
+    o.refundStatus === "REFUNDED" ||
+    o.refundStatus === "PARTIAL" ||
+    o.refundStatus === "PENDING" ||
+    o.timeline.some((e) => e.kind === "REFUNDED");
+  // The refund, in words, from what Caelinex reports.
+  const refundLine =
+    o.refundStatus === "PENDING"
+      ? "A refund is on its way."
+      : o.refundStatus === "REFUNDED"
+        ? o.refundedAmount
+          ? `Refunded ${money(o.refundedAmount)}.`
+          : "Refunded."
+        : o.refundStatus === "PARTIAL"
+          ? o.refundedAmount
+            ? `Part of it has been refunded: ${money(o.refundedAmount)}.`
+            : "Part of it has been refunded."
+          : null;
   // Where a shipped order stands: partly or fully on its way.
   // "Delivered" only appears once Caelinex tracks delivery.
   const tracksDelivery = "deliveredAt" in o;
@@ -141,7 +158,12 @@ export function OrderView({
 
       {cancelled ? (
         <div className="ord-void">
-          <p>This order was cancelled.</p>
+          <p>
+            This order was cancelled
+            {o.cancelledAt ? ` on ${orderDate(o.cancelledAt)}` : ""}.
+            {o.cancelReason ? ` ${o.cancelReason}.` : ""}
+          </p>
+          {refundLine && <p>{refundLine}</p>}
           {aftermath.map((e) => (
             <p key={`${e.kind}-${e.at}`}>
               {e.message} <small>{orderDate(e.at)}</small>
@@ -247,6 +269,11 @@ export function OrderView({
                       .filter(Boolean)
                       .join(" · ")}
                   </small>
+                  {delivered && l.slug && (
+                    <Link className="ord-again" href={`/products/${l.slug}`}>
+                      Buy again
+                    </Link>
+                  )}
                   {showPieceStatus && (
                     <em className="ord-tag">
                       {(sent.get(`${l.name}|${l.variantName ?? ""}`) ?? 0) >=

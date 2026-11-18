@@ -7157,3 +7157,12 @@ summary {
     border-radius: var(--radius-lg);
   }
 }
+.ord-again {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
