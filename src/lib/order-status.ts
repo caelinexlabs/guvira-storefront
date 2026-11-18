@@ -1,11 +1,7 @@
-import type { ShopperOrder } from "@/lib/caelinex/shopper";
-
 export type OrderStage = "prep" | "partial" | "shipped" | "cancelled";
 
 /** What Caelinex tells us about an order, in the shopper's words. */
-export function orderStage(
-  o: Pick<ShopperOrder, "status" | "fulfilmentStatus">,
-): {
+export function orderStage(o: { status: string; fulfilmentStatus: string }): {
   stage: OrderStage;
   label: string;
 } {
@@ -20,6 +16,7 @@ export function orderStage(
 
 export const orderDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", {
+    timeZone: "Asia/Kolkata",
     day: "numeric",
     month: "short",
     year: "numeric",

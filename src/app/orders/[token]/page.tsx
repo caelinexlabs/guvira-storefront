@@ -20,20 +20,25 @@ export default async function OrderPage({ params }: Props) {
   if (!r.ok) notFound();
   const o = r.value;
   const paid = o.paymentStatus === "PAID";
+  const cancelled = o.status === "CANCELLED";
   return (
     <>
       <SiteHeader />
       <main id="main" className="wrap">
-        {paid && <ClearBag />}
+        {paid && !cancelled && <ClearBag />}
         <Heading
           as="h1"
-          script={paid ? "thank you" : "almost"}
-          caps={paid ? "Order placed" : "Payment pending"}
+          script={cancelled ? "this order" : paid ? "thank you" : "almost"}
+          caps={
+            cancelled ? "Cancelled" : paid ? "Order placed" : "Payment pending"
+          }
         />
         <p className="result-lead">
-          {paid
-            ? "Your payment went through. Your confirmation goes to the email you gave."
-            : "We haven’t received your payment yet. If you’ve paid, this page updates shortly."}
+          {cancelled
+            ? "This order was cancelled. The details are below."
+            : paid
+              ? "Your payment went through. Your confirmation goes to the email you gave."
+              : "We haven’t received your payment yet. If you’ve paid, this page updates shortly."}
         </p>
         <OrderView order={o} />
         <div className="result-actions">
