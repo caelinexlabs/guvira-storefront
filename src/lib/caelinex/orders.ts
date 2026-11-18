@@ -24,6 +24,7 @@ export type Shipment = {
 };
 
 export type OrderLine = {
+  productId?: string;
   /** What a return refers to. */
   id?: string;
   /** The piece's page, once Caelinex sends it. */
@@ -63,8 +64,14 @@ export type Order = {
   cancelReason?: string | null;
   refundStatus?: "NONE" | "PENDING" | "PARTIAL" | "REFUNDED";
   refundedAmount?: number | null;
-  /** Only while the order waits for an online payment: what reopens Razorpay. */
-  payment?: { keyId: string; razorpayOrderId: string } | null;
+  /** For an online order still waiting to be paid; null once paid, or for cash on delivery. */
+  payment?: {
+    provider: string;
+    keyId: string;
+    razorpayOrderId: string;
+    amount: number;
+    currency: string;
+  } | null;
 };
 
 /**
@@ -97,4 +104,10 @@ export const confirmRazorpayPayment = (
   storefront<Order>(`/orders/${encodeURIComponent(orderToken)}/payment`, {
     method: "POST",
     body: JSON.stringify(payment),
+  });
+
+/** Cancel an online order that is still unpaid, freeing its stock. Safe to repeat. */
+export const cancelOrder = (token: string): Promise<StorefrontResult<Order>> =>
+  storefront<Order>(`/orders/${encodeURIComponent(token)}/cancel`, {
+    method: "POST",
   });

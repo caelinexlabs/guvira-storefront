@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { syncBag } from "@/app/cart/actions";
+import { loadPending } from "@/lib/checkout/session-store";
 import { useShop } from "@/lib/store/shop";
 
 /**
@@ -30,6 +31,10 @@ export function BagSync() {
       const r = await syncBag(lines);
       if (r.status !== "ok") return;
       const { bag: now, setQty } = useShop.getState();
+      // An order for this very bag is waiting for payment, so its stock is
+      // held by that order. Don't empty the bag the shopper is paying for.
+      if (loadPending()?.bag === now.map((l) => `${l.id}:${l.qty}`).join(","))
+        return;
       for (const p of r.problems) {
         const i = now.findIndex((l) => l.id === p.id);
         if (i === -1) continue;
