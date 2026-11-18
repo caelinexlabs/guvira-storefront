@@ -7270,3 +7270,12 @@ summary {
     drop-shadow(0 0 3px rgb(249 246 240 / 0.95))
     drop-shadow(0 0 10px rgb(249 246 240 / 0.8));
 }
+
+/* The page a reminder email opens while the bag is put back. */
+.recover-status {
+  display: block;
+  min-height: 240px;
+  padding-block: var(--space-12);
+  text-align: center;
+  color: var(--soft);
+}

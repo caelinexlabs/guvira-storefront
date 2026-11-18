@@ -1,3 +1,7 @@
+/** Shown wherever an email is asked for, when the shop sends bag reminders. */
+export const REMINDER_NOTE =
+  "We’ll email you once if you leave without buying.";
+
 /** A labelled control with its hint and error, tied together for screen readers. */
 export function Field({
   id,
