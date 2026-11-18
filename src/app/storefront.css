@@ -6308,7 +6308,8 @@ summary {
 }
 .acct-track li.now::before {
   border-color: var(--gold-light);
-  box-shadow: 0 0 0 4px rgb(var(--gold-rgb) / 0.25);
+  outline: 1px solid var(--gold-light);
+  outline-offset: 3px;
 }
 .acct-view.pill {
   background: var(--on-dark);
@@ -6352,8 +6353,8 @@ summary {
   font-weight: 600;
 }
 .acct-chip i {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: var(--radius-round);
   background: currentColor;
 }
@@ -6611,7 +6612,7 @@ summary {
   .acct-mono {
     width: 56px;
     height: 56px;
-    font-size: 26px;
+    font-size: 24px;
   }
   .acct-row {
     grid-template-columns: minmax(0, 1fr);
@@ -6856,7 +6857,8 @@ summary {
 .ord-track li.now::before {
   border-color: var(--emerald);
   background: var(--emerald);
-  box-shadow: 0 0 0 4px rgb(var(--emerald-rgb) / 0.16);
+  outline: 1px solid var(--emerald);
+  outline-offset: 3px;
 }
 .ord-cols {
   display: grid;
@@ -7051,7 +7053,8 @@ summary {
 .ord-track.is-delivered li:last-child::before {
   border-color: var(--gold);
   background: var(--gold);
-  box-shadow: 0 0 0 4px rgb(184 149 106 / 0.2);
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
 }
 .ord-tools {
   display: flex;
