@@ -3,6 +3,8 @@ export type HelpTopic = {
   slug: string;
   title: string;
   summary: string;
+  /** The few things most readers came for, stated before the detail. */
+  facts?: string[];
   sections: { heading: string; body: string[] }[];
 };
 
@@ -11,6 +13,11 @@ export const HELP: HelpTopic[] = [
     slug: "shipping",
     title: "Shipping and returns",
     summary: "How and when we ship, and what we do if a piece arrives damaged.",
+    facts: [
+      "Every order is dispatched within 24 hours.",
+      "We do not accept returns at the moment.",
+      "A damaged or wrong piece is replaced. Film the unboxing.",
+    ],
     sections: [
       {
         heading: "Where we ship",

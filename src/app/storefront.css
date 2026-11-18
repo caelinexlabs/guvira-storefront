@@ -4683,9 +4683,23 @@ fieldset.stepper {
   letter-spacing: var(--tracking-tight);
 }
 .help-summary {
-  margin: var(--space-3) 0 var(--space-2);
+  margin: var(--space-4) 0 0;
   color: var(--soft);
   font-size: var(--text-lg);
+}
+.help-facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-6) 0 0;
+  padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius-md);
+  background: var(--sand);
+  list-style: none;
+  text-wrap: pretty;
+  font:
+    500 var(--text-xl) / 1.3 var(--font-serif),
+    Georgia,
+    serif;
 }
 .help-body section {
   padding-top: var(--space-7);

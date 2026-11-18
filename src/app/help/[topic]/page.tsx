@@ -54,6 +54,13 @@ export default async function HelpPage({ params }: Props) {
         <article className="help-body">
           <h1>{topic.title}</h1>
           <p className="help-summary">{topic.summary}</p>
+          {topic.facts && (
+            <ul className="help-facts">
+              {topic.facts.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+          )}
           {topic.sections.map((s) => (
             <section key={s.heading}>
               <h2>{s.heading}</h2>
