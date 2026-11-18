@@ -4,7 +4,7 @@ import { PillLink } from "@/components/ui";
 import type { ShopperOrder } from "@/lib/caelinex/shopper";
 import { formatMoney } from "@/lib/commerce/money";
 import type { Currency } from "@/lib/commerce/types";
-import { orderDate, orderStage } from "../order-status";
+import { orderDate, orderStage } from "@/lib/order-status";
 import { OrderThumb } from "../order-thumb";
 import { getAccount, getOrders } from "../session";
 
