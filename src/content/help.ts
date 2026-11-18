@@ -21,13 +21,13 @@ export const HELP: HelpTopic[] = [
       {
         heading: "Delivery times and charges",
         body: [
-          "The delivery time and charge for your address are shown at checkout, before you pay. Both depend on where you live. Some orders qualify for free delivery once the basket passes a set amount, and checkout shows when that applies.",
+          "Standard delivery within India takes 5 to 7 days. For the United Arab Emirates, Europe and Canada, and for the exact charge on your address, checkout shows the delivery time and cost before you pay. Some orders qualify for free delivery once the basket passes a set amount, and checkout shows when that applies.",
         ],
       },
       {
         heading: "Packing and dispatch",
         body: [
-          "We pack each order and hand it to the courier. You get an email with your tracking link as soon as it ships. An order with several pieces can leave in more than one parcel, and each parcel has its own tracking link.",
+          "We pack each order and hand it to the courier. We choose the courier for each order, whichever will deliver it fastest. You get an email with your tracking link as soon as it ships. An order with several pieces can leave in more than one parcel, and each parcel has its own tracking link.",
         ],
       },
       {
