@@ -22,7 +22,7 @@ type Me = { signedIn: boolean; name: string };
  * first scroll, and the bar turns emerald once the film has scrolled under it.
  */
 export function SiteHeader({ over = false }: { over?: boolean }) {
-  const { nav, wishlist, search, logo, announcement, menu } = useShopConfig();
+  const { nav, wishlist, search, announcement, menu } = useShopConfig();
   const ref = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -143,12 +143,14 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
           ))}
         </nav>
         <Link className="logo" href="/" aria-label="Guvira home">
-          {logo ? (
-            // biome-ignore lint/performance/noImgElement: the owner's logo, from the Caelinex host
-            <img src={logo} alt="Guvira" />
-          ) : (
-            "Guvira"
-          )}
+          <Image
+            src="/brand/guvira-logo-gold.png"
+            alt="Guvira"
+            width={160}
+            height={44}
+            priority
+            unoptimized
+          />
         </Link>
         <div className="tools">
           {search && <SearchCommand />}
