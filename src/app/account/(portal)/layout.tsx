@@ -11,20 +11,19 @@ export default async function AccountLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { token, customer } = await getAccount();
+  const { token } = await getAccount();
   const [orders, settings] = await Promise.all([
     getOrders(token),
     getShopSettings(),
   ]);
-  const name = customer.ok ? customer.value.name.split(" ")[0] : "";
   return (
     <>
       <SiteHeader />
       <main id="main" className="wrap acct">
         <Heading
           as="h1"
-          script={name ? `hello ${name.toLowerCase()}` : "hello"}
-          caps="Your account"
+          script="your"
+          caps="Account"
         />
         <div className="acct-shell">
           <aside className="acct-side">
