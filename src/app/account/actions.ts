@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import {
   requestSignInCode,
+  signOutEverywhere,
   signOutShopper,
   verifySignInCode,
 } from "@/lib/caelinex/shopper";
@@ -75,6 +76,13 @@ export async function signIn(
 export async function signOut() {
   const token = await getSessionToken();
   if (token) await signOutShopper(token);
+  await clearSession();
+  redirect("/");
+}
+
+export async function signOutAllDevices() {
+  const token = await getSessionToken();
+  if (token) await signOutEverywhere(token);
   await clearSession();
   redirect("/");
 }
