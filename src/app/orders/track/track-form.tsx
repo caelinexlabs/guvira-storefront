@@ -30,7 +30,7 @@ export function TrackForm() {
       <Field
         id="number"
         label="Order number"
-        hint="Find it in your confirmation email."
+        hint="Find it in your confirmation email"
       >
         <input
           {...describe("number", undefined, true)}
@@ -43,7 +43,7 @@ export function TrackForm() {
       <Field
         id="contact"
         label="Email or mobile"
-        hint="The one you ordered with."
+        hint="The one you ordered with"
         error={state.error}
       >
         <input

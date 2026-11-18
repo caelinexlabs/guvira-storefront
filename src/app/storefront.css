@@ -5078,6 +5078,9 @@ summary {
 }
 
 /* Order tracking */
+.track {
+  min-height: 72svh;
+}
 .track-grid {
   display: grid;
   gap: var(--space-8);
