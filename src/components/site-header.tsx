@@ -2,7 +2,9 @@
 
 import { Dialog } from "@base-ui/react/dialog";
 import clsx from "clsx";
+import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { bagCount, useShop } from "@/lib/store/shop";
 import { CurrencySelect } from "./currency-select";
@@ -13,22 +15,25 @@ import { useShopConfig } from "./shop-config";
 type Me = { signedIn: boolean; name: string };
 
 /**
- * `over` floats the header on the home video; it turns solid once the video
- * has scrolled under it. Other pages get the solid sticky header.
+ * The emerald band: the owner's announcement line, then links on the left, the
+ * logo in the middle and the tools on the right. The line folds away once the
+ * page scrolls. Shop opens a panel with the categories and one featured piece.
+ * `over` floats it, clear, on the home film. The announcement line folds on the
+ * first scroll, and the bar turns emerald once the film has scrolled under it.
  */
 export function SiteHeader({ over = false }: { over?: boolean }) {
-  const { nav, wishlist, search, logo } = useShopConfig();
+  const { nav, wishlist, search, logo, announcement, menu } = useShopConfig();
   const ref = useRef<HTMLElement>(null);
-  const [solid, setSolid] = useState(!over);
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [menu, setMenu] = useState(false);
+  const [folded, setFolded] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(false);
   const [me, setMe] = useState<Me>();
   const count = useShop((s) => bagCount(s.bag));
   const openBag = useShop((s) => s.openBag);
-
-  const bagOpen = useShop((s) => s.bagOpen);
-  const [hidden, setHidden] = useState(false);
-  const focusInside = useRef(false);
+  const menu_ = menu;
+  const hasPanel = menu_.categories.length > 0 || !!menu_.featured;
 
   // Who's signed in, for the account link and the phone menu.
   useEffect(() => {
@@ -40,46 +45,62 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
   const firstName = me?.signedIn ? me.name.split(/[\s@]/)[0] : "";
 
   useEffect(() => {
+    // On the home page the header stays transparent until the hero film has
+    // scrolled up under it; elsewhere it turns solid on the first scroll.
     const hero = over ? document.querySelector(".vhero-frame") : null;
-    const bar = over ? document.querySelector(".announce") : null;
-    let lastY = scrollY;
     const onScroll = () => {
-      const y = scrollY;
-      // The floating header sits just under the announcement bar while the
-      // bar is on screen, then pins to the top as the bar scrolls away.
-      if (bar && ref.current)
-        ref.current.style.top = `${Math.max(0, bar.getBoundingClientRect().bottom)}px`;
-      const h = ref.current?.offsetHeight ?? 80;
-      setScrolled(y > 8);
-      if (hero) setSolid(hero.getBoundingClientRect().bottom < h + 8);
-      // Hide while scrolling down, return on any scroll up. Small movements
-      // (under 6px) are ignored so trackpad jitter doesn't flicker it.
-      const delta = y - lastY;
-      if (Math.abs(delta) < 6) return;
-      setHidden(delta > 0 && y > h * 2 && !focusInside.current);
-      lastY = y;
-    };
-    // Keyboard users tabbing into the header always see it.
-    const el = ref.current;
-    const onFocusIn = () => {
-      focusInside.current = true;
-      setHidden(false);
-    };
-    const onFocusOut = () => {
-      focusInside.current = false;
+      // The announcement line folds away on the first scroll.
+      setFolded(scrollY > 8);
+      if (!hero) return setScrolled(scrollY > 8);
+      const h = ref.current?.offsetHeight ?? 0;
+      setScrolled(hero.getBoundingClientRect().bottom <= h);
     };
     onScroll();
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", onScroll);
-    el?.addEventListener("focusin", onFocusIn);
-    el?.addEventListener("focusout", onFocusOut);
     return () => {
       removeEventListener("scroll", onScroll);
       removeEventListener("resize", onScroll);
-      el?.removeEventListener("focusin", onFocusIn);
-      el?.removeEventListener("focusout", onFocusOut);
     };
   }, [over]);
+
+  // A new page, or Escape, closes the Shop panel.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: close when the address changes
+  useEffect(() => setShopOpen(false), [pathname]);
+  useEffect(() => {
+    const el = ref.current;
+    const close = () => setShopOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    // Leaving the header, or tabbing out of it, closes the panel too.
+    const onBlur = (e: FocusEvent) => {
+      if (!el?.contains(e.relatedTarget as Node | null)) close();
+    };
+    addEventListener("keydown", onKey);
+    el?.addEventListener("pointerleave", close);
+    el?.addEventListener("focusout", onBlur);
+    return () => {
+      removeEventListener("keydown", onKey);
+      el?.removeEventListener("pointerleave", close);
+      el?.removeEventListener("focusout", onBlur);
+    };
+  }, []);
+
+  const note = announcement.text ? (
+    announcement.href ? (
+      <Link
+        href={announcement.href}
+        {...(announcement.external
+          ? { rel: "noopener", target: "_blank" }
+          : {})}
+      >
+        {announcement.text}
+      </Link>
+    ) : (
+      <span>{announcement.text}</span>
+    )
+  ) : null;
 
   return (
     <header
@@ -87,14 +108,34 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
       className={clsx(
         "nav",
         over && "over",
-        over && solid && "solid",
         scrolled && "scrolled",
-        hidden && !menu && !bagOpen && "hide",
+        folded && "folded",
       )}
     >
+      {note && (
+        <div className="nav-note">
+          <div>
+            <p>{note}</p>
+          </div>
+        </div>
+      )}
       <div className="wrap nav-in">
         <nav className="links" aria-label="Shop">
-          <Link href="/shop">Shop</Link>
+          {hasPanel ? (
+            <button
+              type="button"
+              aria-expanded={shopOpen}
+              aria-controls="shop-panel"
+              onClick={() => setShopOpen((o) => !o)}
+              onPointerEnter={(e) => {
+                if (e.pointerType === "mouse") setShopOpen(true);
+              }}
+            >
+              Shop
+            </button>
+          ) : (
+            <Link href="/shop">Shop</Link>
+          )}
           {nav.slice(0, 2).map((n) => (
             <Link key={n.label} href={n.href}>
               {n.label}
@@ -145,7 +186,7 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
               {count}
             </span>
           </button>
-          <Dialog.Root open={menu} onOpenChange={setMenu}>
+          <Dialog.Root open={menuOpen} onOpenChange={setMenuOpen}>
             <Dialog.Trigger className="icon-btn menu-btn" aria-label="Menu">
               <Icon name="menu" />
             </Dialog.Trigger>
@@ -163,7 +204,7 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
                   <Link
                     className="sheet-me"
                     href="/account"
-                    onClick={() => setMenu(false)}
+                    onClick={() => setMenuOpen(false)}
                   >
                     <span className="sheet-me-ic">
                       {firstName.slice(0, 1).toUpperCase() || (
@@ -180,7 +221,7 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
                   <Link
                     className="sheet-me"
                     href="/account/sign-in"
-                    onClick={() => setMenu(false)}
+                    onClick={() => setMenuOpen(false)}
                   >
                     <span className="sheet-me-ic">
                       <Icon name="user" />
@@ -193,20 +234,20 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
                   </Link>
                 )}
                 <nav className="sheet-nav" aria-label="Categories">
-                  <Link href="/shop" onClick={() => setMenu(false)}>
+                  <Link href="/shop" onClick={() => setMenuOpen(false)}>
                     All jewellery <Icon name="chev" />
                   </Link>
                   {nav.map((n) => (
                     <Link
                       key={n.label}
                       href={n.href}
-                      onClick={() => setMenu(false)}
+                      onClick={() => setMenuOpen(false)}
                     >
                       {n.label} <Icon name="chev" />
                     </Link>
                   ))}
                   {wishlist && (
-                    <Link href="/wishlist" onClick={() => setMenu(false)}>
+                    <Link href="/wishlist" onClick={() => setMenuOpen(false)}>
                       Wishlist <Icon name="chev" />
                     </Link>
                   )}
@@ -220,6 +261,65 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
           </Dialog.Root>
         </div>
       </div>
+      {hasPanel && (
+        <div
+          id="shop-panel"
+          className="nav-mega"
+          data-open={shopOpen || undefined}
+          inert={!shopOpen}
+        >
+          <div>
+            <h2>Shop by type</h2>
+            <ul className="mega-cats">
+              {menu_.categories.map((c) => (
+                <li key={c.slug}>
+                  <Link href={`/shop/${c.slug}`}>
+                    <span className="mega-photo">
+                      {c.image ? (
+                        <Image
+                          src={c.image}
+                          alt=""
+                          width={100}
+                          height={100}
+                          sizes="100px"
+                        />
+                      ) : (
+                        <span aria-hidden="true">{c.name.charAt(0)}</span>
+                      )}
+                    </span>
+                    {c.name}
+                    <small>
+                      {c.count} {c.count === 1 ? "piece" : "pieces"}
+                    </small>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {menu_.featured && (
+            <div>
+              <h2>New in</h2>
+              <Link
+                className="mega-feat"
+                href={`/products/${menu_.featured.slug}`}
+              >
+                <Image
+                  src={menu_.featured.image}
+                  alt=""
+                  width={150}
+                  height={150}
+                  sizes="150px"
+                />
+                <span>
+                  <b>{menu_.featured.name}</b>
+                  {menu_.featured.line && <small>{menu_.featured.line}</small>}
+                  <u>Explore collection</u>
+                </span>
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 }
