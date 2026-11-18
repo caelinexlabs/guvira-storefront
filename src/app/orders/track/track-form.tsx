@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { describe, Field } from "@/app/checkout/field";
 import { OrderView } from "@/components/order-view";
@@ -13,15 +14,23 @@ export function TrackForm() {
     { step: "form" },
   );
 
-  if (state.step === "found") return <OrderView order={state.order} />;
+  if (state.step === "found")
+    return (
+      <div className="track-found">
+        <OrderView order={state.order} />
+        <Link className="text-btn" href="/orders/track">
+          Track another order
+        </Link>
+      </div>
+    );
 
   const v = state.values ?? {};
   return (
-    <form className="co-form track-form" action={act} noValidate>
+    <form className="co-form track-form acct-card" action={act} noValidate>
       <Field
         id="number"
         label="Order number"
-        hint="In your confirmation email."
+        hint="Find it in your confirmation email."
       >
         <input
           {...describe("number", undefined, true)}
