@@ -16,6 +16,8 @@ export type ShopConfig = {
   /** The owner's logo, or empty for the text wordmark. */
   logo: string;
   promises: { icon: string; title: string; text: string }[];
+  /** The shop emails a shopper once about a bag left behind, so ask for an email. */
+  cartReminders: boolean;
   /** The owner's announcement line, shown inside the header band. */
   announcement: { text: string; href?: string; external: boolean };
   /** What the Shop panel in the header shows. */
@@ -35,6 +37,7 @@ const OFF: ShopConfig = {
   sizeGuide: { enabled: false, text: "" },
   logo: "",
   promises: [],
+  cartReminders: false,
   announcement: { text: "", external: false },
   menu: { categories: [] },
 };

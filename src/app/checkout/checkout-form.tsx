@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Icon } from "@/components/icons";
 import { Price } from "@/components/price";
+import { useShopConfig } from "@/components/shop-config";
 import { PillButton, PillLink } from "@/components/ui";
 import type { PromoCart } from "@/lib/caelinex/promo";
 import type { Customer } from "@/lib/caelinex/shopper";
@@ -27,20 +28,24 @@ import {
   type CheckoutDetails,
   EMPTY_DETAILS,
   type FieldErrors,
+  internationalPhone,
   validateAddress,
   validateContact,
 } from "@/lib/checkout/validate";
 import { CURRENCY_META, formatMoney } from "@/lib/commerce/money";
 import { priceFor, totalPrices } from "@/lib/commerce/price";
+import type { Currency } from "@/lib/commerce/types";
+import { isEmail } from "@/lib/identity";
 import { goToRazorpay } from "@/lib/razorpay-redirect";
 import { bagCount, useShop } from "@/lib/store/shop";
+import { saveCartEmail } from "../cart/actions";
 import {
   type DeliveryQuote,
   quoteDelivery,
   type RateOption,
 } from "../delivery/actions";
-import { placeOrder } from "./actions";
-import { describe, Field } from "./field";
+import { cancelWaitingOrder, placeOrder } from "./actions";
+import { describe, Field, REMINDER_NOTE } from "./field";
 import { PaymentStep } from "./payment-step";
 import { PromoCode } from "./promo-code";
 import { WhoStep } from "./who-step";
@@ -56,8 +61,11 @@ type Done = CheckoutDraft["done"];
 export function CheckoutForm({
   customer: initialCustomer,
   returned,
+  waiting: waitingOrder,
 }: {
   customer?: Customer;
+  /** An order from this shopper's last attempt that is still waiting for payment. */
+  waiting?: WaitingOrder;
   /** Coming back from Razorpay without having paid. */
   returned?: { kind: "failed" | "cancelled"; reason?: string };
 }) {
@@ -100,6 +108,16 @@ export function CheckoutForm({
   const [shipError, setShipError] = useState<string>();
   const [pending, start] = useTransition();
   const busy = pending;
+
+  // When the shop sends reminders, keep the shopper's email on their cart as
+  // soon as it is a valid address, so a bag left behind can be followed up.
+  const { cartReminders } = useShopConfig();
+  const cartEmail = details.email.trim();
+  useEffect(() => {
+    if (!cartReminders || !bag.length || !isEmail(cartEmail)) return;
+    const t = setTimeout(() => void saveCartEmail(cartEmail), 600);
+    return () => clearTimeout(t);
+  }, [cartReminders, cartEmail, bag.length]);
 
   // Coming back from a failed payment (or a refresh) picks up where it was.
   // Nothing is saved until this has run, so the empty first render can never
@@ -248,7 +266,9 @@ export function CheckoutForm({
       token: r.token,
       placedAt: new Date().toISOString(),
       email: details.email.trim(),
-      phone: `${country?.dialCode ?? ""} ${details.phone.trim()}`.trim(),
+      phone: details.phone.trim().startsWith("+")
+        ? details.phone.trim()
+        : `${country?.dialCode ?? ""} ${details.phone.trim()}`.trim(),
       name: details.fullName.trim(),
       address: addressLines(details),
       payment: paymentLabel(method),
@@ -318,12 +338,26 @@ export function CheckoutForm({
         {
           name: details.fullName.trim(),
           email: details.email.trim(),
-          contact: `${country?.dialCode ?? ""}${details.phone.trim()}`,
+          contact: internationalPhone(country?.dialCode ?? "", details.phone),
         },
       );
     });
   };
 
+  // The server can't see the bag, so until the browser has read it the page
+  // shows nothing rather than "Your bag is empty".
+  if (!bag.length && !busy && waitingOrder)
+    return (
+      <ResumePayment
+        order={waitingOrder}
+        notice={
+          returned?.kind === "failed"
+            ? `${returned.reason || "Your payment didn’t go through."} Nothing was charged.`
+            : "Payment cancelled. Nothing was charged."
+        }
+      />
+    );
+  if (!bag.length && !busy && !restored) return <div className="co-loading" />;
   if (!bag.length && !busy) {
     return (
       <div className="empty-state">
@@ -410,9 +444,14 @@ export function CheckoutForm({
               />
             </Field>
             <div className="co-row">
-              <Field id="email" label="Email" error={errorFor("email")}>
+              <Field
+                id="email"
+                label="Email"
+                hint={cartReminders ? REMINDER_NOTE : undefined}
+                error={errorFor("email")}
+              >
                 <input
-                  {...describe("email", errorFor("email"))}
+                  {...describe("email", errorFor("email"), cartReminders)}
                   type="email"
                   spellCheck={false}
                   autoComplete="email"
@@ -804,3 +843,102 @@ function addressLines(d: CheckoutDetails): string[] {
 /** The bag as a short signature, to tell whether it changed. */
 const bagKey = (bag: { id: string; qty: number }[]) =>
   bag.map((l) => `${l.id}:${l.qty}`).join(",");
+
+export type WaitingOrder = {
+  token: string;
+  number: string;
+  name: string;
+  currency: string;
+  total: number;
+  lines: {
+    name: string;
+    variantName: string | null;
+    quantity: number;
+    lineTotal: number;
+  }[];
+  payment: { keyId: string; razorpayOrderId: string };
+};
+
+/**
+ * The bag is empty but an order from the last attempt is still waiting for
+ * payment: show it and let the shopper pay it, instead of an empty page.
+ */
+function ResumePayment({
+  order,
+  notice,
+}: {
+  order: WaitingOrder;
+  notice?: string;
+}) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const money = (n: number) => formatMoney(n, order.currency as Currency);
+  const cancel = async () => {
+    setBusy(true);
+    setFailed(false);
+    if (await cancelWaitingOrder(order.token)) {
+      savePending(undefined);
+      router.push("/shop");
+      return;
+    }
+    setBusy(false);
+    setFailed(true);
+  };
+  const pay = () => {
+    setBusy(true);
+    const d = loadDraft()?.details;
+    const dial = d ? (countryByCode(d.country)?.dialCode ?? "") : "";
+    goToRazorpay(
+      order.payment,
+      { token: order.token, number: order.number },
+      {
+        name: order.name || d?.fullName.trim() || "",
+        email: d?.email.trim() ?? "",
+        contact: d ? internationalPhone(dial, d.phone) : "",
+      },
+    );
+  };
+  return (
+    <section className="co-resume" aria-labelledby="resume-h">
+      <h2 id="resume-h">Your order is waiting for payment</h2>
+      {notice && (
+        <p className="notice notice-error" role="alert">
+          {notice}
+        </p>
+      )}
+      <ul>
+        {order.lines.map((l) => (
+          <li key={`${l.name}-${l.variantName ?? ""}`}>
+            <span>
+              {l.name}
+              {l.variantName ? `, ${l.variantName}` : ""}
+              <small> × {l.quantity}</small>
+            </span>
+            <b>{money(l.lineTotal)}</b>
+          </li>
+        ))}
+      </ul>
+      <p className="co-resume-total">
+        <span>Total</span>
+        <b>{money(order.total)}</b>
+      </p>
+      <PillButton tone="dark" className="wide" onClick={pay} disabled={busy}>
+        {busy ? "Opening payment…" : `Pay ${money(order.total)}`}
+      </PillButton>
+      <button
+        type="button"
+        className="text-btn"
+        onClick={cancel}
+        disabled={busy}
+      >
+        Cancel this order
+      </button>
+      {failed && (
+        <p className="field-error" role="alert">
+          We couldn’t cancel that order. Try again in a moment.
+        </p>
+      )}
+    </section>
+  );
+}

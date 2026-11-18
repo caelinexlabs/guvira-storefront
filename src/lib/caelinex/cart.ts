@@ -98,3 +98,25 @@ export const checkoutCart = (
     headers: { "idempotency-key": idempotencyKey },
     body: JSON.stringify(body),
   });
+
+/** Keeps the shopper's email on the cart, so a reminder can reach them. "" removes it. */
+export const putCartEmail = (
+  token: string,
+  email: string,
+): Promise<StorefrontResult<Cart>> =>
+  storefront<Cart>(path(token, "/email"), {
+    method: "PUT",
+    body: JSON.stringify({ email }),
+  });
+
+/**
+ * Opens the cart a reminder email linked to. The secret works once. The answer
+ * carries a new cart token, and the old one stops working.
+ */
+export const recoverCart = (
+  secret: string,
+): Promise<StorefrontResult<Created>> =>
+  storefront<Created>("/carts/recover", {
+    method: "POST",
+    body: JSON.stringify({ token: secret }),
+  });

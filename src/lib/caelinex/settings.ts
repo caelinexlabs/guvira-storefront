@@ -73,6 +73,8 @@ export type ShopSettings = {
     };
   };
   promises: { items: { icon: string; title: string; text: string }[] };
+  /** Whether the shop emails shoppers once about a bag they left behind. */
+  cartReminders: { enabled: boolean };
 };
 
 /** What the shop shows when Caelinex can't be reached: nothing optional. */
@@ -119,6 +121,7 @@ const OFF: ShopSettings = {
     social: { instagram: "", facebook: "", pinterest: "", youtube: "", x: "" },
   },
   promises: { items: [] },
+  cartReminders: { enabled: false },
 };
 
 type Raw = { settings?: Partial<ShopSettings> };
@@ -192,5 +195,6 @@ export async function getShopSettings(): Promise<ShopSettings> {
       social: merge(OFF.contact.social, s.contact?.social),
     },
     promises: merge(OFF.promises, s.promises),
+    cartReminders: merge(OFF.cartReminders, s.cartReminders),
   };
 }
