@@ -20,11 +20,7 @@ export default async function AccountLayout({
     <>
       <SiteHeader />
       <main id="main" className="wrap acct">
-        <Heading
-          as="h1"
-          script="your"
-          caps="Account"
-        />
+        <Heading as="h1" script="your" caps="Account" />
         <div className="acct-shell">
           <aside className="acct-side">
             <AccountNav
