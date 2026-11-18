@@ -10,7 +10,7 @@ export const HELP: HelpTopic[] = [
   {
     slug: "shipping",
     title: "Shipping and returns",
-    summary: "How we ship, how long it takes, and how to send a piece back.",
+    summary: "How and when we ship, and what we do if a piece arrives damaged.",
     sections: [
       {
         heading: "Where we ship",
@@ -19,15 +19,16 @@ export const HELP: HelpTopic[] = [
         ],
       },
       {
-        heading: "Delivery times and charges",
+        heading: "Dispatch",
         body: [
-          "Standard delivery within India takes 5 to 7 days. For the United Arab Emirates, Europe and Canada, and for the exact charge on your address, checkout shows the delivery time and cost before you pay. Some orders qualify for free delivery once the basket passes a set amount, and checkout shows when that applies.",
+          "We dispatch every order within 24 hours of it being placed. After that, delivery takes the standard shipping time for your address.",
+          "You get an email with your tracking link as soon as it ships. An order with several pieces can leave in more than one parcel, and each parcel has its own tracking link.",
         ],
       },
       {
-        heading: "Packing and dispatch",
+        heading: "Delivery times and charges",
         body: [
-          "We pack each order and hand it to the courier. We choose the courier for each order, whichever will deliver it fastest. You get an email with your tracking link as soon as it ships. An order with several pieces can leave in more than one parcel, and each parcel has its own tracking link.",
+          "The delivery time and charge for your address are shown at checkout, before you pay. Both depend on where you live. Some orders qualify for free delivery once the basket passes a set amount, and checkout shows when that applies.",
         ],
       },
       {
@@ -45,22 +46,15 @@ export const HELP: HelpTopic[] = [
       {
         heading: "Returns",
         body: [
-          "You can return a piece within 14 days of it being dispatched. To qualify, the piece must be unused, in its original condition and in its original packaging.",
-          "Tell us if a piece arrives damaged or is not what you ordered. We will put it right, or refund it in full.",
+          "We do not accept returns at the moment. Please check the size and finish of a piece before you order, and write to us if you want help choosing.",
         ],
       },
       {
-        heading: "How to return an order",
+        heading: "Damaged or wrong pieces",
         body: [
-          "Sign in, open the order from your account and choose Return a piece. Pick the pieces and a reason, then send the request. The reasons are: it arrived damaged, I received the wrong piece, it isn’t as described, size or fit, I changed my mind, or something else.",
-          "We review each request and email you the result. When we approve it, we email you how to send the parcel back. Please wait for that email before posting anything.",
-        ],
-      },
-      {
-        heading: "Refunds",
-        body: [
-          "We refund a return once the parcel reaches us and we have checked it. The refund covers what you paid for the returned pieces, with any discount on the order shared out fairly between them.",
-          "Online payments go back to the card, UPI or bank account you paid with. Your bank can take a few working days to show it. For cash on delivery, we arrange the refund with you directly. You receive a credit note by email for every refund.",
+          "If a piece arrives damaged, or is not the piece you ordered, we will replace it. The replacement ships to you within the same delivery time as your original order.",
+          "To make a claim, record a video as you unbox the parcel. Film the sealed package first, then open it and show every piece inside, so we can see its condition and check it against your order. Then write to us from the Contact us page with your order number and the video.",
+          "Without an unboxing video we cannot verify a claim, so please record it for every order.",
         ],
       },
       {
