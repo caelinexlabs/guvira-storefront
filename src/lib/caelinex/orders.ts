@@ -12,10 +12,17 @@ export type Shipment = {
   trackingNumber: string | null;
   trackingUrl: string | null;
   shippedAt: string | null;
+  /** When the carrier expects to deliver; sent once Caelinex has it. */
+  expectedDeliveryAt?: string | null;
+  deliveredAt?: string | null;
   items: { name: string; variantName: string | null; quantity: number }[];
 };
 
 export type OrderLine = {
+  /** What a return refers to. */
+  id?: string;
+  /** The piece's page, once Caelinex sends it. */
+  slug?: string | null;
   name: string;
   variantName: string | null;
   imageUrl: string | null;
@@ -44,6 +51,11 @@ export type Order = {
   shippingName: string | null;
   taxTotal: number;
   total: number;
+  /** Sent once Caelinex tracks delivery; until then an order ends at "shipped". */
+  deliveredAt?: string | null;
+  cancelledAt?: string | null;
+  refundStatus?: "NONE" | "PENDING" | "REFUNDED";
+  refundedAmount?: number | null;
 };
 
 /**

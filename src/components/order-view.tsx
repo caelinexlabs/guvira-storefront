@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useId } from "react";
+import { type CSSProperties, type ReactNode, useId } from "react";
 import type { Order } from "@/lib/caelinex/orders";
 import { countryByCode } from "@/lib/checkout/countries";
 import { CURRENCY_META, formatMoney } from "@/lib/commerce/money";
 import type { Currency } from "@/lib/commerce/types";
 import { orderDate, orderStage } from "@/lib/order-status";
+import { OrderTools } from "./order-tools";
 import { PillLink } from "./ui";
 
 /** Whole amounts as the shop shows them; an amount with paise keeps them. */
@@ -33,6 +34,24 @@ function addressLines(a: Order["shippingAddress"]): string[] {
   ].filter(Boolean);
 }
 
+/** "Standard" alone reads as a mystery in a totals list. */
+const deliveryLabel = (name: string | null) =>
+  !name
+    ? "Delivery"
+    : /deliver|shipping|courier|pickup/i.test(name)
+      ? name
+      : `${name} delivery`;
+
+/** One line of help that fits where the order stands. */
+function helpLine(o: Order, stage: string) {
+  if (o.deliveredAt || stage === "cancelled") return "";
+  if (stage === "shipped" || stage === "partial")
+    return "Parcel not moving? Ask us and we’ll check with the carrier.";
+  if (o.paymentStatus === "PENDING" && o.paymentMethod !== "COD")
+    return "Paid but still showing pending? It can take a few minutes. Tell us if it doesn’t clear.";
+  return "";
+}
+
 /** How the order is being paid for, in plain words. */
 function paymentLine(o: Order) {
   const cod = o.paymentMethod === "COD";
@@ -45,7 +64,17 @@ function paymentLine(o: Order) {
  * where it is going and what has happened. Shared by the account, the
  * thank-you page and "track an order", so each reads the same.
  */
-export function OrderView({ order: o }: { order: Order }) {
+export function OrderView({
+  order: o,
+  actions,
+  askHref,
+}: {
+  order: Order;
+  /** Extra sections for the account page, such as returns. */
+  actions?: ReactNode;
+  /** A chat link that already quotes this order, when the shop has one. */
+  askHref?: string;
+}) {
   const uid = useId();
   const money = (n: number) => exact(n, o.currency as Currency);
   const { stage, label } = orderStage(o);
@@ -60,12 +89,38 @@ export function OrderView({ order: o }: { order: Order }) {
   );
   const refunded = o.timeline.some((e) => e.kind === "REFUNDED");
   // Where a shipped order stands: partly or fully on its way.
-  const steps =
-    stage === "partial"
-      ? (["Placed", "Being prepared", "Partly shipped"] as const)
-      : (["Placed", "Being prepared", "Shipped"] as const);
-  // The step the order is on; 3 means every step is done.
-  const cur = stage === "shipped" ? 3 : stage === "partial" ? 2 : 1;
+  // "Delivered" only appears once Caelinex tracks delivery.
+  const tracksDelivery = "deliveredAt" in o;
+  const delivered = Boolean(o.deliveredAt);
+  const steps: string[] = [
+    "Placed",
+    "Being prepared",
+    stage === "partial" ? "Partly shipped" : "Shipped",
+    ...(tracksDelivery ? ["Delivered"] : []),
+  ];
+  // The step the order is on; steps.length means every step is done.
+  const cur = delivered
+    ? steps.length
+    : stage === "shipped"
+      ? tracksDelivery
+        ? 3
+        : steps.length
+      : stage === "partial"
+        ? 2
+        : 1;
+  const expected = o.shipments
+    .map((sh) => sh.expectedDeliveryAt)
+    .filter((d): d is string => Boolean(d))
+    .sort()[0];
+  // How many of each piece have left in a parcel, to tell pieces apart on a partial order.
+  const sent = new Map<string, number>();
+  for (const sh of o.shipments)
+    for (const it of sh.items)
+      sent.set(
+        `${it.name}|${it.variantName ?? ""}`,
+        (sent.get(`${it.name}|${it.variantName ?? ""}`) ?? 0) + it.quantity,
+      );
+  const showPieceStatus = stage === "partial";
 
   return (
     <article className="ord" aria-labelledby={`${uid}-h`}>
@@ -104,7 +159,11 @@ export function OrderView({ order: o }: { order: Order }) {
         </div>
       ) : (
         <>
-          <ol className="ord-track" aria-label="Order progress">
+          <ol
+            className="ord-track"
+            aria-label="Order progress"
+            style={{ "--n": steps.length } as CSSProperties}
+          >
             {steps.map((st, n) => {
               const state = n < cur ? "done" : n === cur ? "now" : "next";
               return (
@@ -125,6 +184,13 @@ export function OrderView({ order: o }: { order: Order }) {
               );
             })}
           </ol>
+          {(delivered || expected) && (
+            <p className="ord-eta">
+              {delivered
+                ? `Delivered ${orderDate(o.deliveredAt as string)}.`
+                : `Expected by ${orderDate(expected as string)}.`}
+            </p>
+          )}
           {tracked.length > 0 && (
             <div className="ord-go">
               {tracked.map((s, i) => (
@@ -144,6 +210,11 @@ export function OrderView({ order: o }: { order: Order }) {
           )}
         </>
       )}
+      <OrderTools
+        orderNumber={o.orderNumber}
+        trackingUrl={tracked[0]?.trackingUrl ?? undefined}
+        trackingNumber={tracked[0]?.trackingNumber}
+      />
 
       <div className="ord-cols">
         <section className="ord-card" aria-labelledby={`${uid}-items`}>
@@ -159,7 +230,13 @@ export function OrderView({ order: o }: { order: Order }) {
                   )}
                 </span>
                 <span className="ord-name">
-                  <b>{l.name}</b>
+                  <b>
+                    {l.slug ? (
+                      <Link href={`/products/${l.slug}`}>{l.name}</Link>
+                    ) : (
+                      l.name
+                    )}
+                  </b>
                   <small>
                     {[
                       l.variantName,
@@ -170,6 +247,14 @@ export function OrderView({ order: o }: { order: Order }) {
                       .filter(Boolean)
                       .join(" · ")}
                   </small>
+                  {showPieceStatus && (
+                    <em className="ord-tag">
+                      {(sent.get(`${l.name}|${l.variantName ?? ""}`) ?? 0) >=
+                      l.quantity
+                        ? "Shipped"
+                        : "Still being prepared"}
+                    </em>
+                  )}
                 </span>
                 <b className="ord-price">{money(l.lineTotal)}</b>
               </li>
@@ -195,7 +280,7 @@ export function OrderView({ order: o }: { order: Order }) {
                 )}
             {typeof o.shippingTotal === "number" && (
               <div>
-                <dt>{o.shippingName ?? "Delivery"}</dt>
+                <dt>{deliveryLabel(o.shippingName)}</dt>
                 <dd>
                   {o.shippingTotal === 0 ? "Free" : money(o.shippingTotal)}
                 </dd>
@@ -243,7 +328,7 @@ export function OrderView({ order: o }: { order: Order }) {
           ))}
 
           <section aria-labelledby={`${uid}-hist`}>
-            <h3 id={`${uid}-hist`}>What’s happened</h3>
+            <h3 id={`${uid}-hist`}>Order history</h3>
             <ol className="ord-events">
               {events.map((e, i) => (
                 <li key={`${i}-${e.kind}-${e.at}`}>
@@ -253,17 +338,28 @@ export function OrderView({ order: o }: { order: Order }) {
               ))}
             </ol>
           </section>
-
-          <section aria-labelledby={`${uid}-help`}>
-            <h3 id={`${uid}-help`}>Need a hand with this order?</h3>
-            <p>
-              <Link href="/help/shipping">Shipping and returns</Link>
-              {" · "}
-              <Link href="/help/contact">Contact us</Link>
-            </p>
-          </section>
         </div>
       </div>
+
+      {actions}
+
+      <section className="ord-help" aria-labelledby={`${uid}-help`}>
+        <h3 id={`${uid}-help`}>Need a hand with this order?</h3>
+        <p>
+          {helpLine(o, stage)}{" "}
+          <Link href="/help/shipping">Shipping and returns</Link>
+          {" · "}
+          <Link href="/help/contact">Contact us</Link>
+          {askHref && (
+            <>
+              {" · "}
+              <a href={askHref} target="_blank" rel="noopener noreferrer">
+                Ask on WhatsApp
+              </a>
+            </>
+          )}
+        </p>
+      </section>
     </article>
   );
 }
