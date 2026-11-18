@@ -322,6 +322,20 @@ select {
   width: 18px;
   height: 18px;
 }
+/* A smaller pill, for the quiet action inside a card. */
+.pill.sm {
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  font-size: var(--text-xs);
+}
+.pill.sm .dot {
+  width: 32px;
+  height: 32px;
+}
+.pill.sm .dot .ico {
+  width: 16px;
+  height: 16px;
+}
 .pill.dark {
   background: var(--ink);
   border-color: var(--ink);
@@ -906,36 +920,6 @@ select {
     transform: translateX(110%);
     transition: transform var(--dur-hero) var(--ease);
   }
-}
-.vhero-toggle {
-  position: absolute;
-  right: clamp(16px, 2.4vw, 32px);
-  bottom: clamp(16px, 2.4vw, 32px);
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--glass-line);
-  border-radius: var(--radius-round);
-  background: var(--glass);
-  color: var(--on-media);
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-.vhero-toggle .ico {
-  width: 18px;
-  height: 18px;
-}
-.vhero-toggle .i-play {
-  display: none;
-  fill: currentColor;
-}
-.vhero-toggle[aria-pressed="true"] .i-pause {
-  display: none;
-}
-.vhero-toggle[aria-pressed="true"] .i-play {
-  display: block;
 }
 @media (prefers-reduced-motion: no-preference) {
   .vhero-video {
@@ -1921,9 +1905,6 @@ select {
   height: 14px;
   color: var(--gold);
 }
-.tagline[data-paused] .tagline-run {
-  animation-play-state: paused;
-}
 @media (hover: hover) and (pointer: fine) {
   .tagline:hover .tagline-run {
     animation-play-state: paused;
@@ -1932,24 +1913,12 @@ select {
 .tagline:focus-within .tagline-run {
   animation-play-state: paused;
 }
-.tagline-toggle {
-  flex: none;
-  width: 36px;
-  height: 36px;
-  background: transparent;
-  border-color: rgb(var(--on-dark-rgb) / 0.2);
-  color: var(--on-dark);
-}
-.tagline-toggle .ico {
-  width: 16px;
-  height: 16px;
-}
 @keyframes tagline-run {
   to {
     transform: translateX(-100%);
   }
 }
-/* Less motion: one still line, no copy, no button. */
+/* Less motion: one still line, no copy. */
 @media (prefers-reduced-motion: reduce) {
   .tagline-track {
     justify-content: center;
@@ -1970,8 +1939,7 @@ select {
   .tagline-run .ico {
     display: none;
   }
-  .tagline-run[aria-hidden],
-  .tagline-toggle {
+  .tagline-run[aria-hidden] {
     display: none;
   }
 }
@@ -4863,15 +4831,6 @@ summary {
     )
   );
 }
-.vhero-toggle {
-  right: max(
-    16px,
-    calc(
-      (100cqw - min(var(--max), 100cqw + 2 * var(--edge) - 2 * var(--m))) /
-      2
-    )
-  );
-}
 .panel {
   max-width: var(--canvas);
   margin-inline: auto;
@@ -5260,8 +5219,6 @@ summary {
   height: 22px;
 }
 
-/* An owner-uploaded logo replaces the text wordmark */
-
 /* ---------- Header: the emerald band ---------- */
 .nav {
   position: sticky;
@@ -5357,6 +5314,18 @@ summary {
   background: none;
   border-color: transparent;
   color: inherit;
+}
+/* Opened, the pill is a light bar on the dark band: ink text, not the band's cream. */
+.nav .search-pill:hover,
+.nav .search-pill:focus-visible,
+.nav .search-pill:focus-within {
+  background: var(--card);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.nav .search-pill:hover .search-pill-text,
+.nav .search-pill:focus-visible .search-pill-text {
+  opacity: 1;
 }
 /* The bar is the same dark green as the badge, so the badge takes the gold
    tint and sits on the bag's corner instead of floating beside it. */
@@ -5785,8 +5754,10 @@ summary {
   }
 }
 @media (hover: hover) and (pointer: fine) {
-  .dock-main:hover {
-    background: rgb(var(--on-dark-rgb) / 0.2);
+  .dock-main:hover,
+  .dock-main:focus-visible {
+    background: var(--on-dark);
+    color: var(--night);
   }
 }
 
@@ -6869,13 +6840,20 @@ summary {
   color: var(--soft);
 }
 .ord-void {
-  display: grid;
-  justify-items: start;
-  gap: var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-lg);
   background: var(--sand);
   color: var(--ink);
+}
+.ord-void-msg {
+  display: grid;
+  gap: var(--space-1);
+  flex: 1 1 280px;
 }
 .ord-void p {
   margin: 0;
@@ -7130,8 +7108,8 @@ summary {
   font-size: var(--text-sm);
 }
 .ord-void .ord-go {
-  justify-content: flex-start;
-  margin-top: var(--space-1);
+  flex: none;
+  justify-content: flex-end;
 }
 .ord-track.is-delivered li:last-child::before {
   border-color: var(--gold);
@@ -7209,7 +7187,50 @@ summary {
   align-items: center;
   min-height: 44px;
   color: var(--ink);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 1px;
   text-underline-offset: 4px;
+}
+.ord-help a:hover {
+  text-decoration-thickness: 2px;
+}
+.ord-num {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  text-decoration: underline dotted var(--line-strong);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ord-num:hover {
+    text-decoration-color: var(--gold);
+  }
+}
+.ord-copied {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: var(--space-3);
+  vertical-align: middle;
+  color: var(--soft);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.ord-copied .ico {
+  width: 16px;
+  height: 16px;
+  color: var(--gold);
+}
+.acct-card > .pill {
+  justify-self: start;
 }
 .ord-return-list {
   display: grid;

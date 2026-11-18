@@ -9,7 +9,6 @@ import { Icon } from "./icons";
 
 const CARE_LINKS = [
   { href: "/help/shipping", label: "Shipping and returns" },
-  { href: "/help/sizes", label: "Size guide" },
   { href: "/help/care", label: "Jewellery care" },
   { href: "/help/contact", label: "Contact us" },
 ];
