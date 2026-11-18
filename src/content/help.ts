@@ -10,7 +10,7 @@ export const HELP: HelpTopic[] = [
   {
     slug: "shipping",
     title: "Shipping and returns",
-    summary: "Where we ship, and what happens after you order.",
+    summary: "How we ship, how long it takes, and how to send a piece back.",
     sections: [
       {
         heading: "Where we ship",
@@ -19,15 +19,60 @@ export const HELP: HelpTopic[] = [
         ],
       },
       {
-        heading: "Delivery times and costs",
+        heading: "Delivery times and charges",
         body: [
-          "Delivery times and charges for your address are shown at checkout, before you pay.",
+          "The delivery time and charge for your address are shown at checkout, before you pay. Both depend on where you live. Some orders qualify for free delivery once the basket passes a set amount, and checkout shows when that applies.",
+        ],
+      },
+      {
+        heading: "Packing and dispatch",
+        body: [
+          "We pack each order and hand it to the courier. You get an email with your tracking link as soon as it ships. An order with several pieces can leave in more than one parcel, and each parcel has its own tracking link.",
+        ],
+      },
+      {
+        heading: "Tracking your order",
+        body: [
+          "Use the link in your shipping email, or the Track your order page with your order number and the email or mobile you ordered with. If you have an account, every order is listed there too.",
+        ],
+      },
+      {
+        heading: "Customs and duties",
+        body: [
+          "Orders to the United Arab Emirates, Europe and Canada may be charged import duty or taxes by the destination country. These are set by customs, not by us, and are paid by the person receiving the parcel.",
         ],
       },
       {
         heading: "Returns",
         body: [
-          "Our returns policy is being finalised and will be published here before online orders open.",
+          "You can return a piece within 14 days of it being dispatched. To qualify, the piece must be unused, in its original condition and in its original packaging.",
+          "Tell us if a piece arrives damaged or is not what you ordered. We will put it right, or refund it in full.",
+        ],
+      },
+      {
+        heading: "How to return an order",
+        body: [
+          "Sign in, open the order from your account and choose Return a piece. Pick the pieces and a reason, then send the request. The reasons are: it arrived damaged, I received the wrong piece, it isn’t as described, size or fit, I changed my mind, or something else.",
+          "We review each request and email you the result. When we approve it, we email you how to send the parcel back. Please wait for that email before posting anything.",
+        ],
+      },
+      {
+        heading: "Refunds",
+        body: [
+          "We refund a return once the parcel reaches us and we have checked it. The refund covers what you paid for the returned pieces, with any discount on the order shared out fairly between them.",
+          "Online payments go back to the card, UPI or bank account you paid with. Your bank can take a few working days to show it. For cash on delivery, we arrange the refund with you directly. You receive a credit note by email for every refund.",
+        ],
+      },
+      {
+        heading: "Cancelling an order",
+        body: [
+          "An order that is still unpaid can be cancelled from the order page, and its stock goes back on sale. An unpaid order is cancelled automatically after a day. To cancel a paid order before it ships, contact us straight away.",
+        ],
+      },
+      {
+        heading: "Questions",
+        body: [
+          "Write to us from the Contact us page and quote your order number. We reply as soon as we can.",
         ],
       },
     ],
