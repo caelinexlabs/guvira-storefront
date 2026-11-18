@@ -2,7 +2,7 @@ import "server-only";
 import { type StorefrontResult, storefront } from "./storefront";
 
 export type OrderEvent = {
-  kind: "PLACED" | "PAID" | "SHIPPED" | "CANCELLED" | "REFUNDED";
+  kind: "PLACED" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "REFUNDED";
   message: string;
   at: string;
 };
@@ -12,10 +12,22 @@ export type Shipment = {
   trackingNumber: string | null;
   trackingUrl: string | null;
   shippedAt: string | null;
-  items: { name: string; variantName: string | null; quantity: number }[];
+  /** When the carrier expects to deliver; sent once Caelinex has it. */
+  expectedDeliveryAt?: string | null;
+  deliveredAt?: string | null;
+  items: {
+    name: string;
+    variantName: string | null;
+    quantity: number;
+    slug?: string | null;
+  }[];
 };
 
 export type OrderLine = {
+  /** What a return refers to. */
+  id?: string;
+  /** The piece's page, once Caelinex sends it. */
+  slug?: string | null;
   name: string;
   variantName: string | null;
   imageUrl: string | null;
@@ -44,6 +56,15 @@ export type Order = {
   shippingName: string | null;
   taxTotal: number;
   total: number;
+  /** Sent once Caelinex tracks delivery; until then an order ends at "shipped". */
+  deliveredAt?: string | null;
+  cancelledAt?: string | null;
+  /** "Cancelled by the shop", "Payment was not completed" or "Refunded in full"; null on older orders. */
+  cancelReason?: string | null;
+  refundStatus?: "NONE" | "PENDING" | "PARTIAL" | "REFUNDED";
+  refundedAmount?: number | null;
+  /** Only while the order waits for an online payment: what reopens Razorpay. */
+  payment?: { keyId: string; razorpayOrderId: string } | null;
 };
 
 /**

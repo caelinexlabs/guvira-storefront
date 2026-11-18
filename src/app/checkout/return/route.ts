@@ -54,6 +54,9 @@ export async function POST(req: NextRequest) {
 
   const params = new URLSearchParams({ payment: "failed", order: token });
   if (reason) params.set("reason", reason.slice(0, 200));
+  // Paid again from the order page: a failed try goes back to that order.
+  if (req.nextUrl.searchParams.get("back") === "order")
+    return go(req, `/orders/${token}?${params}`);
   return go(req, `/checkout?${params}`);
 }
 

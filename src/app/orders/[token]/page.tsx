@@ -12,11 +12,16 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-type Props = { params: Promise<{ token: string }> };
+type Props = {
+  params: Promise<{ token: string }>;
+  searchParams: Promise<{ payment?: string }>;
+};
 
 /** The thank-you page for an online order. It shows what Caelinex says, never the address bar. */
-export default async function OrderPage({ params }: Props) {
-  const r = await getOrder((await params).token);
+export default async function OrderPage({ params, searchParams }: Props) {
+  const { token } = await params;
+  const failed = (await searchParams).payment === "failed";
+  const r = await getOrder(token);
   if (!r.ok) notFound();
   const o = r.value;
   const paid = o.paymentStatus === "PAID";
@@ -38,9 +43,11 @@ export default async function OrderPage({ params }: Props) {
             ? "This order was cancelled. The details are below."
             : paid
               ? "Your payment went through. Your confirmation goes to the email you gave."
-              : "We haven’t received your payment yet. If you’ve paid, this page updates shortly."}
+              : failed
+                ? "Your payment didn’t go through. Nothing was charged. You can try again below."
+                : "We haven’t received your payment yet. If you’ve paid, this page updates shortly."}
         </p>
-        <OrderView order={o} />
+        <OrderView order={o} token={token} />
         <div className="result-actions">
           <PillLink href="/shop" tone="dark">
             Continue shopping

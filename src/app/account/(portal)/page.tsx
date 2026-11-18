@@ -74,7 +74,6 @@ export default async function AccountOverview() {
         <section className="acct-dark" aria-labelledby="latest-h">
           <div className="acct-dark-top">
             <div>
-              <p className="acct-eyebrow">Latest order</p>
               <h2 id="latest-h">Order {latest.orderNumber}</h2>
               <p className="acct-meta">
                 Placed {orderDate(latest.placedAt)} · {latest.itemCount}{" "}
