@@ -54,7 +54,9 @@ export default async function AccountOrders({
       ) : orders.value.orders.length === 0 ? (
         <div className="acct-card">
           <p>No orders yet.</p>
-          <PillLink href="/shop">Browse jewellery</PillLink>
+          <PillLink href="/shop" className="sm">
+            Browse jewellery
+          </PillLink>
         </div>
       ) : (
         <>

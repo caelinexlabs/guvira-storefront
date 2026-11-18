@@ -32,7 +32,6 @@
   --on-media: #fff; /* text and icons over photographs and the hero film */
   --gold-light: #e3c59b;
   --gold-pale: #f2e3c8;
-  --gold-metal: linear-gradient(135deg, #f0dcb8, #c9a57c 55%, #a8855c);
   --wish: #c2185b;
   --line-strong: #cbc2b2;
   --danger: #b4232c;
@@ -887,7 +886,7 @@ select {
 .vhero-actions .pill {
   border-color: transparent;
 }
-/* The hero's one call to action: ivory pill, gold arrow, a sheen on hover. */
+/* The hero's one call to action: ivory pill with a gold arrow. */
 .vhero-cta.pill {
   position: relative;
   gap: var(--space-5);
@@ -899,27 +898,8 @@ select {
 .vhero-cta .dot {
   width: 46px;
   height: 46px;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold) 70%);
+  background: var(--gold);
   color: var(--ink);
-}
-.vhero-cta::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 30%,
-    rgb(var(--champagne-rgb) / 0.45) 50%,
-    transparent 70%
-  );
-  transform: translateX(-110%);
-  pointer-events: none;
-}
-@media (hover: hover) and (pointer: fine) {
-  .vhero-cta:hover::before {
-    transform: translateX(110%);
-    transition: transform var(--dur-hero) var(--ease);
-  }
 }
 @media (prefers-reduced-motion: no-preference) {
   .vhero-video {
@@ -1125,25 +1105,6 @@ select {
   }
   .card:hover .media > a img:first-child {
     transform: scale(1.05);
-  }
-}
-/* cursor-following light on the photo (micro-interaction) */
-.card .media::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    240px circle at var(--mx, 50%) var(--my, 0%),
-    rgb(var(--white-rgb) / 0.22),
-    transparent 60%
-  );
-  opacity: 0;
-  transition: opacity var(--dur-medium) ease;
-} /* taste-skill-ignore: light sheen over photo */
-@media (hover: hover) and (pointer: fine) {
-  .card:hover .media::after {
-    opacity: 1;
   }
 }
 .flag {
@@ -1792,10 +1753,9 @@ select {
   }
 }
 
-/* The hologram watermark: a foil gradient clipped to the letters with fine
-   scan lines, fading into the base. It drifts slowly, and follows the
-   pointer on a mouse (holo-mark.tsx). */
-.holo {
+/* The large GUVIRA watermark at the foot of the page: flat champagne, fading
+   into the base. Decorative only. */
+.foot-mark {
   margin-top: clamp(40px, 5vw, 72px);
   font-size: 21.6cqw;
   font-weight: 500;
@@ -1805,58 +1765,12 @@ select {
   white-space: nowrap;
   margin-inline: -0.03em;
   user-select: none;
-  color: transparent;
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      rgb(var(--night-rgb) / 0.28) 0 1px,
-      transparent 1px 5px
-    ),
-    linear-gradient(
-      100deg,
-      #8a6a4a 0%,
-      #e3c59b 18%,
-      #f6e6c8 34%,
-      #c9a57c 50%,
-      #f0dcb8 66%,
-      #e3c59b 82%,
-      #8a6a4a 100%
-    );
-  background-size:
-    100% 100%,
-    250% 100%;
-  background-position:
-    0 0,
-    var(--hx, 50%) 50%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  opacity: 0.42;
+  color: var(--gold-light);
+  opacity: 0.2;
   mask-image: linear-gradient(to bottom, #000 30%, transparent 96%);
-  animation: holo-drift 14s ease-in-out infinite alternate;
-  transition: background-position var(--dur-brand) var(--ease);
-}
-.holo.live {
-  animation: none;
-}
-@keyframes holo-drift {
-  from {
-    background-position:
-      0 0,
-      0% 50%;
-  }
-  to {
-    background-position:
-      0 0,
-      100% 50%;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .holo {
-    animation: none;
-  }
 }
 
-/* The brand line running under the hologram. */
+/* The brand line running under the watermark. */
 .tagline {
   position: relative;
   display: flex;

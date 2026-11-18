@@ -60,14 +60,7 @@ export function ProductCard({
       aria-hidden={clone || undefined}
       inert={clone || undefined}
     >
-      <div
-        className="media"
-        onPointerMove={(e) => {
-          const r = e.currentTarget.getBoundingClientRect();
-          e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
-          e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
-        }}
-      >
+      <div className="media">
         <Link href={href} aria-label={product.name}>
           <Image
             src={a.src}

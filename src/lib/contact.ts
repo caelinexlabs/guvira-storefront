@@ -26,7 +26,9 @@ export const BRAND = {
 
 /** Blank, or the dummy values a fresh admin ships with (example.com, all zeros). */
 export const isPlaceholder = (v: string) =>
-  !v.trim() || /@example\.(com|org|net)$/i.test(v.trim()) || !/[1-9]/.test(v);
+  !v.trim() ||
+  /@example\.(com|org|net)$/i.test(v.trim()) ||
+  /(\d)\1{4,}/.test(v.replace(/[\s-]/g, ""));
 
 const real = (v: string, fallback: string) => (isPlaceholder(v) ? fallback : v);
 
