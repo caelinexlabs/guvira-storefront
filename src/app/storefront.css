@@ -3486,8 +3486,24 @@ select {
 /* Shop listing */
 .shop-head {
   display: grid;
-  gap: var(--space-4-5);
-  padding-block: clamp(20px, 3vw, 40px) var(--space-7);
+  gap: var(--space-5);
+  align-items: end;
+  padding-block: clamp(20px, 3vw, 40px) var(--space-6);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--line);
+}
+.shop-title {
+  display: grid;
+  gap: var(--space-4);
+}
+@media (min-width: 900px) {
+  .shop-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-8);
+  }
+  .shop-head .results-row {
+    gap: var(--space-6);
+  }
 }
 .shop-head p {
   margin: 0;
@@ -3534,6 +3550,11 @@ select {
 /* The list always leaves the normal section gap before the footer. */
 .shop-page {
   padding-bottom: var(--section-y);
+  /* A short list still fills the screen, so the dock and footer stay put. */
+  min-height: 90svh;
+}
+.shop-page .applied {
+  margin: 0 0 var(--space-6);
 }
 
 /* Nothing matched: a calm message, the way out, and pieces ready now. */
@@ -3713,15 +3734,6 @@ fieldset.stepper {
 }
 
 /* Shop filters */
-.shop-tools {
-  display: grid;
-  /* One column that never grows past the screen; the strips scroll inside. */
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-3-5);
-  padding-bottom: var(--space-7);
-  margin-bottom: var(--space-7);
-  border-bottom: 1px solid var(--line);
-}
 .result-count {
   margin: 0;
   color: var(--soft);
@@ -4804,11 +4816,6 @@ fieldset.stepper {
   }
   .shop-head p {
     font-size: var(--text-md);
-  }
-  .shop-tools {
-    gap: var(--space-2-5);
-    padding-bottom: var(--space-4);
-    margin-bottom: var(--space-5);
   }
 }
 

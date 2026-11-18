@@ -65,24 +65,17 @@ export async function ShopView({
         </nav>
 
         <header className="shop-head">
-          <Heading
-            as="h1"
-            script={current ? "shop" : "all"}
-            caps={current ? current.name : "Jewellery"}
-          />
-          <p>
-            {current?.blurb ||
-              "Anti-tarnish, waterproof jewellery, curated for every day."}
-          </p>
-        </header>
-
-        <div className="shop-tools">
-          <AppliedFilters
-            query={query}
-            facets={facets}
-            current={current}
-            priceRange={priceRange}
-          />
+          <div className="shop-title">
+            <Heading
+              as="h1"
+              script={current ? "shop" : "all"}
+              caps={current ? current.name : "Jewellery"}
+            />
+            <p>
+              {current?.blurb ||
+                "Anti-tarnish, waterproof jewellery, curated for every day."}
+            </p>
+          </div>
           <div className="results-row">
             <p className="result-count" aria-live="polite">
               {products.length > 0 && count}
@@ -96,7 +89,14 @@ export async function ShopView({
               }))}
             />
           </div>
-        </div>
+        </header>
+
+        <AppliedFilters
+          query={query}
+          facets={facets}
+          current={current}
+          priceRange={priceRange}
+        />
 
         {products.length ? (
           <ul className="shop-grid" id="shop-results">
