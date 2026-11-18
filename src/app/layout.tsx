@@ -9,6 +9,7 @@ import { WhatsAppButton } from "@/components/whatsapp-button";
 import { WishlistSync } from "@/components/wishlist-sync";
 import { getShopSettings } from "@/lib/caelinex/settings";
 import { getCurrencies, listCategories, listProducts } from "@/lib/commerce";
+import { BRAND, isPlaceholder } from "@/lib/contact";
 import { isExternal, resolveLink } from "@/lib/link";
 import { getNavigation } from "@/lib/nav";
 import "./globals.css";
@@ -124,12 +125,14 @@ export default async function RootLayout({
         <BagSync />
         <WishlistSync />
         <BagDrawer />
-        {features.whatsapp.enabled && features.whatsapp.number && (
-          <WhatsAppButton
-            number={features.whatsapp.number}
-            message={features.whatsapp.message}
-          />
-        )}
+        <WhatsAppButton
+          number={
+            isPlaceholder(features.whatsapp.number)
+              ? BRAND.whatsapp
+              : features.whatsapp.number
+          }
+          message={features.whatsapp.message}
+        />
         <Toaster position="bottom-center" />
       </body>
     </html>

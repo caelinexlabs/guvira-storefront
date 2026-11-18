@@ -5,6 +5,7 @@ import { Icon } from "@/components/icons";
 import { OrderView } from "@/components/order-view";
 import { getOrder } from "@/lib/caelinex/orders";
 import { getShopSettings } from "@/lib/caelinex/settings";
+import { BRAND, isPlaceholder } from "@/lib/contact";
 import { getAccount } from "../../session";
 import { ReturnPanel } from "./return-panel";
 
@@ -21,11 +22,12 @@ export default async function AccountOrderPage({ params }: Props) {
   const [r, settings] = await Promise.all([getOrder(token), getShopSettings()]);
   if (!r.ok) notFound();
   const wa = settings.features.whatsapp;
-  const digits = wa.number.replace(/[^\d]/g, "");
-  const askHref =
-    wa.enabled && digits
-      ? `https://wa.me/${digits}?text=${encodeURIComponent(`Hello, a question about my order ${r.value.orderNumber}.`)}`
-      : undefined;
+  const digits = (
+    isPlaceholder(wa.number) ? BRAND.whatsapp : wa.number
+  ).replace(/[^\d]/g, "");
+  const askHref = digits
+    ? `https://wa.me/${digits}?text=${encodeURIComponent(`Hello, a question about my order ${r.value.orderNumber}.`)}`
+    : undefined;
   return (
     <>
       <Link className="ord-back" href="/account/orders">
