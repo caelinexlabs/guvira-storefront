@@ -14,12 +14,26 @@ export default function TrackPage() {
   return (
     <>
       <SiteHeader />
-      <main id="main" className="wrap">
+      <main id="main" className="wrap track">
         <nav className="crumbs" aria-label="Breadcrumb">
-          <Link href="/help/orders">Order help</Link>
+          <Link href="/">Home</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Track your order</span>
         </nav>
-        <Heading as="h1" script="where is" caps="My order" />
-        <TrackForm />
+        <div className="track-grid">
+          <div className="track-intro">
+            <Heading as="h1" script="where is" caps="My order" />
+            <p className="track-lead">
+              Enter your order number and the email or mobile you ordered with
+              to see its status, parcels and tracking links.
+            </p>
+            <p className="track-alt">
+              Have an account? <Link href="/account">Sign in</Link> to see every
+              order in one place.
+            </p>
+          </div>
+          <TrackForm />
+        </div>
       </main>
       <SiteFooter slim />
     </>

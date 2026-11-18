@@ -5037,9 +5037,65 @@ summary {
 }
 
 /* Order tracking */
+.track {
+  min-height: 72svh;
+}
+.track-grid {
+  display: grid;
+  gap: var(--space-8);
+  align-items: start;
+  padding-bottom: var(--space-16);
+}
+.track-intro {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+.track-lead {
+  max-width: 40ch;
+  margin: 0;
+  color: var(--soft);
+  font-size: var(--text-lg);
+}
+.track-alt {
+  margin: 0;
+  color: var(--soft);
+}
+.track-alt a {
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 4px;
+}
 .track-form {
+  width: 100%;
   max-width: 28rem;
-  margin-inline: auto;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+.track-found {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: start;
+  grid-column: 1 / -1;
+  max-width: 56rem;
+}
+.track-grid:has(.track-found) .track-lead,
+.track-grid:has(.track-found) .track-alt {
+  display: none;
+}
+.track-found .ord {
+  width: 100%;
+}
+@media (min-width: 900px) {
+  .track-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
+    gap: var(--space-16);
+  }
+  .track-form {
+    justify-self: end;
+  }
 }
 
 /* Discount code on the order summary */
