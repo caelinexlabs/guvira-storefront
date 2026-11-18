@@ -34,7 +34,7 @@ export const HELP: HelpTopic[] = [
       {
         heading: "Tracking your order",
         body: [
-          "Use the link in your shipping email, or the Track your order page with your order number and the email or mobile you ordered with. If you have an account, every order is listed there too.",
+          "Use the link in your shipping email, or the [Track your order](/orders/track) page with your order number and the email or mobile you ordered with. If you have an account, every order is listed there too.",
         ],
       },
       {
@@ -53,7 +53,7 @@ export const HELP: HelpTopic[] = [
         heading: "Damaged or wrong pieces",
         body: [
           "If a piece arrives damaged, or is not the piece you ordered, we will replace it. The replacement ships to you within the same delivery time as your original order.",
-          "To make a claim, record a video as you unbox the parcel. Film the sealed package first, then open it and show every piece inside, so we can see its condition and check it against your order. Then write to us from the Contact us page with your order number and the video.",
+          "To make a claim, record a video as you unbox the parcel. Film the sealed package first, then open it and show every piece inside, so we can see its condition and check it against your order. Then write to us from the [Contact us](/help/contact) page with your order number and the video.",
           "Without an unboxing video we cannot verify a claim, so please record it for every order.",
         ],
       },
@@ -66,7 +66,7 @@ export const HELP: HelpTopic[] = [
       {
         heading: "Questions",
         body: [
-          "Write to us from the Contact us page and quote your order number. We reply as soon as we can.",
+          "Write to us from the [Contact us](/help/contact) page and quote your order number. We reply as soon as we can.",
         ],
       },
     ],

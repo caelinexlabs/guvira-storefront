@@ -4674,6 +4674,14 @@ fieldset.stepper {
 .help-body {
   max-width: 64ch;
 }
+.help-body h1 {
+  margin: 0;
+  font:
+    500 var(--text-3xl) / 1.15 var(--font-serif),
+    Georgia,
+    serif;
+  letter-spacing: var(--tracking-tight);
+}
 .help-summary {
   margin: var(--space-3) 0 var(--space-2);
   color: var(--soft);
@@ -4693,6 +4701,14 @@ fieldset.stepper {
 }
 .help-body a {
   color: var(--ink);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.help-body a:hover {
+  text-decoration-thickness: 2px;
 }
 .search-page {
   padding-block: var(--gap-fluid) var(--section-y);
