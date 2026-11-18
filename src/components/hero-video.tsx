@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { resolveLink } from "@/lib/link";
-import { Icon } from "./icons";
 import { Heading, PillLink } from "./ui";
 
 export type HeroContent = {
@@ -51,7 +50,7 @@ function splitHeading(text: string) {
 
 /**
  * Full-screen hero film. Plays muted and loops, pauses off screen, keeps still
- * for people who ask their device to reduce motion, and always offers pause.
+ * for people who ask their device to reduce motion.
  */
 export function HeroVideo({ content }: { content: HeroContent }) {
   const own = content.media;
@@ -62,7 +61,6 @@ export function HeroVideo({ content }: { content: HeroContent }) {
   const link = resolveLink(content.buttonLink || DEFAULT.buttonLink);
   const ref = useRef<HTMLVideoElement>(null);
   const userPaused = useRef(false);
-  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     const v = ref.current;
@@ -77,9 +75,6 @@ export function HeroVideo({ content }: { content: HeroContent }) {
       userPaused.current = true;
       v.pause();
     }
-    const sync = () => setPaused(v.paused);
-    v.addEventListener("play", sync);
-    v.addEventListener("pause", sync);
     const io = new IntersectionObserver(
       ([e]) => {
         if (!e.isIntersecting) v.pause();
@@ -88,25 +83,8 @@ export function HeroVideo({ content }: { content: HeroContent }) {
       { threshold: 0.15 },
     );
     io.observe(v);
-    sync();
-    return () => {
-      io.disconnect();
-      v.removeEventListener("play", sync);
-      v.removeEventListener("pause", sync);
-    };
+    return () => io.disconnect();
   }, [content.media, content.mobilePoster]);
-
-  const toggle = () => {
-    const v = ref.current;
-    if (!v) return;
-    if (v.paused) {
-      userPaused.current = false;
-      v.play();
-    } else {
-      userPaused.current = true;
-      v.pause();
-    }
-  };
 
   return (
     <section className="vhero" aria-labelledby="hero-h">
@@ -185,17 +163,6 @@ export function HeroVideo({ content }: { content: HeroContent }) {
             </PillLink>
           </div>
         </div>
-        {(!own || ownVideo) && (
-          <button
-            className="vhero-toggle"
-            type="button"
-            onClick={toggle}
-            aria-pressed={paused}
-            aria-label={paused ? "Play the video" : "Pause the video"}
-          >
-            <Icon name={paused ? "play" : "pause"} />
-          </button>
-        )}
       </div>
     </section>
   );

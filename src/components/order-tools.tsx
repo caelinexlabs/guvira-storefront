@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Icon } from "./icons";
 
 /** Copies text to the clipboard and says so for a moment. */
 export function CopyButton({ text, label }: { text: string; label: string }) {
@@ -27,6 +28,43 @@ export function CopyButton({ text, label }: { text: string; label: string }) {
   );
 }
 
+/** The number in "Order 1012": tap it to copy, and a tick says so for five seconds. */
+export function CopyOrderNumber({ number }: { number: number }) {
+  const [done, setDone] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  return (
+    <>
+      <button
+        type="button"
+        className="ord-num"
+        aria-label={`Order ${number}, copy order number`}
+        title="Copy order number"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(String(number));
+            setDone(true);
+            clearTimeout(timer.current);
+            timer.current = setTimeout(() => setDone(false), 5000);
+          } catch {
+            // No clipboard here; the number stays on the page to read out.
+          }
+        }}
+      >
+        {number}
+      </button>
+      <output className="ord-copied">
+        {done && (
+          <>
+            <Icon name="check" />
+            Copied
+          </>
+        )}
+      </output>
+    </>
+  );
+}
+
 /** Small helpers under the progress line: keep the order number, pass the tracking link on. */
 export function OrderTools({
   orderNumber,
@@ -41,9 +79,9 @@ export function OrderTools({
   useEffect(() => {
     setCanShare(typeof navigator.share === "function");
   }, []);
+  if (!trackingUrl) return null;
   return (
     <div className="ord-tools">
-      <CopyButton text={String(orderNumber)} label="Copy order number" />
       {trackingUrl &&
         (canShare ? (
           <button

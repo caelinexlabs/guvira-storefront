@@ -122,7 +122,9 @@ export default async function AccountOverview() {
               ? "Find your next piece in the shop."
               : "Orders placed with your email or mobile show here."}
           </p>
-          <PillLink href="/shop">Browse jewellery</PillLink>
+          <PillLink href="/shop" className="sm">
+            Browse jewellery
+          </PillLink>
         </section>
       )}
 
