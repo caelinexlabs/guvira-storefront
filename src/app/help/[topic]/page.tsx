@@ -8,6 +8,21 @@ import { getContact } from "@/lib/contact";
 
 type Props = { params: Promise<{ topic: string }> };
 
+/** Text with [label](/path) links, so a help page can point to another page. */
+function Text({ children }: { children: string }) {
+  const parts = children.split(/(\[[^\]]+\]\([^)]+\))/);
+  return parts.map((part) => {
+    const m = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    return m ? (
+      <Link key={part} href={m[2]}>
+        {m[1]}
+      </Link>
+    ) : (
+      part
+    );
+  });
+}
+
 export function generateStaticParams() {
   return HELP.map((h) => ({ topic: h.slug }));
 }
@@ -37,13 +52,22 @@ export default async function HelpPage({ params }: Props) {
           ))}
         </nav>
         <article className="help-body">
-          <h1 className="h2plain">{topic.title}</h1>
+          <h1>{topic.title}</h1>
           <p className="help-summary">{topic.summary}</p>
+          {topic.facts && (
+            <ul className="help-facts">
+              {topic.facts.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+          )}
           {topic.sections.map((s) => (
             <section key={s.heading}>
               <h2>{s.heading}</h2>
               {s.body.map((p) => (
-                <p key={p}>{p}</p>
+                <p key={p}>
+                  <Text>{p}</Text>
+                </p>
               ))}
             </section>
           ))}

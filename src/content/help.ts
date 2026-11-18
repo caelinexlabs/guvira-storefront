@@ -3,6 +3,8 @@ export type HelpTopic = {
   slug: string;
   title: string;
   summary: string;
+  /** The few things most readers came for, stated before the detail. */
+  facts?: string[];
   sections: { heading: string; body: string[] }[];
 };
 
@@ -10,7 +12,12 @@ export const HELP: HelpTopic[] = [
   {
     slug: "shipping",
     title: "Shipping and returns",
-    summary: "Where we ship, and what happens after you order.",
+    summary: "How and when we ship, and what we do if a piece arrives damaged.",
+    facts: [
+      "Every order is dispatched within 24 hours.",
+      "We do not accept returns at the moment.",
+      "A damaged or wrong piece is replaced. Film the unboxing.",
+    ],
     sections: [
       {
         heading: "Where we ship",
@@ -19,15 +26,54 @@ export const HELP: HelpTopic[] = [
         ],
       },
       {
-        heading: "Delivery times and costs",
+        heading: "Dispatch",
         body: [
-          "Delivery times and charges for your address are shown at checkout, before you pay.",
+          "We dispatch every order within 24 hours of it being placed. After that, delivery takes the standard shipping time for your address.",
+          "You get an email with your tracking link as soon as it ships. An order with several pieces can leave in more than one parcel, and each parcel has its own tracking link.",
+        ],
+      },
+      {
+        heading: "Delivery times and charges",
+        body: [
+          "The delivery time and charge for your address are shown at checkout, before you pay. Both depend on where you live. Some orders qualify for free delivery once the basket passes a set amount, and checkout shows when that applies.",
+        ],
+      },
+      {
+        heading: "Tracking your order",
+        body: [
+          "Use the link in your shipping email, or the [Track your order](/orders/track) page with your order number and the email or mobile you ordered with. If you have an account, every order is listed there too.",
+        ],
+      },
+      {
+        heading: "Customs and duties",
+        body: [
+          "Orders to the United Arab Emirates, Europe and Canada may be charged import duty or taxes by the destination country. These are set by customs, not by us, and are paid by the person receiving the parcel.",
         ],
       },
       {
         heading: "Returns",
         body: [
-          "Our returns policy is being finalised and will be published here before online orders open.",
+          "We do not accept returns at the moment. Please check the size and finish of a piece before you order, and write to us if you want help choosing.",
+        ],
+      },
+      {
+        heading: "Damaged or wrong pieces",
+        body: [
+          "If a piece arrives damaged, or is not the piece you ordered, we will replace it. The replacement ships to you within the same delivery time as your original order.",
+          "To make a claim, record a video as you unbox the parcel. Film the sealed package first, then open it and show every piece inside, so we can see its condition and check it against your order. Then write to us from the [Contact us](/help/contact) page with your order number and the video.",
+          "Without an unboxing video we cannot verify a claim, so please record it for every order.",
+        ],
+      },
+      {
+        heading: "Cancelling an order",
+        body: [
+          "An order that is still unpaid can be cancelled from the order page, and its stock goes back on sale. An unpaid order is cancelled automatically after a day. To cancel a paid order before it ships, contact us straight away.",
+        ],
+      },
+      {
+        heading: "Questions",
+        body: [
+          "Write to us from the [Contact us](/help/contact) page and quote your order number. We reply as soon as we can.",
         ],
       },
     ],
