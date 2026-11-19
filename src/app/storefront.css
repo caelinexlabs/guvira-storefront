@@ -7283,7 +7283,7 @@ summary {
   display: block;
   width: auto;
   height: 44px;
-  margin: var(--space-6) auto 0;
+  margin: var(--space-6) auto var(--space-5);
 }
 .brand-mark {
   display: block;
