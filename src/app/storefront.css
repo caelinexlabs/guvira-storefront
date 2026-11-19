@@ -6859,6 +6859,15 @@ summary {
   border-radius: var(--radius-round);
   background: var(--paper);
 }
+.ord-track li small {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--soft);
+  font-size: var(--text-xs);
+}
+.ord-last {
+  color: var(--soft);
+}
 .ord-track li.done {
   color: var(--ink);
 }
