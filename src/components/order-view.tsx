@@ -7,7 +7,7 @@ import { CURRENCY_META, formatMoney } from "@/lib/commerce/money";
 import type { Currency } from "@/lib/commerce/types";
 import { awaitingPayment, orderDate, orderStage } from "@/lib/order-status";
 import { PayNowButton, ReorderButton } from "./order-actions";
-import { CopyButton, CopyOrderNumber, OrderTools } from "./order-tools";
+import { CopyOrderNumber, CopyTrackingNumber, OrderTools } from "./order-tools";
 import { PillLink } from "./ui";
 
 /** Whole amounts as the shop shows them; an amount with paise keeps them. */
@@ -447,8 +447,10 @@ export function OrderView({
               </p>
               {s.trackingNumber && (
                 <p>
-                  Tracking number <b>{s.trackingNumber}</b>{" "}
-                  <CopyButton text={s.trackingNumber} label="Copy number" />
+                  Tracking number{" "}
+                  <b>
+                    <CopyTrackingNumber number={s.trackingNumber} />
+                  </b>
                 </p>
               )}
               {s.events && s.events.length > 0 && (

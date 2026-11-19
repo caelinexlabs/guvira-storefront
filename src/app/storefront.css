@@ -7207,6 +7207,13 @@ summary {
   font-weight: 400;
   letter-spacing: 0;
 }
+.ord-side .ord-num {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.ord-side .ord-copied {
+  margin-left: var(--space-2);
+}
 .ord-copied .ico {
   width: 16px;
   height: 16px;
@@ -7324,4 +7331,198 @@ summary {
 }
 .bag-empty .brand-mark {
   margin-left: 0;
+}
+
+/* Reviews: on the product page, and on an order */
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: middle;
+}
+.stars svg {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.stars svg.on {
+  fill: var(--gold);
+}
+.reviews {
+  padding-block: var(--gap-fluid-xl) 0;
+}
+.reviews-in {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  gap: var(--gap-fluid);
+  align-items: start;
+}
+.reviews-sum h2 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-3xl);
+  font-weight: 400;
+}
+.reviews-avg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-5);
+  color: var(--soft);
+}
+.reviews-avg b {
+  color: var(--ink);
+  font-size: var(--text-3xl);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+.reviews-bars {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.reviews-bars li {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--soft);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.reviews-bars i {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.reviews-bars i b {
+  display: block;
+  height: 100%;
+  background: var(--emerald);
+}
+.reviews-bars small {
+  text-align: right;
+}
+.reviews-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.reviews-list li {
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+.reviews-list li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.reviews-list h3 {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 500;
+}
+.reviews-list p {
+  margin: 0;
+  max-width: 64ch;
+  line-height: 1.6;
+}
+.reviews-list small {
+  color: var(--soft);
+}
+.reviews-list blockquote {
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--gold);
+  color: var(--soft);
+}
+.reviews-list blockquote b {
+  color: var(--ink);
+  font-weight: 500;
+}
+.ord-reviews {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--card);
+}
+.ord-reviews h3 {
+  margin: 0;
+}
+.ord-review-list {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ord-review-list li {
+  display: grid;
+  gap: var(--space-1);
+}
+.ord-review-list small {
+  color: var(--soft);
+}
+.review-form {
+  display: grid;
+  gap: var(--space-3);
+}
+.review-rate {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.review-rate legend {
+  float: left;
+  margin-right: var(--space-3);
+  padding: 0;
+}
+.review-rate label {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+.review-rate input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.review-rate svg {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  transition: fill 120ms ease;
+}
+.review-rate label.on svg {
+  fill: var(--gold);
+}
+.review-rate label:has(input:focus-visible) {
+  outline: 2px solid var(--emerald);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm, 4px);
+}
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+@media (max-width: 860px) {
+  .reviews-in {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ord-reviews {
+    padding: var(--space-4);
+  }
 }

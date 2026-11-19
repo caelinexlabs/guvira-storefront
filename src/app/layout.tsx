@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Pinyon_Script, Urbanist } from "next/font/google";
 import { Toaster } from "sonner";
+import { BagClaim } from "@/components/bag-claim";
 import { BagDrawer } from "@/components/bag-drawer";
 import { BagSync } from "@/components/bag-sync";
 import { CurrencyBoot } from "@/components/currency-boot";
@@ -122,6 +123,7 @@ export default async function RootLayout({
           {children}
         </ShopConfigProvider>
         <CurrencyBoot currencies={currencies} />
+        <BagClaim />
         <BagSync />
         <WishlistSync />
         <BagDrawer />

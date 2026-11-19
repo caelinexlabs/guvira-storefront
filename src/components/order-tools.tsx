@@ -28,8 +28,16 @@ export function CopyButton({ text, label }: { text: string; label: string }) {
   );
 }
 
-/** The number in "Order 1012": tap it to copy, and a tick says so for five seconds. */
-export function CopyOrderNumber({ number }: { number: number }) {
+/** A value you tap to copy; a tick says so for five seconds. */
+function CopyValue({
+  value,
+  aria,
+  title,
+}: {
+  value: string;
+  aria: string;
+  title: string;
+}) {
   const [done, setDone] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -38,20 +46,20 @@ export function CopyOrderNumber({ number }: { number: number }) {
       <button
         type="button"
         className="ord-num"
-        aria-label={`Order ${number}, copy order number`}
-        title="Copy order number"
+        aria-label={aria}
+        title={title}
         onClick={async () => {
           try {
-            await navigator.clipboard.writeText(String(number));
+            await navigator.clipboard.writeText(value);
             setDone(true);
             clearTimeout(timer.current);
             timer.current = setTimeout(() => setDone(false), 5000);
           } catch {
-            // No clipboard here; the number stays on the page to read out.
+            // No clipboard here; the value stays on the page to read out.
           }
         }}
       >
-        {number}
+        {value}
       </button>
       <output className="ord-copied">
         {done && (
@@ -62,6 +70,28 @@ export function CopyOrderNumber({ number }: { number: number }) {
         )}
       </output>
     </>
+  );
+}
+
+/** The number in "Order 1012": tap it to copy. */
+export function CopyOrderNumber({ number }: { number: number }) {
+  return (
+    <CopyValue
+      value={String(number)}
+      aria={`Order ${number}, copy order number`}
+      title="Copy order number"
+    />
+  );
+}
+
+/** A parcel's tracking number: tap it to copy. */
+export function CopyTrackingNumber({ number }: { number: string }) {
+  return (
+    <CopyValue
+      value={number}
+      aria={`Tracking number ${number}, copy tracking number`}
+      title="Copy tracking number"
+    />
   );
 }
 

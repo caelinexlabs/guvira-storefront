@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { OrderReviews } from "@/components/order-reviews";
 import { OrderView } from "@/components/order-view";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -55,6 +56,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
         </div>
         <div className="ord-body">
           <OrderView order={o} token={token} />
+          {!cancelled && <OrderReviews orderToken={token} />}
         </div>
         <div className="result-actions">
           <PillLink href="/shop" tone="dark">

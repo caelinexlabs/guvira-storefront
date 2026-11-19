@@ -1,6 +1,12 @@
 "use server";
 
-import { getCart, putCartEmail, recoverCart } from "@/lib/caelinex/cart";
+import {
+  type CartLine,
+  claimCart,
+  getCart,
+  putCartEmail,
+  recoverCart,
+} from "@/lib/caelinex/cart";
 import {
   type SyncResult,
   syncCart,
@@ -8,7 +14,7 @@ import {
 } from "@/lib/caelinex/cart-sync";
 import { listProducts } from "@/lib/commerce";
 import { isEmail } from "@/lib/identity";
-import { getCartToken, setCartToken } from "@/lib/session";
+import { getCartToken, getSessionToken, setCartToken } from "@/lib/session";
 import type { BagLine } from "@/lib/store/shop";
 
 export type BagSyncResult =
@@ -76,10 +82,18 @@ export async function recoverBag(secret: string): Promise<RecoverResult> {
     return { status: r.reason === "invalid" ? "expired" : "unavailable" };
   await setCartToken(r.value.token);
 
-  // The cart knows ids and quantities; the bag also wants the product's link,
-  // photo and prices, which the catalog holds.
   const cart = await getCart(r.value.token);
-  const lines = cart.ok ? cart.value.lines : r.value.lines;
+  return {
+    status: "ok",
+    lines: await bagFromLines(cart.ok ? cart.value.lines : r.value.lines),
+  };
+}
+
+/**
+ * The cart knows ids and quantities; the bag also wants the product's link,
+ * photo and prices, which the catalog holds.
+ */
+async function bagFromLines(lines: CartLine[]): Promise<BagLine[]> {
   const products = new Map((await listProducts()).map((p) => [p.id, p]));
   const bag: BagLine[] = [];
   for (const l of lines) {
@@ -96,5 +110,27 @@ export async function recoverBag(secret: string): Promise<RecoverResult> {
       qty: l.quantity,
     });
   }
-  return { status: "ok", lines: bag };
+  return bag;
+}
+
+export type ClaimResult =
+  | { status: "ok"; lines: BagLine[] }
+  | { status: "none" | "signed-out" | "unavailable" };
+
+/**
+ * For a signed-in shopper: joins this browser's cart to the one saved on their
+ * account, so a bag filled on another device appears here. Keeps the cart
+ * token Caelinex answers with and hands back the bag.
+ */
+export async function claimBag(): Promise<ClaimResult> {
+  const session = await getSessionToken();
+  if (!session) return { status: "signed-out" };
+  const r = await claimCart(session, await getCartToken());
+  if (!r.ok)
+    return {
+      status: r.reason === "unauthorised" ? "signed-out" : "unavailable",
+    };
+  if (!r.value.token || !r.value.cart) return { status: "none" };
+  await setCartToken(r.value.token);
+  return { status: "ok", lines: await bagFromLines(r.value.cart.lines) };
 }

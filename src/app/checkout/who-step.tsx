@@ -1,5 +1,6 @@
 "use client";
 
+import { claimIntoBag } from "@/components/bag-claim";
 import clsx from "clsx";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/icons";
@@ -137,6 +138,7 @@ function AccountFlow({
     if (state.step !== "done" || handed.current) return;
     handed.current = true;
     onDone(state.customer);
+    void claimIntoBag();
   }, [state, onDone]);
 
   if (state.step === "done") return null;

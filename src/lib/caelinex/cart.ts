@@ -120,3 +120,18 @@ export const recoverCart = (
     method: "POST",
     body: JSON.stringify({ token: secret }),
   });
+
+/**
+ * After sign-in: joins the cart this browser holds to the one the shopper left
+ * on their account, and answers with the joined cart and its token. Both are
+ * null when there is nothing to join.
+ */
+export const claimCart = (
+  shopperToken: string,
+  cartToken?: string,
+): Promise<StorefrontResult<{ token: string | null; cart: Cart | null }>> =>
+  storefront("/shopper/cart/claim", {
+    method: "POST",
+    headers: { "x-shopper-token": shopperToken },
+    body: JSON.stringify(cartToken ? { cartToken } : {}),
+  });

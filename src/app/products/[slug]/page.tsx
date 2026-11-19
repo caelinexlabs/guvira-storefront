@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Icon } from "@/components/icons";
 import { BuyBox, ProductGallery } from "@/components/product-buy";
 import { ProductCard } from "@/components/product-card";
+import { ProductReviews } from "@/components/product-reviews";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Heading, PillLink } from "@/components/ui";
@@ -145,6 +146,8 @@ export default async function ProductPage({ params }: Props) {
             </div>
           </section>
         </div>
+
+        <ProductReviews slug={product.slug} />
 
         <section className="sec panel-wrap" aria-labelledby="pair-h">
           <div className="panel">
