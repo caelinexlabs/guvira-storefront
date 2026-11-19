@@ -47,7 +47,6 @@ function CopyValue({
         type="button"
         className="ord-num"
         aria-label={aria}
-        title={title}
         onClick={async () => {
           try {
             await navigator.clipboard.writeText(value);
@@ -61,6 +60,9 @@ function CopyValue({
       >
         <span className="ord-num-text">{value}</span>
         <Icon name="info" className="ico ord-info" />
+        <span className="ord-tip" aria-hidden="true">
+          {title}
+        </span>
       </button>
       <output className="ord-copied">
         {done && (
