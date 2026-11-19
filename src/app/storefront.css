@@ -1746,9 +1746,10 @@ select {
   }
 }
 
-/* The large GUVIRA watermark at the foot of the page: flat champagne cut by
-   fine horizontal strips, fading into the base. Still, and decorative only. */
-.foot-mark {
+/* The hologram watermark: a foil gradient clipped to the letters with fine
+   scan lines, fading into the base. It drifts slowly, and follows the
+   pointer on a mouse (holo-mark.tsx). */
+.holo {
   margin-top: clamp(40px, 5vw, 72px);
   font-size: 21.6cqw;
   font-weight: 500;
@@ -1759,16 +1760,54 @@ select {
   margin-inline: -0.03em;
   user-select: none;
   color: transparent;
-  background-color: var(--gold-light);
-  background-image: repeating-linear-gradient(
-    0deg,
-    rgb(var(--night-rgb) / 0.55) 0 1px,
-    transparent 1px 5px
-  );
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgb(var(--night-rgb) / 0.28) 0 1px,
+      transparent 1px 5px
+    ),
+    linear-gradient(
+      100deg,
+      #8a6a4a 0%,
+      #e3c59b 18%,
+      #f6e6c8 34%,
+      #c9a57c 50%,
+      #f0dcb8 66%,
+      #e3c59b 82%,
+      #8a6a4a 100%
+    );
+  background-size:
+    100% 100%,
+    250% 100%;
+  background-position:
+    0 0,
+    var(--hx, 50%) 50%;
   -webkit-background-clip: text;
   background-clip: text;
-  opacity: 0.34;
+  opacity: 0.42;
   mask-image: linear-gradient(to bottom, #000 30%, transparent 96%);
+  animation: holo-drift 14s ease-in-out infinite alternate;
+  transition: background-position var(--dur-brand) var(--ease);
+}
+.holo.live {
+  animation: none;
+}
+@keyframes holo-drift {
+  from {
+    background-position:
+      0 0,
+      0% 50%;
+  }
+  to {
+    background-position:
+      0 0,
+      100% 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .holo {
+    animation: none;
+  }
 }
 
 /* The brand line under the watermark: still, centred, wrapping on a phone. */

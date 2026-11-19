@@ -4,6 +4,7 @@ import { BRAND, getContact, isPlaceholder } from "@/lib/contact";
 import { getNavigation } from "@/lib/nav";
 import { CurrencySelect } from "./currency-select";
 import { FootTagline } from "./foot-tagline";
+import { HoloMark } from "./holo-mark";
 import { Icon } from "./icons";
 
 const CARE_LINKS = [
@@ -137,9 +138,7 @@ export async function SiteFooter({ slim = false }: { slim?: boolean }) {
           </div>
         </div>
 
-        <div className="foot-mark" aria-hidden="true">
-          GUVIRA
-        </div>
+        <HoloMark />
         <FootTagline />
 
         <div className="foot-base">
