@@ -6776,6 +6776,25 @@ summary {
   display: grid;
   gap: var(--space-6);
 }
+.ord-page {
+  padding-block: var(--gap-fluid-xl) var(--section-y);
+}
+.ord-confirm {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--gap-fluid);
+  text-align: center;
+}
+.ord-body {
+  max-width: 960px;
+  margin-inline: auto;
+  padding-top: var(--gap-fluid);
+  border-top: 1px solid var(--line);
+}
+.ord-page .result-actions {
+  margin-top: var(--gap-fluid);
+}
 .ord-head {
   display: flex;
   flex-wrap: wrap;
