@@ -59,7 +59,6 @@ function CopyValue({
         }}
       >
         <span className="ord-num-text">{value}</span>
-        <Icon name="info" className="ico ord-info" />
         <span className="ord-tip" aria-hidden="true">
           {title}
         </span>

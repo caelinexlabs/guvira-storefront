@@ -7184,13 +7184,6 @@ summary {
   text-decoration-thickness: 2px;
   text-underline-offset: 8px;
 }
-.ord-info {
-  width: 16px;
-  height: 16px;
-  flex: none;
-  margin-left: var(--space-2);
-  color: var(--soft);
-}
 .ord-num {
   position: relative;
   display: inline-flex;
@@ -7206,9 +7199,6 @@ summary {
 @media (hover: hover) and (pointer: fine) {
   .ord-num:hover .ord-num-text {
     text-decoration-color: var(--gold);
-  }
-  .ord-num:hover .ord-info {
-    color: var(--ink);
   }
 }
 .ord-tip {
@@ -7238,6 +7228,18 @@ summary {
   opacity: 1;
   transform: translate(0, -50%);
 }
+@media (max-width: 560px) {
+  .ord-tip {
+    left: 0;
+    top: 100%;
+    margin: var(--space-2) 0 0;
+    transform: translateY(-4px);
+  }
+  .ord-num:hover .ord-tip,
+  .ord-num:focus-visible .ord-tip {
+    transform: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .ord-tip {
     transition: none;
@@ -7257,10 +7259,6 @@ summary {
 .ord-side .ord-num-text {
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
-}
-.ord-side .ord-info {
-  width: 14px;
-  height: 14px;
 }
 .ord-side .ord-copied {
   margin-left: var(--space-2);
