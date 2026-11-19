@@ -29,25 +29,33 @@ export default async function OrderPage({ params, searchParams }: Props) {
   return (
     <>
       <SiteHeader />
-      <main id="main" className="wrap">
+      <main id="main" className="wrap ord-page">
         {paid && !cancelled && <ClearBag />}
-        <Heading
-          as="h1"
-          script={cancelled ? "this order" : paid ? "thank you" : "almost"}
-          caps={
-            cancelled ? "Cancelled" : paid ? "Order placed" : "Payment pending"
-          }
-        />
-        <p className="result-lead">
-          {cancelled
-            ? "This order was cancelled. The details are below."
-            : paid
-              ? "Your payment went through. Your confirmation goes to the email you gave."
-              : failed
-                ? "Your payment didn’t go through. Nothing was charged. You can try again below."
-                : "We haven’t received your payment yet. If you’ve paid, this page updates shortly."}
-        </p>
-        <OrderView order={o} token={token} />
+        <div className="ord-confirm">
+          <Heading
+            as="h1"
+            script={cancelled ? "this order" : paid ? "thank you" : "almost"}
+            caps={
+              cancelled
+                ? "Cancelled"
+                : paid
+                  ? "Order placed"
+                  : "Payment pending"
+            }
+          />
+          <p className="result-lead">
+            {cancelled
+              ? "This order was cancelled. The details are below."
+              : paid
+                ? "Your payment went through. Your confirmation goes to the email you gave."
+                : failed
+                  ? "Your payment didn’t go through. Nothing was charged. You can try again below."
+                  : "We haven’t received your payment yet. If you’ve paid, this page updates shortly."}
+          </p>
+        </div>
+        <div className="ord-body">
+          <OrderView order={o} token={token} />
+        </div>
         <div className="result-actions">
           <PillLink href="/shop" tone="dark">
             Continue shopping
