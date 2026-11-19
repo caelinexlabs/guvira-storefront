@@ -1716,20 +1716,6 @@ select {
   line-height: 1.6;
   color: rgb(var(--on-dark-rgb) / 0.75);
 }
-.foot-social + .foot-mail,
-.foot-connect p + .foot-mail {
-  margin-top: var(--space-5);
-}
-.foot-mail {
-  display: flex;
-  width: fit-content;
-  align-items: center;
-  gap: var(--space-2-5);
-  margin-top: var(--space-3);
-  color: inherit;
-  font-size: var(--text-md);
-  text-underline-offset: 4px;
-}
 .foot h2 {
   margin: 0 0 var(--space-4);
   color: var(--gold-light);
