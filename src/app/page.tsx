@@ -14,6 +14,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getShopSettings } from "@/lib/caelinex/settings";
 import { listCategories, listProducts } from "@/lib/commerce";
+import { getContact } from "@/lib/contact";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
@@ -23,10 +24,11 @@ export const metadata: Metadata = { alternates: { canonical: "/" } };
  * show, is left out.
  */
 export default async function Home() {
-  const [settings, products, categories] = await Promise.all([
+  const [settings, products, categories, contact] = await Promise.all([
     getShopSettings(),
     listProducts(),
     listCategories(),
+    getContact(),
   ]);
   const s = settings.sections;
   const { hero } = settings;
@@ -63,7 +65,7 @@ export default async function Home() {
           <NewsletterSection
             heading={s.newsletter.heading}
             text={s.newsletter.text}
-            instagram={settings.contact.social.instagram}
+            instagram={contact.social.find((l) => l.icon === "instagram")?.href}
           />
         )}
         <Closing script="find your" caps="Favourite" />

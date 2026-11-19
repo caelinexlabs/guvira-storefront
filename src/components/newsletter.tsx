@@ -62,7 +62,7 @@ export function Newsletter({
               id="news-email"
               name="email"
               type="email"
-              placeholder="you@example.com…"
+              placeholder="you@example.com"
               spellCheck={false}
               autoComplete="email"
               defaultValue={error?.email}
