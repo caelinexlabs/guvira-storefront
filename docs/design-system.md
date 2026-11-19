@@ -94,6 +94,13 @@ Media queries can't read custom properties, so these are fixed: 420px (small pho
 
 **Why two category shapes:** the home page tiles are editorial (a large arch photo with a description) and invite browsing. The shop page strip is a compact filter whose job is to show which category is selected. They are different components on purpose, so don't merge them.
 
+## Email
+
+Guvira's shopper emails (order, payment, shipping, sign-in code, welcome, bag reminder, returns) share one layout: a full-width evergreen band with the headline, a paper body, and a deep evergreen footer with the lotus, the script line and five social icons. The designs live in a published artifact, and the templates themselves are stored in the backend (Caelinex), not in this repo.
+
+- Design reference: https://claude.ai/artifact/3mmvohFFnKNKC9aGRKPCHc
+- Where they are used: the backend looks up the Guvira channel's template for each email and falls back to plain text when there is none, so other storefronts are unaffected.
+
 ## Known content gaps
 
 - The necklaces, arm cuffs and pendants tiles show line glyphs until real photos exist.

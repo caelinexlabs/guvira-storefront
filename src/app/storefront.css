@@ -1716,20 +1716,6 @@ select {
   line-height: 1.6;
   color: rgb(var(--on-dark-rgb) / 0.75);
 }
-.foot-social + .foot-mail,
-.foot-connect p + .foot-mail {
-  margin-top: var(--space-5);
-}
-.foot-mail {
-  display: flex;
-  width: fit-content;
-  align-items: center;
-  gap: var(--space-2-5);
-  margin-top: var(--space-3);
-  color: inherit;
-  font-size: var(--text-md);
-  text-underline-offset: 4px;
-}
 .foot h2 {
   margin: 0 0 var(--space-4);
   color: var(--gold-light);
@@ -1760,9 +1746,10 @@ select {
   }
 }
 
-/* The large GUVIRA watermark at the foot of the page: flat champagne, fading
-   into the base. Decorative only. */
-.foot-mark {
+/* The hologram watermark: a foil gradient clipped to the letters with fine
+   scan lines, fading into the base. It drifts slowly, and follows the
+   pointer on a mouse (holo-mark.tsx). */
+.holo {
   margin-top: clamp(40px, 5vw, 72px);
   font-size: 21.6cqw;
   font-weight: 500;
@@ -1772,46 +1759,74 @@ select {
   white-space: nowrap;
   margin-inline: -0.03em;
   user-select: none;
-  color: var(--gold-light);
-  opacity: 0.2;
+  color: transparent;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgb(var(--night-rgb) / 0.28) 0 1px,
+      transparent 1px 5px
+    ),
+    linear-gradient(
+      100deg,
+      #8a6a4a 0%,
+      #e3c59b 18%,
+      #f6e6c8 34%,
+      #c9a57c 50%,
+      #f0dcb8 66%,
+      #e3c59b 82%,
+      #8a6a4a 100%
+    );
+  background-size:
+    100% 100%,
+    250% 100%;
+  background-position:
+    0 0,
+    var(--hx, 50%) 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  opacity: 0.42;
   mask-image: linear-gradient(to bottom, #000 30%, transparent 96%);
+  animation: holo-drift 14s ease-in-out infinite alternate;
+  transition: background-position var(--dur-brand) var(--ease);
+}
+.holo.live {
+  animation: none;
+}
+@keyframes holo-drift {
+  from {
+    background-position:
+      0 0,
+      0% 50%;
+  }
+  to {
+    background-position:
+      0 0,
+      100% 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .holo {
+    animation: none;
+  }
 }
 
-/* The brand line running under the watermark. */
+/* The brand line under the watermark: still, centred, wrapping on a phone. */
 .tagline {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
   margin-top: calc(-1 * var(--space-2));
   padding-block: var(--space-5) var(--space-8);
 }
-.tagline-track {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  margin: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 8%,
-    #000 92%,
-    transparent
-  );
-}
 .tagline-run {
   display: flex;
-  flex: none;
+  flex-wrap: wrap;
   align-items: baseline;
-  animation: tagline-run 48s linear infinite;
+  justify-content: center;
+  gap: var(--space-2) var(--space-6);
+  margin: 0;
+  text-align: center;
 }
 .tagline-run > span {
   display: inline-flex;
-  align-items: center;
-  gap: var(--space-8);
-  padding-right: var(--space-8);
+  align-items: baseline;
 }
 .tagline-script {
   font: 400 var(--text-4xl) / 1.2 var(--script);
@@ -1820,49 +1835,6 @@ select {
 .tagline-plain {
   font-size: var(--text-lg);
   color: rgb(var(--on-dark-rgb) / 0.75);
-}
-.tagline-run .ico {
-  width: 14px;
-  height: 14px;
-  color: var(--gold);
-}
-@media (hover: hover) and (pointer: fine) {
-  .tagline:hover .tagline-run {
-    animation-play-state: paused;
-  }
-}
-.tagline:focus-within .tagline-run {
-  animation-play-state: paused;
-}
-@keyframes tagline-run {
-  to {
-    transform: translateX(-100%);
-  }
-}
-/* Less motion: one still line, no copy. */
-@media (prefers-reduced-motion: reduce) {
-  .tagline-track {
-    justify-content: center;
-    white-space: normal;
-    mask-image: none;
-  }
-  .tagline-run {
-    flex: 1;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-2) 0;
-    text-align: center;
-    animation: none;
-  }
-  .tagline-run > span {
-    padding-inline: var(--space-3);
-  }
-  .tagline-run .ico {
-    display: none;
-  }
-  .tagline-run[aria-hidden] {
-    display: none;
-  }
 }
 .foot-slim .foot-base {
   margin-top: 0;
