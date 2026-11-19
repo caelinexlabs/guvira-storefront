@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { totalPrices } from "@/lib/commerce/price";
 import { useShop } from "@/lib/store/shop";
+import { BrandMark } from "./brand-mark";
 import { Icon } from "./icons";
 import { Price } from "./price";
 import { PillLink } from "./ui";
@@ -26,6 +27,7 @@ export function BagDrawer() {
           </div>
           {bag.length === 0 ? (
             <div className="bag-empty">
+              <BrandMark size={52} />
               <p>Your bag is empty.</p>
               <PillLink tone="dark" href="/shop" onClick={() => openBag(false)}>
                 Browse jewellery

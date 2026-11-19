@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BrandMark } from "@/components/brand-mark";
 import { Icon } from "@/components/icons";
 import { ProductCard } from "@/components/product-card";
 import { SiteFooter } from "@/components/site-footer";
@@ -64,6 +65,7 @@ export default async function SearchPage({ searchParams }: Props) {
           </ul>
         ) : (
           <div className="search-empty">
+            <BrandMark size={52} />
             <p>
               {q ? "Nothing matched. Try a category:" : "Browse a category:"}
             </p>

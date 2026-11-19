@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getShopSettings } from "@/lib/caelinex/settings";
 import { getContact } from "@/lib/contact";
@@ -115,6 +116,14 @@ export async function SiteFooter({ slim = false }: { slim?: boolean }) {
         <div className="foot-mark" aria-hidden="true">
           GUVIRA
         </div>
+        <Image
+          className="foot-lotus"
+          src="/brand/guvira-lotus-champagne.png"
+          alt=""
+          width={43}
+          height={48}
+          unoptimized
+        />
         <FootTagline />
 
         <div className="foot-base">

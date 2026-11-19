@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/brand-mark";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Heading, PillLink } from "@/components/ui";
@@ -10,6 +11,7 @@ export default function NotFound() {
     <>
       <SiteHeader />
       <main id="main" className="wrap not-found">
+        <BrandMark size={64} />
         <Heading
           as="h1"
           script="lost"
