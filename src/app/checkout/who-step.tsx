@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { useActionState, useEffect, useRef, useState } from "react";
+import { claimIntoBag } from "@/components/bag-claim";
 import { Icon } from "@/components/icons";
 import { useShopConfig } from "@/components/shop-config";
 import { PillButton } from "@/components/ui";
@@ -137,6 +138,7 @@ function AccountFlow({
     if (state.step !== "done" || handed.current) return;
     handed.current = true;
     onDone(state.customer);
+    void claimIntoBag();
   }, [state, onDone]);
 
   if (state.step === "done") return null;

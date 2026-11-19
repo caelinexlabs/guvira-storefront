@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Icon } from "@/components/icons";
+import { OrderReviews } from "@/components/order-reviews";
 import { OrderView } from "@/components/order-view";
 import { getOrder } from "@/lib/caelinex/orders";
 import { getShopSettings } from "@/lib/caelinex/settings";
@@ -41,7 +42,10 @@ export default async function AccountOrderPage({ params }: Props) {
         askHref={askHref}
         actions={
           r.value.status !== "CANCELLED" ? (
-            <ReturnPanel orderToken={token} currency={r.value.currency} />
+            <>
+              <ReturnPanel orderToken={token} currency={r.value.currency} />
+              <OrderReviews orderToken={token} />
+            </>
           ) : undefined
         }
       />
