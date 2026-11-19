@@ -26,7 +26,9 @@ export function CategoryTiles({ categories }: { categories: Category[] }) {
                     style={{ objectPosition: c.image.position }}
                   />
                 ) : (
-                  <Icon name={c.glyph ?? "necklace"} className="" />
+                  <span className="arch-mono" aria-hidden="true">
+                    {c.name.charAt(0).toUpperCase()}
+                  </span>
                 )}
               </span>
               <span className="row">

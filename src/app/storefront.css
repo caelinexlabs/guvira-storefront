@@ -979,6 +979,13 @@ select {
   display: grid;
   place-items: center;
 }
+.arch-mono {
+  color: var(--line-strong);
+  font:
+    500 clamp(56px, 7vw, 96px) / 1 var(--font-serif),
+    Georgia,
+    serif;
+}
 .tile .arch img {
   position: absolute;
   inset: 0;
