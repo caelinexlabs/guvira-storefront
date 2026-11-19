@@ -59,7 +59,8 @@ function CopyValue({
           }
         }}
       >
-        {value}
+        <span className="ord-num-text">{value}</span>
+        <Icon name="info" className="ico ord-info" />
       </button>
       <output className="ord-copied">
         {done && (

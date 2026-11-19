@@ -7179,7 +7179,21 @@ summary {
 .ord-help a:hover {
   text-decoration-thickness: 2px;
 }
+.ord-num-text {
+  text-decoration: underline dotted var(--line-strong);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+.ord-info {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-left: var(--space-2);
+  color: var(--soft);
+}
 .ord-num {
+  display: inline-flex;
+  align-items: center;
   padding: 0;
   border: 0;
   background: none;
@@ -7187,13 +7201,13 @@ summary {
   font: inherit;
   letter-spacing: inherit;
   cursor: pointer;
-  text-decoration: underline dotted var(--line-strong);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 8px;
 }
 @media (hover: hover) and (pointer: fine) {
-  .ord-num:hover {
+  .ord-num:hover .ord-num-text {
     text-decoration-color: var(--gold);
+  }
+  .ord-num:hover .ord-info {
+    color: var(--ink);
   }
 }
 .ord-copied {
@@ -7207,9 +7221,13 @@ summary {
   font-weight: 400;
   letter-spacing: 0;
 }
-.ord-side .ord-num {
+.ord-side .ord-num-text {
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
+}
+.ord-side .ord-info {
+  width: 14px;
+  height: 14px;
 }
 .ord-side .ord-copied {
   margin-left: var(--space-2);
