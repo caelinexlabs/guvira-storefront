@@ -5205,6 +5205,23 @@ summary {
   padding: 0;
   border: 0;
   background: none;
+  color: var(--paper);
+}
+.nav .logo {
+  font:
+    700 30px / 1 var(--font-serif),
+    Georgia,
+    serif;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+.nav .logo {
+  margin-right: -0.26em;
+}
+@media (max-width: 860px) {
+  .nav .logo {
+    font-size: 22px;
+  }
 }
 .nav .links {
   font-weight: 500;
@@ -7259,4 +7276,24 @@ summary {
   padding-block: var(--space-12);
   text-align: center;
   color: var(--soft);
+}
+
+/* The lotus, for the places that have room for it. */
+.foot-lotus {
+  display: block;
+  width: auto;
+  height: 44px;
+  margin: var(--space-6) auto var(--space-5);
+}
+.brand-mark {
+  display: block;
+  width: auto;
+  height: 56px;
+  margin: 0 auto var(--space-4);
+}
+.search-empty .brand-mark {
+  margin-left: 0;
+}
+.bag-empty .brand-mark {
+  margin-left: 0;
 }

@@ -143,14 +143,7 @@ export function SiteHeader({ over = false }: { over?: boolean }) {
           ))}
         </nav>
         <Link className="logo" href="/" aria-label="Guvira home">
-          <Image
-            src="/brand/guvira-logo-gold.png"
-            alt="Guvira"
-            width={175}
-            height={44}
-            priority
-            unoptimized
-          />
+          Guvira
         </Link>
         <div className="tools">
           {search && <SearchCommand />}
