@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { getShopSettings } from "@/lib/caelinex/settings";
-import { getContact } from "@/lib/contact";
+import { BRAND, getContact, isPlaceholder } from "@/lib/contact";
 import { getNavigation } from "@/lib/nav";
 import { CurrencySelect } from "./currency-select";
 import { FootTagline } from "./foot-tagline";
+import { HoloMark } from "./holo-mark";
 import { Icon } from "./icons";
 
 const CARE_LINKS = [
@@ -61,7 +62,42 @@ export async function SiteFooter({ slim = false }: { slim?: boolean }) {
     getShopSettings(),
     getContact(),
   ]);
-  const social = contact.social;
+  const wa = isPlaceholder(features.whatsapp.number)
+    ? BRAND.whatsapp
+    : features.whatsapp.number;
+  const waDigits = wa.replace(/\D/g, "");
+  // Icons only: each one carries its own link, so no address or number is printed.
+  const links = [
+    ...contact.social.map((s) => ({
+      key: s.label,
+      label: s.label,
+      href: s.href,
+      icon: s.icon,
+      external: true,
+    })),
+    ...(contact.email
+      ? [
+          {
+            key: "email",
+            label: "Email",
+            href: `mailto:${contact.email}`,
+            icon: "mail" as const,
+            external: false,
+          },
+        ]
+      : []),
+    ...(waDigits
+      ? [
+          {
+            key: "whatsapp",
+            label: "WhatsApp",
+            href: `https://wa.me/${waDigits}`,
+            icon: "whatsapp" as const,
+            external: true,
+          },
+        ]
+      : []),
+  ];
   return (
     <footer className="foot">
       <div className="wrap">
@@ -77,44 +113,32 @@ export async function SiteFooter({ slim = false }: { slim?: boolean }) {
           <div className="foot-connect">
             <h2>Connect</h2>
             <p>New pieces and restocks land first on our socials.</p>
-            {social.length > 0 && (
-              <ul className="foot-social" aria-label="Guvira on social media">
-                {social.map((s) => (
-                  <li key={s.label}>
+            {links.length > 0 && (
+              <ul className="foot-social" aria-label="Find and contact Guvira">
+                {links.map((l) => (
+                  <li key={l.key}>
                     <a
                       className="icon-btn"
-                      href={s.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Guvira on ${s.label}`}
+                      href={l.href}
+                      {...(l.external
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                      aria-label={
+                        l.key === "email" || l.key === "whatsapp"
+                          ? `${l.label} Guvira`
+                          : `Guvira on ${l.label}`
+                      }
                     >
-                      <Icon name={s.icon} />
+                      <Icon name={l.icon} />
                     </a>
                   </li>
                 ))}
               </ul>
             )}
-            {contact.email && (
-              <a className="foot-mail" href={`mailto:${contact.email}`}>
-                <Icon name="mail" />
-                {contact.email}
-              </a>
-            )}
-            {contact.phone && (
-              <a
-                className="foot-mail"
-                href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}
-              >
-                <Icon name="phone" />
-                {contact.phone}
-              </a>
-            )}
           </div>
         </div>
 
-        <div className="foot-mark" aria-hidden="true">
-          GUVIRA
-        </div>
+        <HoloMark />
         <FootTagline />
 
         <div className="foot-base">
