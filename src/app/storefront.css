@@ -1746,8 +1746,8 @@ select {
   }
 }
 
-/* The large GUVIRA watermark at the foot of the page: flat champagne, fading
-   into the base. Decorative only. */
+/* The large GUVIRA watermark at the foot of the page: flat champagne cut by
+   fine horizontal strips, fading into the base. Still, and decorative only. */
 .foot-mark {
   margin-top: clamp(40px, 5vw, 72px);
   font-size: 21.6cqw;
@@ -1758,8 +1758,16 @@ select {
   white-space: nowrap;
   margin-inline: -0.03em;
   user-select: none;
-  color: var(--gold-light);
-  opacity: 0.2;
+  color: transparent;
+  background-color: var(--gold-light);
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgb(var(--night-rgb) / 0.55) 0 1px,
+    transparent 1px 5px
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  opacity: 0.34;
   mask-image: linear-gradient(to bottom, #000 30%, transparent 96%);
 }
 
