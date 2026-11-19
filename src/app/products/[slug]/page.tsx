@@ -132,9 +132,13 @@ export default async function ProductPage({ params }: Props) {
                     <Icon name="plus" />
                   </summary>
                   <p>
-                    Shipping across India and to the UAE, Europe and Canada.
-                    Delivery times and return terms will be shown here once
-                    confirmed.
+                    We dispatch every order within 24 hours. Delivery then takes
+                    the standard time for your address, shown at checkout.
+                  </p>
+                  <p>
+                    We do not accept returns at the moment. A damaged or wrong
+                    piece is replaced, so film the unboxing as proof.{" "}
+                    <Link href="/help/shipping">Read the full policy</Link>
                   </p>
                 </details>
               </div>
