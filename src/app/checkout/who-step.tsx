@@ -1,8 +1,8 @@
 "use client";
 
-import { claimIntoBag } from "@/components/bag-claim";
 import clsx from "clsx";
 import { useActionState, useEffect, useRef, useState } from "react";
+import { claimIntoBag } from "@/components/bag-claim";
 import { Icon } from "@/components/icons";
 import { useShopConfig } from "@/components/shop-config";
 import { PillButton } from "@/components/ui";
