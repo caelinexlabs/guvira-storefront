@@ -1777,41 +1777,23 @@ select {
   mask-image: linear-gradient(to bottom, #000 30%, transparent 96%);
 }
 
-/* The brand line running under the watermark. */
+/* The brand line under the watermark: still, centred, wrapping on a phone. */
 .tagline {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
   margin-top: calc(-1 * var(--space-2));
   padding-block: var(--space-5) var(--space-8);
 }
-.tagline-track {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  margin: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 8%,
-    #000 92%,
-    transparent
-  );
-}
 .tagline-run {
   display: flex;
-  flex: none;
+  flex-wrap: wrap;
   align-items: baseline;
-  animation: tagline-run 48s linear infinite;
+  justify-content: center;
+  gap: var(--space-2) var(--space-6);
+  margin: 0;
+  text-align: center;
 }
 .tagline-run > span {
   display: inline-flex;
-  align-items: center;
-  gap: var(--space-8);
-  padding-right: var(--space-8);
+  align-items: baseline;
 }
 .tagline-script {
   font: 400 var(--text-4xl) / 1.2 var(--script);
@@ -1820,49 +1802,6 @@ select {
 .tagline-plain {
   font-size: var(--text-lg);
   color: rgb(var(--on-dark-rgb) / 0.75);
-}
-.tagline-run .ico {
-  width: 14px;
-  height: 14px;
-  color: var(--gold);
-}
-@media (hover: hover) and (pointer: fine) {
-  .tagline:hover .tagline-run {
-    animation-play-state: paused;
-  }
-}
-.tagline:focus-within .tagline-run {
-  animation-play-state: paused;
-}
-@keyframes tagline-run {
-  to {
-    transform: translateX(-100%);
-  }
-}
-/* Less motion: one still line, no copy. */
-@media (prefers-reduced-motion: reduce) {
-  .tagline-track {
-    justify-content: center;
-    white-space: normal;
-    mask-image: none;
-  }
-  .tagline-run {
-    flex: 1;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-2) 0;
-    text-align: center;
-    animation: none;
-  }
-  .tagline-run > span {
-    padding-inline: var(--space-3);
-  }
-  .tagline-run .ico {
-    display: none;
-  }
-  .tagline-run[aria-hidden] {
-    display: none;
-  }
 }
 .foot-slim .foot-base {
   margin-top: 0;
