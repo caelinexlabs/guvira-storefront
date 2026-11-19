@@ -5,18 +5,19 @@ import { ProductCard } from "@/components/product-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { PillButton } from "@/components/ui";
-import { searchProducts } from "@/lib/commerce";
+import { listCategories, searchProducts } from "@/lib/commerce";
 
 export const metadata: Metadata = { title: "Search", robots: { index: false } };
 
 type Props = { searchParams: Promise<{ q?: string | string[] }> };
 
-const SUGGESTIONS = ["ring", "cuff", "earrings", "AD stones", "emerald"];
-
 export default async function SearchPage({ searchParams }: Props) {
   const raw = (await searchParams).q;
   const q = (Array.isArray(raw) ? raw[0] : raw)?.trim().slice(0, 80) ?? "";
-  const results = q ? await searchProducts(q) : [];
+  const [results, categories] = await Promise.all([
+    q ? searchProducts(q) : Promise.resolve([]),
+    listCategories(),
+  ]);
 
   return (
     <>
@@ -43,7 +44,7 @@ export default async function SearchPage({ searchParams }: Props) {
           </form>
         </search>
 
-        {q ? (
+        {q && results.length ? (
           <p className="result-count" aria-live="polite">
             {results.length} {results.length === 1 ? "result" : "results"} for “
             {q}”
@@ -64,12 +65,12 @@ export default async function SearchPage({ searchParams }: Props) {
         ) : (
           <div className="search-empty">
             <p>
-              {q ? "Nothing matched. Try one of these:" : "Popular searches:"}
+              {q ? "Nothing matched. Try a category:" : "Browse a category:"}
             </p>
             <div className="chips">
-              {SUGGESTIONS.map((s) => (
-                <Link key={s} href={`/search?q=${encodeURIComponent(s)}`}>
-                  {s}
+              {categories.map((c) => (
+                <Link key={c.slug} href={`/shop/${c.slug}`}>
+                  {c.name}
                 </Link>
               ))}
             </div>
