@@ -431,7 +431,7 @@ export function CheckoutForm({
           >
             {who === "account" && customer && (
               <p className="co-filled">
-                <Icon name="check" /> Filled in from your account.
+                <Icon name="check" /> Filled in from your account
               </p>
             )}
             <Field id="fullName" label="Full name" error={errorFor("fullName")}>
@@ -463,7 +463,7 @@ export function CheckoutForm({
               <Field
                 id="phone"
                 label="Mobile number"
-                hint="For delivery updates only."
+                hint="For delivery updates only"
                 error={errorFor("phone")}
               >
                 <input

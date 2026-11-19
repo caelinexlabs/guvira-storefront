@@ -26,13 +26,9 @@ export function BagDrawer() {
           </div>
           {bag.length === 0 ? (
             <div className="bag-empty">
-              <p>Your bag is empty. The rings are a good place to start.</p>
-              <PillLink
-                tone="dark"
-                href="/shop/rings"
-                onClick={() => openBag(false)}
-              >
-                Shop rings
+              <p>Your bag is empty.</p>
+              <PillLink tone="dark" href="/shop" onClick={() => openBag(false)}>
+                Browse jewellery
               </PillLink>
             </div>
           ) : (
