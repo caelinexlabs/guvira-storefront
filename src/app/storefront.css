@@ -818,7 +818,7 @@ select {
   z-index: -2;
 }
 /* On desktop the film is cropped at the sides; hold the left edge so the
-   bracelet sits right of the headline. */
+   subject sits right of the headline. */
 @media (min-width: 768px) {
   .vhero-video {
     object-position: 0% 50%;
@@ -843,8 +843,8 @@ select {
   z-index: -1;
   background: radial-gradient(
     ellipse 66% 78% at 0% 100%,
-    rgb(var(--shade-rgb) / 0.62),
-    rgb(var(--shade-rgb) / 0.3) 48%,
+    rgb(var(--shade-rgb) / 0.72),
+    rgb(var(--shade-rgb) / 0.36) 48%,
     rgb(var(--shade-rgb) / 0) 80%
   );
   pointer-events: none;
@@ -865,7 +865,7 @@ select {
   text-shadow: 0 2px 18px rgb(var(--shade-rgb) / 0.45);
 }
 .vhero-copy .heading .heading-caps {
-  max-width: 5.6em; /* stacks "Everyday / Gold" on the calm left, clear of the bracelet */
+  max-width: 5.6em; /* keeps the headline narrow, on the calm left of the frame */
   color: var(--on-media);
   font-size: var(--display-xl);
   text-shadow: 0 2px 30px rgb(var(--shade-rgb) / 0.25);
@@ -5485,9 +5485,9 @@ summary {
   inset: 0 0 calc(-1 * var(--space-12));
   background: linear-gradient(
     to bottom,
-    rgb(var(--shade-rgb) / 0.34),
-    rgb(var(--shade-rgb) / 0.22) 38%,
-    rgb(var(--shade-rgb) / 0.09) 72%,
+    rgb(var(--shade-rgb) / 0.55),
+    rgb(var(--shade-rgb) / 0.36) 38%,
+    rgb(var(--shade-rgb) / 0.14) 72%,
     rgb(var(--shade-rgb) / 0)
   );
   pointer-events: none;
