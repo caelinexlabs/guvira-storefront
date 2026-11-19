@@ -18,6 +18,12 @@ export function orderStage(o: {
   paymentStatus?: string;
   paymentMethod?: string | null;
   deliveredAt?: string | null;
+  fulfilmentStage?:
+    | "PACKED"
+    | "SHIPPED"
+    | "OUT_FOR_DELIVERY"
+    | "DELIVERED"
+    | null;
 }): {
   stage: OrderStage;
   label: string;
@@ -26,10 +32,13 @@ export function orderStage(o: {
     return { stage: "cancelled", label: "Cancelled" };
   if (o.deliveredAt) return { stage: "shipped", label: "Delivered" };
   if (awaitingPayment(o)) return { stage: "prep", label: "Awaiting payment" };
+  if (o.fulfilmentStage === "OUT_FOR_DELIVERY")
+    return { stage: "shipped", label: "Out for delivery" };
   if (o.fulfilmentStatus === "FULFILLED")
     return { stage: "shipped", label: "Shipped" };
   if (o.fulfilmentStatus === "PARTIAL")
     return { stage: "partial", label: "Partly shipped" };
+  if (o.fulfilmentStage === "PACKED") return { stage: "prep", label: "Packed" };
   return { stage: "prep", label: "Being prepared" };
 }
 

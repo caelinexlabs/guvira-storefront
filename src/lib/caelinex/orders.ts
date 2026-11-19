@@ -2,10 +2,25 @@ import "server-only";
 import { type StorefrontResult, storefront } from "./storefront";
 
 export type OrderEvent = {
-  kind: "PLACED" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "REFUNDED";
+  kind:
+    | "PLACED"
+    | "PAID"
+    | "PACKED"
+    | "SHIPPED"
+    | "OUT_FOR_DELIVERY"
+    | "DELIVERED"
+    | "CANCELLED"
+    | "REFUNDED";
   message: string;
   at: string;
 };
+
+/** The furthest step every parcel of an order has reached. */
+export type FulfilmentStage =
+  | "PACKED"
+  | "SHIPPED"
+  | "OUT_FOR_DELIVERY"
+  | "DELIVERED";
 
 export type Shipment = {
   carrier: string | null;
@@ -15,6 +30,17 @@ export type Shipment = {
   /** When the carrier expects to deliver; sent once Caelinex has it. */
   expectedDeliveryAt?: string | null;
   deliveredAt?: string | null;
+  /** Where this parcel is; sent once Caelinex tracks each step. */
+  status?: FulfilmentStage;
+  packedAt?: string | null;
+  outForDeliveryAt?: string | null;
+  /** What the carrier reported, oldest first. */
+  events?: {
+    status: string;
+    message: string | null;
+    location: string | null;
+    occurredAt: string;
+  }[];
   items: {
     name: string;
     variantName: string | null;
@@ -59,6 +85,11 @@ export type Order = {
   total: number;
   /** Sent once Caelinex tracks delivery; until then an order ends at "shipped". */
   deliveredAt?: string | null;
+  /** Null until something is packed. Sent once Caelinex tracks each step. */
+  fulfilmentStage?: FulfilmentStage | null;
+  packedAt?: string | null;
+  shippedAt?: string | null;
+  outForDeliveryAt?: string | null;
   cancelledAt?: string | null;
   /** "Cancelled by the shop", "Payment was not completed" or "Refunded in full"; null on older orders. */
   cancelReason?: string | null;

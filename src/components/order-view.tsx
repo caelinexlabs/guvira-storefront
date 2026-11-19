@@ -126,24 +126,43 @@ export function OrderView({
           : null;
   // Where a shipped order stands: partly or fully on its way.
   // "Delivered" only appears once Caelinex tracks delivery.
-  const tracksDelivery = "deliveredAt" in o;
+  // Where the order stands. Once Caelinex reports each step the timeline
+  // follows it; until then an order ends at "shipped".
+  const fs = o.fulfilmentStage;
+  const tracksSteps = "fulfilmentStage" in o;
+  const tracksDelivery = tracksSteps || "deliveredAt" in o;
   const delivered = Boolean(o.deliveredAt);
-  const steps: string[] = [
-    "Placed",
-    "Being prepared",
-    stage === "partial" ? "Partly shipped" : "Shipped",
-    ...(tracksDelivery ? ["Delivered"] : []),
+  const outForDelivery = fs === "OUT_FOR_DELIVERY";
+  const steps: { name: string; at?: string | null }[] = [
+    { name: "Placed", at: o.placedAt },
+    ...(tracksSteps ? [{ name: "Packed", at: o.packedAt }] : []),
+    ...(!tracksSteps ? [{ name: "Being prepared" }] : []),
+    {
+      name: outForDelivery
+        ? "Out for delivery"
+        : stage === "partial"
+          ? "Partly shipped"
+          : "Shipped",
+      at: outForDelivery ? o.outForDeliveryAt : o.shippedAt,
+    },
+    ...(tracksDelivery ? [{ name: "Delivered", at: o.deliveredAt }] : []),
   ];
   // The step the order is on; steps.length means every step is done.
   const cur = delivered
     ? steps.length
-    : stage === "shipped"
-      ? tracksDelivery
+    : tracksSteps
+      ? fs === "SHIPPED" || fs === "OUT_FOR_DELIVERY"
         ? 3
-        : steps.length
-      : stage === "partial"
-        ? 2
-        : 1;
+        : fs === "PACKED" || stage === "partial"
+          ? 2
+          : 1
+      : stage === "shipped"
+        ? tracksDelivery
+          ? 3
+          : steps.length
+        : stage === "partial"
+          ? 2
+          : 1;
   const expected = o.shipments
     .map((sh) => sh.expectedDeliveryAt)
     .filter((d): d is string => Boolean(d))
@@ -254,11 +273,11 @@ export function OrderView({
             aria-label="Order progress"
             style={{ "--n": steps.length } as CSSProperties}
           >
-            {steps.map((st, n) => {
+            {steps.map((step, n) => {
               const state = n < cur ? "done" : n === cur ? "now" : "next";
               return (
                 <li
-                  key={st}
+                  key={step.name}
                   className={state === "next" ? undefined : state}
                   aria-current={state === "now" ? "step" : undefined}
                 >
@@ -269,7 +288,8 @@ export function OrderView({
                         ? "Now: "
                         : "Next: "}
                   </span>
-                  {st}
+                  {step.name}
+                  {step.at ? <small>{orderDate(step.at)}</small> : null}
                 </li>
               );
             })}
@@ -413,8 +433,14 @@ export function OrderView({
               aria-labelledby={`${uid}-p${i}`}
             >
               <h3 id={`${uid}-p${i}`}>
-                {s.carrier ? `Shipped with ${s.carrier}` : "Shipped"}
-                {s.shippedAt ? ` · ${orderDate(s.shippedAt)}` : ""}
+                {s.shippedAt || s.status !== "PACKED"
+                  ? s.carrier
+                    ? `Shipped with ${s.carrier}`
+                    : "Shipped"
+                  : "Packed"}
+                {s.shippedAt || s.packedAt
+                  ? ` · ${orderDate((s.shippedAt ?? s.packedAt) as string)}`
+                  : ""}
               </h3>
               <p>
                 {s.items.map((it) => `${it.name} × ${it.quantity}`).join(", ")}
@@ -423,6 +449,15 @@ export function OrderView({
                 <p>
                   Tracking number <b>{s.trackingNumber}</b>{" "}
                   <CopyButton text={s.trackingNumber} label="Copy number" />
+                </p>
+              )}
+              {s.events && s.events.length > 0 && (
+                <p className="ord-last">
+                  {s.events[s.events.length - 1].message ??
+                    s.events[s.events.length - 1].status}
+                  {s.events[s.events.length - 1].location
+                    ? `, ${s.events[s.events.length - 1].location}`
+                    : ""}
                 </p>
               )}
             </section>
