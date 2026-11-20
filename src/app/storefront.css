@@ -15,6 +15,8 @@
   --emerald: #1d2c26;
   --night: #1d2c26;
   --gold: #b8956a;
+  /* The gold for rating stars: deep enough to reach 3:1 on paper and cards. */
+  --star: #a07a48;
   --on-dark: #f3ead9;
   --script: var(--font-script), "Snell Roundhand", cursive;
   --ui: var(--font-ui), system-ui, sans-serif;
@@ -7390,12 +7392,12 @@ summary {
 }
 .stars svg {
   fill: none;
-  stroke: var(--gold);
+  stroke: var(--star);
   stroke-width: 1.5;
   stroke-linejoin: round;
 }
 .stars svg.on {
-  fill: var(--gold);
+  fill: var(--star);
 }
 .reviews {
   padding-block: var(--gap-fluid-xl) 0;
@@ -7549,13 +7551,13 @@ summary {
 }
 .review-rate svg {
   fill: none;
-  stroke: var(--gold);
+  stroke: var(--star);
   stroke-width: 1.5;
   stroke-linejoin: round;
   transition: fill 120ms ease;
 }
 .review-rate label.on svg {
-  fill: var(--gold);
+  fill: var(--star);
 }
 .review-rate label:has(input:focus-visible) {
   outline: 2px solid var(--emerald);
