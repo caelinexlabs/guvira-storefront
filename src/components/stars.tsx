@@ -12,7 +12,7 @@ export function Stars({ value, size = 16 }: { value: number; size?: number }) {
           height={size}
           viewBox="0 0 24 24"
           aria-hidden="true"
-          className={value >= n - 0.25 ? "on" : undefined}
+          className={value >= n - 0.5 ? "on" : undefined}
         >
           <path d={STAR} />
         </svg>

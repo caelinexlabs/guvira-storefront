@@ -4,10 +4,12 @@ import { notFound } from "next/navigation";
 import { Icon } from "@/components/icons";
 import { BuyBox, ProductGallery } from "@/components/product-buy";
 import { ProductCard } from "@/components/product-card";
-import { ProductReviews } from "@/components/product-reviews";
+import { ReviewsView } from "@/components/product-reviews";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { Stars } from "@/components/stars";
 import { Heading, PillLink } from "@/components/ui";
+import { getProductReviews } from "@/lib/caelinex/reviews";
 import { getShopSettings } from "@/lib/caelinex/settings";
 import { getCategory, getProduct, relatedProducts } from "@/lib/commerce";
 import { priceFor } from "@/lib/commerce/price";
@@ -27,7 +29,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /** Product structured data for search results, priced in the shop's own currency. */
-function productJsonLd(p: Product) {
+function productJsonLd(
+  p: Product,
+  rating?: { average: number; count: number },
+) {
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const abs = (src: string) => (src.startsWith("http") ? src : `${site}${src}`);
   const { amount, currency } = priceFor(p.prices, "INR");
@@ -44,6 +49,13 @@ function productJsonLd(p: Product) {
       price: amount,
       url: `${site}/products/${p.slug}`,
     },
+    ...(rating && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: rating.average,
+        reviewCount: rating.count,
+      },
+    }),
   }).replace(/</g, "\\u003c");
 }
 
@@ -67,6 +79,9 @@ export default async function ProductPage({ params }: Props) {
   const { productPage } = await getShopSettings();
   const sizeGuide = productPage.sizeGuide;
   const { script, caps } = splitName(product.name);
+  const rr = await getProductReviews(product.slug);
+  const reviews =
+    rr.ok && rr.value.enabled && rr.value.total > 0 ? rr.value : null;
 
   return (
     <>
@@ -75,7 +90,9 @@ export default async function ProductPage({ params }: Props) {
         <script
           type="application/ld+json"
           // biome-ignore lint/security/noDangerouslySetInnerHtml: structured data for search engines, built from our own catalog
-          dangerouslySetInnerHTML={{ __html: productJsonLd(product) }}
+          dangerouslySetInnerHTML={{
+            __html: productJsonLd(product, reviews?.summary),
+          }}
         />
         <div className="wrap">
           <nav className="crumbs" aria-label="Breadcrumb">
@@ -93,6 +110,16 @@ export default async function ProductPage({ params }: Props) {
             <ProductGallery product={product} />
             <div className="buy">
               <Heading as="h1" id="p-h" script={script} caps={caps} />
+              {reviews && (
+                <a className="pdp-rating" href="#reviews-h">
+                  <Stars value={reviews.summary.average} />
+                  <span>
+                    {reviews.summary.average.toFixed(1)} ·{" "}
+                    {reviews.summary.count}{" "}
+                    {reviews.summary.count === 1 ? "review" : "reviews"}
+                  </span>
+                </a>
+              )}
               {product.summary && <p className="lead">{product.summary}</p>}
               <BuyBox product={product} />
               <div className="acc">
@@ -147,7 +174,7 @@ export default async function ProductPage({ params }: Props) {
           </section>
         </div>
 
-        <ProductReviews slug={product.slug} />
+        <ReviewsView data={reviews} />
 
         <section className="sec panel-wrap" aria-labelledby="pair-h">
           <div className="panel">
