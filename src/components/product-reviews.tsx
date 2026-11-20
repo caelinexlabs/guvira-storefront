@@ -1,4 +1,4 @@
-import { getProductReviews } from "@/lib/caelinex/reviews";
+import type { ProductReviews } from "@/lib/caelinex/reviews";
 import { orderDate } from "@/lib/order-status";
 import { Stars } from "./stars";
 
@@ -6,10 +6,9 @@ import { Stars } from "./stars";
  * What shoppers who bought the piece say. Says nothing when the shop has
  * reviews off or none are published yet.
  */
-export async function ProductReviews({ slug }: { slug: string }) {
-  const r = await getProductReviews(slug);
-  if (!r.ok || !r.value.enabled || r.value.total === 0) return null;
-  const { summary, reviews, total } = r.value;
+export function ReviewsView({ data }: { data: ProductReviews | null }) {
+  if (!data?.enabled || data.total === 0) return null;
+  const { summary, reviews, total } = data;
 
   return (
     <section className="reviews" aria-labelledby="reviews-h">

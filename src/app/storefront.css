@@ -7575,3 +7575,18 @@ summary {
     padding: var(--space-4);
   }
 }
+
+.pdp-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  color: var(--soft);
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pdp-rating:hover span {
+    color: var(--ink);
+  }
+}
