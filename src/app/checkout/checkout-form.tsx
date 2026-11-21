@@ -98,6 +98,9 @@ export function CheckoutForm({
         : undefined,
   );
   const attempt = useRef<string>(undefined);
+  // What the attempt was made with. Edit the address or the bag and the next
+  // Pay is a new attempt, so the order can't keep the old details or total.
+  const attemptSig = useRef<string>(undefined);
   // True once this attempt has an order waiting for payment.
   const awaitingPayment = useRef(false);
   // What an order waiting for payment came to, shown on the Pay button.
@@ -288,6 +291,18 @@ export function CheckoutForm({
     start(async () => {
       // One key per attempt: a retry after no answer, or after a closed
       // payment window, repeats it, so the order can never be placed twice.
+      const sig = JSON.stringify([
+        details,
+        bag.map((l) => [l.id, l.qty]),
+        method,
+        rateId,
+      ]);
+      if (attempt.current && attemptSig.current && attemptSig.current !== sig) {
+        attempt.current = undefined;
+        awaitingPayment.current = false;
+        savePending(undefined);
+      }
+      attemptSig.current = sig;
       const key = attempt.current ?? crypto.randomUUID();
       attempt.current = key;
       const r = await placeOrder(

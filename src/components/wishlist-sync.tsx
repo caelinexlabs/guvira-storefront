@@ -17,20 +17,28 @@ export function WishlistSync() {
 
   useEffect(() => {
     let alive = true;
-    const unsubscribe = useShop.subscribe((s, prev) => {
-      const sent = known.current;
-      if (!sent || s.wishlist === prev.wishlist) return;
-      const now = new Set(s.wishlist);
+    // Changes go out one at a time, each against the latest list, so a quick
+    // add then remove can't arrive reversed. A piece counts as on the account
+    // only once the account has said so; a failed call is tried again on the
+    // next change.
+    let queue: Promise<void> = Promise.resolve();
+    const flush = async () => {
+      const onAccount = known.current;
+      if (!alive || !onAccount) return;
+      const now = new Set(useShop.getState().wishlist);
       for (const id of now)
-        if (!sent.has(id)) {
-          sent.add(id);
-          void setWishlisted(id, true);
-        }
-      for (const id of [...sent])
-        if (!now.has(id)) {
-          sent.delete(id);
-          void setWishlisted(id, false);
-        }
+        if (
+          !onAccount.has(id) &&
+          (await setWishlisted(id, true)).status === "ok"
+        )
+          onAccount.add(id);
+      for (const id of [...onAccount])
+        if (!now.has(id) && (await setWishlisted(id, false)).status === "ok")
+          onAccount.delete(id);
+    };
+    const unsubscribe = useShop.subscribe((s, prev) => {
+      if (!known.current || s.wishlist === prev.wishlist) return;
+      queue = queue.then(flush);
     });
 
     (async () => {

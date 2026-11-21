@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { breadcrumbs, JsonLd } from "@/components/json-ld";
 import { browseProducts, getCategory, listCategories } from "@/lib/commerce";
 import { parseShopQuery } from "@/lib/commerce/query";
 import { ShopView } from "../shop-view";
@@ -30,13 +31,22 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     browseProducts(query),
   ]);
   return (
-    <ShopView
-      categories={categories}
-      products={products}
-      facets={facets}
-      priceRange={priceRange}
-      current={current}
-      query={query}
-    />
+    <>
+      <JsonLd
+        data={breadcrumbs([
+          { name: "Home", path: "/" },
+          { name: "Shop", path: "/shop" },
+          { name: current.name, path: `/shop/${current.slug}` },
+        ])}
+      />
+      <ShopView
+        categories={categories}
+        products={products}
+        facets={facets}
+        priceRange={priceRange}
+        current={current}
+        query={query}
+      />
+    </>
   );
 }

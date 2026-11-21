@@ -14,13 +14,37 @@ export type SyncResult =
   | { status: "empty" }
   | { status: "unavailable" };
 
+const PRODUCT_ID = /^[0-9a-f]{32}$/;
+const MAX_LINES = 50;
+const MAX_QTY = 99;
+
+/**
+ * The browser's bag is untrusted input. Keep only well-formed product ids,
+ * whole quantities from zero to 99 and one entry per product.
+ */
+export function cleanLines(lines: unknown): WantedLine[] {
+  if (!Array.isArray(lines)) return [];
+  const seen = new Map<string, number>();
+  for (const l of lines) {
+    if (
+      typeof l?.id === "string" &&
+      PRODUCT_ID.test(l.id) &&
+      Number.isInteger(l.qty)
+    )
+      seen.set(l.id, Math.min(Math.max(l.qty, 0), MAX_QTY));
+  }
+  return [...seen].map(([id, qty]) => ({ id, qty }));
+}
+
 /**
  * Makes the Caelinex cart match the bag. The browser's bag is a copy; the
  * cart is what Caelinex prices, stock-checks and sells. A missing or expired
  * cart is replaced and refilled from the bag.
  */
 export async function syncCart(wanted: WantedLine[]): Promise<SyncResult> {
-  const lines = wanted.filter((l) => l.qty > 0).slice(0, 50);
+  const lines = cleanLines(wanted)
+    .filter((l) => l.qty > 0)
+    .slice(0, MAX_LINES);
   let token = await getCartToken();
   let cart = token ? await getCart(token) : undefined;
 

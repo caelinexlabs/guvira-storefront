@@ -1,5 +1,12 @@
 import type { NextConfig } from "next";
 
+// Canonical links, the sitemap and structured data are built from this at build
+// time. Without it a live build would point search engines at localhost.
+if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_SITE_URL)
+  throw new Error(
+    "Set NEXT_PUBLIC_SITE_URL to the shop's public address before building for production.",
+  );
+
 // Product photos are served by the Caelinex API as absolute URLs.
 const api = process.env.CAELINEX_API_URL
   ? new URL(process.env.CAELINEX_API_URL)

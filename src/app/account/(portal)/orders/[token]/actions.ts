@@ -8,6 +8,9 @@ import {
 } from "@/lib/caelinex/returns";
 import { getSessionToken } from "@/lib/session";
 
+const TOKEN = /^[\w-]{10,100}$/;
+const LINE_ID = /^[\w-]{1,64}$/;
+
 export type ReturnState = {
   done?: boolean;
   error?: string;
@@ -23,6 +26,8 @@ export async function askForReturn(
 ): Promise<ReturnState> {
   if (!(await getSessionToken()))
     return { error: "Sign in again to ask for a return." };
+  if (typeof orderToken !== "string" || !TOKEN.test(orderToken))
+    return { error: "We couldn’t find that order. Reload the page." };
   const reason = String(form.get("reason") ?? "");
   const noteText = String(form.get("note") ?? "")
     .trim()
@@ -39,7 +44,13 @@ export async function askForReturn(
       orderLineId: k.slice(4),
       quantity: Number.parseInt(String(form.get(k)), 10),
     }))
-    .filter((l) => Number.isInteger(l.quantity) && l.quantity > 0);
+    .filter(
+      (l) =>
+        LINE_ID.test(l.orderLineId) &&
+        Number.isInteger(l.quantity) &&
+        l.quantity > 0 &&
+        l.quantity <= 99,
+    );
   if (lines.length === 0)
     return { error: "Choose the pieces you are returning.", values };
   const r = await requestReturn(orderToken, {
