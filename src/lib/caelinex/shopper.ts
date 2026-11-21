@@ -1,5 +1,6 @@
 import "server-only";
 import {
+  type CallInit,
   type StorefrontResult,
   storefront,
   storefrontConnected,
@@ -21,7 +22,9 @@ export type Customer = {
 /** True when the app can reach Caelinex with a storefront key. */
 export const caelinexConnected = storefrontConnected;
 
-const auth = (token: string) => ({ "x-shopper-token": token });
+/** A call to a signed-in shopper route; the client sends the token only there. */
+const asShopper = <T>(token: string, path: string, init: CallInit = {}) =>
+  storefront<T>(path, init, { token });
 
 const contact = (identifier: string) =>
   identifier.includes("@") ? { email: identifier } : { phone: identifier };
@@ -82,9 +85,7 @@ const toCustomer = (b: ShopperBody): Customer => {
 export async function getCustomer(
   token: string,
 ): Promise<StorefrontResult<Customer>> {
-  const r = await storefront<ShopperBody>("/shopper/me", {
-    headers: auth(token),
-  });
+  const r = await asShopper<ShopperBody>(token, "/shopper/me");
   return r.ok ? { ok: true, value: toCustomer(r.value) } : r;
 }
 
@@ -93,9 +94,8 @@ export async function updateShopperName(
   token: string,
   name: { firstName: string; lastName: string },
 ): Promise<StorefrontResult<Customer>> {
-  const r = await storefront<ShopperBody>("/shopper/me", {
+  const r = await asShopper<ShopperBody>(token, "/shopper/me", {
     method: "PATCH",
-    headers: auth(token),
     body: JSON.stringify(name),
   });
   return r.ok ? { ok: true, value: toCustomer(r.value) } : r;
@@ -106,9 +106,8 @@ export const requestContactChange = (
   token: string,
   to: { email: string } | { phone: string },
 ) =>
-  storefront<{ sent: true }>("/shopper/me/change-contact", {
+  asShopper<{ sent: true }>(token, "/shopper/me/change-contact", {
     method: "POST",
-    headers: auth(token),
     body: JSON.stringify(to),
   });
 
@@ -118,22 +117,16 @@ export async function confirmContactChange(
   to: { email: string } | { phone: string },
   code: string,
 ): Promise<StorefrontResult<Customer>> {
-  const r = await storefront<ShopperBody>(
+  const r = await asShopper<ShopperBody>(
+    token,
     "/shopper/me/change-contact/confirm",
-    {
-      method: "POST",
-      headers: auth(token),
-      body: JSON.stringify({ ...to, code }),
-    },
+    { method: "POST", body: JSON.stringify({ ...to, code }) },
   );
   return r.ok ? { ok: true, value: toCustomer(r.value) } : r;
 }
 
 export const signOutShopper = (token: string) =>
-  storefront<unknown>("/shopper/logout", {
-    method: "POST",
-    headers: auth(token),
-  });
+  asShopper<unknown>(token, "/shopper/logout", { method: "POST" });
 
 export type ShopperOrder = {
   orderNumber: number;
@@ -166,10 +159,7 @@ export const listShopperOrders = (
   page = 1,
 ): Promise<
   StorefrontResult<{ total: number; pages: number; orders: ShopperOrder[] }>
-> =>
-  storefront(`/shopper/orders?page=${page}&pageSize=20`, {
-    headers: auth(token),
-  });
+> => asShopper(token, `/shopper/orders?page=${page}&pageSize=20`);
 
 /**
  * New-drop and restock emails. Caelinex has no mailing-list endpoint yet
@@ -187,10 +177,7 @@ export const newsletterOpen = false;
 
 /** Sign this shopper out on every device, this one included. */
 export const signOutEverywhere = (token: string) =>
-  storefront<unknown>("/shopper/logout-all", {
-    method: "POST",
-    headers: auth(token),
-  });
+  asShopper<unknown>(token, "/shopper/logout-all", { method: "POST" });
 
 export type ShopperAddress = {
   id: string;
@@ -223,54 +210,40 @@ type AddressList = { addresses: ShopperAddress[] };
 
 /** Saved delivery addresses, the default first. */
 export const listAddresses = (token: string) =>
-  storefront<AddressList>("/shopper/addresses", { headers: auth(token) });
-
-/** An address id is only ever a short run of letters, digits, dashes and underscores. */
-const ADDRESS_ID = /^[\w-]{1,64}$/;
-
-const badId: StorefrontResult<never> = {
-  ok: false,
-  reason: "invalid",
-  message: "That address can’t be found. Reload the page and try again.",
-};
+  asShopper<AddressList>(token, "/shopper/addresses");
 
 export const saveAddress = (
   token: string,
   input: AddressInput,
   id?: string,
-): Promise<StorefrontResult<AddressList>> => {
-  if (id && !ADDRESS_ID.test(id)) return Promise.resolve(badId);
-  return storefront<AddressList>(
+): Promise<StorefrontResult<AddressList>> =>
+  asShopper<AddressList>(
+    token,
     id ? `/shopper/addresses/${encodeURIComponent(id)}` : "/shopper/addresses",
-    {
-      method: id ? "PUT" : "POST",
-      headers: auth(token),
-      body: JSON.stringify(input),
-    },
+    { method: id ? "PUT" : "POST", body: JSON.stringify(input) },
   );
-};
 
 export const makeDefaultAddress = (
   token: string,
   id: string,
 ): Promise<StorefrontResult<AddressList>> =>
-  ADDRESS_ID.test(id)
-    ? storefront<AddressList>(
-        `/shopper/addresses/${encodeURIComponent(id)}/default`,
-        { method: "POST", headers: auth(token) },
-      )
-    : Promise.resolve(badId);
+  asShopper<AddressList>(
+    token,
+    `/shopper/addresses/${encodeURIComponent(id)}/default`,
+    { method: "POST" },
+  );
 
 export const deleteAddress = (
   token: string,
   id: string,
 ): Promise<StorefrontResult<AddressList>> =>
-  ADDRESS_ID.test(id)
-    ? storefront<AddressList>(`/shopper/addresses/${encodeURIComponent(id)}`, {
-        method: "DELETE",
-        headers: auth(token),
-      })
-    : Promise.resolve(badId);
+  asShopper<AddressList>(
+    token,
+    `/shopper/addresses/${encodeURIComponent(id)}`,
+    {
+      method: "DELETE",
+    },
+  );
 
 type WishlistBody = { items: { product: { id: string } }[] };
 const wishIds = (
@@ -280,17 +253,12 @@ const wishIds = (
 
 /** The product ids on the account's wishlist, newest first. */
 export const listWishlistIds = async (token: string) =>
-  wishIds(
-    await storefront<WishlistBody>("/shopper/wishlist", {
-      headers: auth(token),
-    }),
-  );
+  wishIds(await asShopper<WishlistBody>(token, "/shopper/wishlist"));
 
 export const addToAccountWishlist = async (token: string, productId: string) =>
   wishIds(
-    await storefront<WishlistBody>(`/shopper/wishlist/${productId}`, {
+    await asShopper<WishlistBody>(token, `/shopper/wishlist/${productId}`, {
       method: "PUT",
-      headers: auth(token),
     }),
   );
 
@@ -299,9 +267,8 @@ export const removeFromAccountWishlist = async (
   productId: string,
 ) =>
   wishIds(
-    await storefront<WishlistBody>(`/shopper/wishlist/${productId}`, {
+    await asShopper<WishlistBody>(token, `/shopper/wishlist/${productId}`, {
       method: "DELETE",
-      headers: auth(token),
     }),
   );
 
@@ -311,9 +278,8 @@ export const mergeAccountWishlist = async (
   productIds: string[],
 ) =>
   wishIds(
-    await storefront<WishlistBody>("/shopper/wishlist/merge", {
+    await asShopper<WishlistBody>(token, "/shopper/wishlist/merge", {
       method: "POST",
-      headers: auth(token),
       body: JSON.stringify({ productIds }),
     }),
   );

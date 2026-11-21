@@ -1,7 +1,7 @@
 "use server";
 
 import { subscribeToNewsletter } from "@/lib/caelinex/shopper";
-import { isEmail } from "@/lib/identity";
+import { check, emailAddress } from "@/lib/validation/schemas";
 
 export type NewsletterState =
   | { status: "idle" }
@@ -12,15 +12,13 @@ export async function subscribe(
   _prev: NewsletterState,
   form: FormData,
 ): Promise<NewsletterState> {
-  const email = String(form.get("email") ?? "")
+  const typed = String(form.get("email") ?? "")
     .trim()
     .toLowerCase();
-  if (!isEmail(email))
-    return {
-      status: "error",
-      email,
-      message: "Enter an email address like name@example.com.",
-    };
+  const parsed = check(emailAddress(), typed);
+  if (!parsed.ok)
+    return { status: "error", email: typed, message: parsed.message };
+  const email = parsed.value;
   const r = await subscribeToNewsletter(email);
   if (r.ok) return { status: "done" };
   return {

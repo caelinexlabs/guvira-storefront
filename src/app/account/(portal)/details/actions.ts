@@ -6,8 +6,14 @@ import {
   requestContactChange,
   updateShopperName,
 } from "@/lib/caelinex/shopper";
-import { isEmail, isPhone } from "@/lib/identity";
 import { getSessionToken } from "@/lib/session";
+import { nameInput } from "@/lib/validation/forms";
+import {
+  check,
+  emailAddress,
+  mobileNumber,
+  signInCode,
+} from "@/lib/validation/schemas";
 
 const UNAVAILABLE = "We couldn’t reach our service. Try again in a minute.";
 
@@ -24,11 +30,13 @@ export async function saveName(
 ): Promise<NameState> {
   const token = await getSessionToken();
   if (!token) return { error: "Sign in again to change your details." };
-  const firstName = String(form.get("firstName") ?? "").trim();
-  const lastName = String(form.get("lastName") ?? "").trim();
-  const values = { firstName, lastName };
-  if (!firstName) return { error: "Enter your first name.", values };
-  const r = await updateShopperName(token, { firstName, lastName });
+  const values = {
+    firstName: String(form.get("firstName") ?? "").trim(),
+    lastName: String(form.get("lastName") ?? "").trim(),
+  };
+  const name = check(nameInput, values);
+  if (!name.ok) return { error: name.message, values };
+  const r = await updateShopperName(token, name.value);
   if (!r.ok) return { error: r.message ?? UNAVAILABLE, values };
   revalidatePath("/account", "layout");
   return { saved: true };
@@ -46,9 +54,13 @@ const INVALID: Record<ContactKind, string> = {
 };
 
 const clean = (kind: ContactKind, raw: unknown) => {
-  const v = String(raw ?? "").trim();
-  if (kind === "email") return isEmail(v) ? v.toLowerCase() : undefined;
-  return isPhone(v) ? v.replace(/[\s()-]/g, "") : undefined;
+  const r = check(
+    kind === "email"
+      ? emailAddress(INVALID.email)
+      : mobileNumber(INVALID.phone),
+    raw,
+  );
+  return r.ok ? r.value : undefined;
 };
 
 /**
@@ -67,10 +79,9 @@ export async function changeContact(
   const to = (v: string) => (kind === "email" ? { email: v } : { phone: v });
 
   if (intent === "confirm" && prev.step === "code") {
-    const code = String(form.get("code") ?? "").replace(/\D/g, "");
-    if (code.length !== 6)
-      return { ...prev, resent: false, error: "Enter the six-digit code." };
-    const r = await confirmContactChange(token, to(prev.value), code);
+    const code = check(signInCode, form.get("code"));
+    if (!code.ok) return { ...prev, resent: false, error: code.message };
+    const r = await confirmContactChange(token, to(prev.value), code.value);
     if (!r.ok)
       return {
         ...prev,

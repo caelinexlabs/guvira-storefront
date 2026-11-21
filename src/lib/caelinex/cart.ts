@@ -130,8 +130,11 @@ export const claimCart = (
   shopperToken: string,
   cartToken?: string,
 ): Promise<StorefrontResult<{ token: string | null; cart: Cart | null }>> =>
-  storefront("/shopper/cart/claim", {
-    method: "POST",
-    headers: { "x-shopper-token": shopperToken },
-    body: JSON.stringify(cartToken ? { cartToken } : {}),
-  });
+  storefront(
+    "/shopper/cart/claim",
+    {
+      method: "POST",
+      body: JSON.stringify(cartToken ? { cartToken } : {}),
+    },
+    { token: shopperToken },
+  );

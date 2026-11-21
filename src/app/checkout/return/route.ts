@@ -1,13 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { forgetCart } from "@/lib/caelinex/cart-sync";
 import { confirmRazorpayPayment, getOrder } from "@/lib/caelinex/orders";
+import { orderToken } from "@/lib/validation/schemas";
 
 // Razorpay sends the shopper's browser back here with a cross-site form POST,
 // so this is a route handler and not a page. The body is never trusted on its
 // own: only Caelinex's confirm call, which checks Razorpay's signature, proves
 // the payment. Every answer is a 303, so a refresh can't resubmit the form.
-
-const TOKEN = /^[\w-]{10,100}$/;
 
 const go = (req: NextRequest, path: string) =>
   NextResponse.redirect(new URL(path, req.url), 303);
@@ -19,7 +18,7 @@ const text = (form: FormData, key: string) => {
 
 export async function POST(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("order") ?? "";
-  if (!TOKEN.test(token)) return go(req, "/checkout");
+  if (!orderToken.safeParse(token).success) return go(req, "/checkout");
 
   const form = await req.formData().catch(() => new FormData());
   const paymentId = text(form, "razorpay_payment_id");
@@ -63,5 +62,8 @@ export async function POST(req: NextRequest) {
 // Someone opening the address directly, or a flow that redirects with GET.
 export function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("order") ?? "";
-  return go(req, TOKEN.test(token) ? `/orders/${token}` : "/checkout");
+  return go(
+    req,
+    orderToken.safeParse(token).success ? `/orders/${token}` : "/checkout",
+  );
 }
