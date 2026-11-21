@@ -22,7 +22,7 @@ const script = Pinyon_Script({
   display: "swap",
 });
 const serif = Cormorant_Garamond({
-  weight: ["500", "600", "700"],
+  weight: ["500", "600"],
   subsets: ["latin"],
   variable: "--font-serif",
   display: "swap",
