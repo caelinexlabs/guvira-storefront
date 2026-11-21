@@ -11,7 +11,7 @@ import {
 } from "@/lib/caelinex/shopper";
 import { countryByCode } from "@/lib/checkout/countries";
 import { regionCode } from "@/lib/checkout/gst-state";
-import type { PaymentMethod } from "@/lib/checkout/payment";
+import { methodAvailable, type PaymentMethod } from "@/lib/checkout/payment";
 import {
   type CheckoutDetails,
   type FieldErrors,
@@ -202,6 +202,20 @@ export async function placeOrder(
   if (Object.keys(errors).length) return { status: "invalid", errors };
   if (typeof idempotencyKey !== "string" || idempotencyKey.length < 8)
     return { status: "retry" };
+  if (method !== "online" && method !== "cod") return { status: "retry" };
+  if (
+    shippingRateId !== undefined &&
+    (typeof shippingRateId !== "string" ||
+      !/^[\w-]{1,64}$/.test(shippingRateId))
+  )
+    return { status: "retry" };
+  // Cash on delivery is for Indian addresses; the page hides it elsewhere, so
+  // a request that asks for it anyway has been tampered with.
+  if (!methodAvailable(method, details.country))
+    return {
+      status: "bag-changed",
+      message: "Cash on delivery isn’t available for this address.",
+    };
 
   // A replay reuses the cart that is already checked out, so it skips the
   // stock check (which would now fail) and lets Caelinex answer with the same

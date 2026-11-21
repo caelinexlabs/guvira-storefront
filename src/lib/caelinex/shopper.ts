@@ -225,27 +225,52 @@ type AddressList = { addresses: ShopperAddress[] };
 export const listAddresses = (token: string) =>
   storefront<AddressList>("/shopper/addresses", { headers: auth(token) });
 
-export const saveAddress = (token: string, input: AddressInput, id?: string) =>
-  storefront<AddressList>(
-    id ? `/shopper/addresses/${id}` : "/shopper/addresses",
+/** An address id is only ever a short run of letters, digits, dashes and underscores. */
+const ADDRESS_ID = /^[\w-]{1,64}$/;
+
+const badId: StorefrontResult<never> = {
+  ok: false,
+  reason: "invalid",
+  message: "That address can’t be found. Reload the page and try again.",
+};
+
+export const saveAddress = (
+  token: string,
+  input: AddressInput,
+  id?: string,
+): Promise<StorefrontResult<AddressList>> => {
+  if (id && !ADDRESS_ID.test(id)) return Promise.resolve(badId);
+  return storefront<AddressList>(
+    id ? `/shopper/addresses/${encodeURIComponent(id)}` : "/shopper/addresses",
     {
       method: id ? "PUT" : "POST",
       headers: auth(token),
       body: JSON.stringify(input),
     },
   );
+};
 
-export const makeDefaultAddress = (token: string, id: string) =>
-  storefront<AddressList>(`/shopper/addresses/${id}/default`, {
-    method: "POST",
-    headers: auth(token),
-  });
+export const makeDefaultAddress = (
+  token: string,
+  id: string,
+): Promise<StorefrontResult<AddressList>> =>
+  ADDRESS_ID.test(id)
+    ? storefront<AddressList>(
+        `/shopper/addresses/${encodeURIComponent(id)}/default`,
+        { method: "POST", headers: auth(token) },
+      )
+    : Promise.resolve(badId);
 
-export const deleteAddress = (token: string, id: string) =>
-  storefront<AddressList>(`/shopper/addresses/${id}`, {
-    method: "DELETE",
-    headers: auth(token),
-  });
+export const deleteAddress = (
+  token: string,
+  id: string,
+): Promise<StorefrontResult<AddressList>> =>
+  ADDRESS_ID.test(id)
+    ? storefront<AddressList>(`/shopper/addresses/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        headers: auth(token),
+      })
+    : Promise.resolve(badId);
 
 type WishlistBody = { items: { product: { id: string } }[] };
 const wishIds = (

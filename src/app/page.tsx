@@ -10,11 +10,13 @@ import {
   StoryBanner,
   TrustStrip,
 } from "@/components/home-sections";
+import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getShopSettings } from "@/lib/caelinex/settings";
 import { listCategories, listProducts } from "@/lib/commerce";
 import { getContact } from "@/lib/contact";
+import { absoluteUrl, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
@@ -34,6 +36,34 @@ export default async function Home() {
   const { hero } = settings;
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": `${SITE_URL}/#organization`,
+              name: "Guvira",
+              url: SITE_URL,
+              logo: absoluteUrl("/brand/guvira-lotus-evergreen.png"),
+              email: contact.email,
+              sameAs: contact.social.map((l) => l.href),
+            },
+            {
+              "@type": "WebSite",
+              "@id": `${SITE_URL}/#website`,
+              name: "Guvira",
+              url: SITE_URL,
+              publisher: { "@id": `${SITE_URL}/#organization` },
+              potentialAction: {
+                "@type": "SearchAction",
+                target: `${SITE_URL}/search?q={search_term_string}`,
+                "query-input": "required name=search_term_string",
+              },
+            },
+          ],
+        }}
+      />
       <SiteHeader over />
       <main id="main">
         <HeroVideo content={hero} />

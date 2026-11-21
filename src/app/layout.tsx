@@ -13,6 +13,7 @@ import { getCurrencies, listCategories, listProducts } from "@/lib/commerce";
 import { BRAND, isPlaceholder } from "@/lib/contact";
 import { isExternal, resolveLink } from "@/lib/link";
 import { getNavigation } from "@/lib/nav";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const script = Pinyon_Script({
@@ -40,9 +41,7 @@ const FALLBACK_DESCRIPTION =
 export async function generateMetadata(): Promise<Metadata> {
   const { seo, brand } = await getShopSettings();
   return {
-    metadataBase: new URL(
-      process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-    ),
+    metadataBase: new URL(SITE_URL),
     title: {
       default: seo.title || "Guvira | Anti-tarnish everyday gold",
       template: "%s | Guvira",

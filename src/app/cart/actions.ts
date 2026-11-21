@@ -12,7 +12,7 @@ import {
   syncCart,
   type WantedLine,
 } from "@/lib/caelinex/cart-sync";
-import { listProducts } from "@/lib/commerce";
+import { getProduct, listProducts } from "@/lib/commerce";
 import { isEmail } from "@/lib/identity";
 import { getCartToken, getSessionToken, setCartToken } from "@/lib/session";
 import type { BagLine } from "@/lib/store/shop";
@@ -26,19 +26,9 @@ export type BagSyncResult =
     }
   | { status: "empty" | "unavailable" };
 
-const clean = (lines: WantedLine[]) =>
-  (Array.isArray(lines) ? lines : [])
-    .filter(
-      (l) =>
-        typeof l?.id === "string" &&
-        /^[0-9a-f]{32}$/.test(l.id) &&
-        Number.isInteger(l.qty),
-    )
-    .map((l) => ({ id: l.id, qty: Math.min(Math.max(l.qty, 0), 99) }));
-
 /** Called when the bag changes: mirror it into the Caelinex cart. */
 export async function syncBag(lines: WantedLine[]): Promise<BagSyncResult> {
-  const r: SyncResult = await syncCart(clean(lines));
+  const r: SyncResult = await syncCart(lines);
   if (r.status !== "ok") return { status: r.status };
   return {
     status: "ok",
@@ -95,6 +85,14 @@ export async function recoverBag(secret: string): Promise<RecoverResult> {
  */
 async function bagFromLines(lines: CartLine[]): Promise<BagLine[]> {
   const products = new Map((await listProducts()).map((p) => [p.id, p]));
+  // The list is capped and a failed page ends it early, so a piece it lacks
+  // is looked up on its own before being dropped. Dropping a line here makes
+  // the next sync delete it from the cart.
+  const missing = lines.filter(
+    (l) => l.quantity > 0 && !products.has(l.productId),
+  );
+  const found = await Promise.all(missing.map((l) => getProduct(l.productId)));
+  for (const p of found) if (p) products.set(p.id, p);
   const bag: BagLine[] = [];
   for (const l of lines) {
     const p = products.get(l.productId);
