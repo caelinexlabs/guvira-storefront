@@ -1,7 +1,8 @@
 "use server";
 
 import { lookupOrder, type Order } from "@/lib/caelinex/orders";
-import { cleanIdentifier } from "@/lib/identity";
+import { TRACK_MISSING, trackInput } from "@/lib/validation/forms";
+import { check } from "@/lib/validation/schemas";
 
 export type TrackState =
   | { step: "form"; error?: string; values?: Record<string, string> }
@@ -13,17 +14,13 @@ export async function trackOrder(
   _prev: TrackState,
   form: FormData,
 ): Promise<TrackState> {
-  const number = String(form.get("number") ?? "").replace(/\D/g, "");
-  const raw = String(form.get("contact") ?? "").trim();
-  const values = { number: String(form.get("number") ?? ""), contact: raw };
-  const contact = cleanIdentifier(raw);
-  if (!number || !contact)
-    return {
-      step: "form",
-      values,
-      error:
-        "Enter your order number and the email or mobile you ordered with.",
-    };
+  const values = {
+    number: String(form.get("number") ?? ""),
+    contact: String(form.get("contact") ?? "").trim(),
+  };
+  const input = check(trackInput, values);
+  if (!input.ok) return { step: "form", values, error: TRACK_MISSING };
+  const { number, contact } = input.value;
   const r = await lookupOrder(
     Number(number),
     contact.includes("@") ? { email: contact } : { phone: contact },

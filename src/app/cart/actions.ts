@@ -13,9 +13,9 @@ import {
   type WantedLine,
 } from "@/lib/caelinex/cart-sync";
 import { getProduct, listProducts } from "@/lib/commerce";
-import { isEmail } from "@/lib/identity";
 import { getCartToken, getSessionToken, setCartToken } from "@/lib/session";
 import type { BagLine } from "@/lib/store/shop";
+import { cartSecret, emailAddress } from "@/lib/validation/schemas";
 
 export type BagSyncResult =
   | {
@@ -47,17 +47,15 @@ export async function syncBag(lines: WantedLine[]): Promise<BagSyncResult> {
  * never blocks checkout.
  */
 export async function saveCartEmail(email: string): Promise<void> {
-  const address = typeof email === "string" ? email.trim() : "";
-  if (!isEmail(address)) return;
+  const address = emailAddress().safeParse(email);
+  if (!address.success) return;
   const token = await getCartToken();
-  if (token) await putCartEmail(token, address);
+  if (token) await putCartEmail(token, address.data);
 }
 
 export type RecoverResult =
   | { status: "ok"; lines: BagLine[] }
   | { status: "expired" | "unavailable" };
-
-const SECRET = /^[\w.~-]{8,300}$/;
 
 /**
  * Open the cart a reminder email linked to. The secret works once, so call this
@@ -65,8 +63,7 @@ const SECRET = /^[\w.~-]{8,300}$/;
  * holds a new cart token. Keep it, and hand back the bag.
  */
 export async function recoverBag(secret: string): Promise<RecoverResult> {
-  if (typeof secret !== "string" || !SECRET.test(secret))
-    return { status: "expired" };
+  if (!cartSecret.safeParse(secret).success) return { status: "expired" };
   const r = await recoverCart(secret);
   if (!r.ok)
     return { status: r.reason === "invalid" ? "expired" : "unavailable" };

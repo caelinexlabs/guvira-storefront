@@ -7,8 +7,8 @@ import {
   signOutShopper,
   verifySignInCode,
 } from "@/lib/caelinex/shopper";
-import { cleanIdentifier } from "@/lib/identity";
 import { clearSession, getSessionToken, setSessionToken } from "@/lib/session";
+import { check, signInCode, signInIdentifier } from "@/lib/validation/schemas";
 
 export type SignInState =
   | { step: "identify"; error?: string; identifier?: string }
@@ -30,10 +30,9 @@ export async function signIn(
   const intent = String(form.get("intent"));
 
   if (intent === "check" && prev.step === "code") {
-    const code = String(form.get("code") ?? "").replace(/\D/g, "");
-    if (code.length !== 6)
-      return { ...prev, resent: false, error: "Enter the six-digit code." };
-    const r = await verifySignInCode(prev.identifier, code);
+    const code = check(signInCode, form.get("code"));
+    if (!code.ok) return { ...prev, resent: false, error: code.message };
+    const r = await verifySignInCode(prev.identifier, code.value);
     if (!r.ok)
       return {
         step: "code",
@@ -53,16 +52,17 @@ export async function signIn(
     return { step: "identify", identifier: prev.identifier };
 
   // "send" from the first step, or "resend" from the code step.
-  const identifier =
+  const asked =
     intent === "resend" && prev.step === "code"
-      ? prev.identifier
-      : cleanIdentifier(form.get("identifier"));
-  if (!identifier)
+      ? { ok: true as const, value: prev.identifier }
+      : check(signInIdentifier, form.get("identifier"));
+  if (!asked.ok)
     return {
       step: "identify",
       identifier: String(form.get("identifier") ?? ""),
-      error: "Enter the email address or mobile number you shop with.",
+      error: asked.message,
     };
+  const identifier = asked.value;
   const r = await requestSignInCode(identifier);
   if (!r.ok)
     return {

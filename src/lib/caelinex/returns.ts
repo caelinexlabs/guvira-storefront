@@ -1,16 +1,17 @@
 import "server-only";
+import type { RETURN_REASON_CODES } from "@/lib/validation/forms";
 import { type StorefrontResult, storefront } from "./storefront";
 
-export const RETURN_REASONS = {
+export const RETURN_REASONS: Record<ReturnReason, string> = {
   DAMAGED: "It arrived damaged",
   WRONG_ITEM: "I received the wrong piece",
   NOT_AS_DESCRIBED: "It isn’t as described",
   SIZE_FIT: "Size or fit",
   CHANGED_MIND: "I changed my mind",
   OTHER: "Something else",
-} as const;
+};
 
-export type ReturnReason = keyof typeof RETURN_REASONS;
+export type ReturnReason = (typeof RETURN_REASON_CODES)[number];
 
 export type ReturnRequest = {
   returnNumber: string | number;

@@ -6,8 +6,9 @@ import {
   makeDefaultAddress,
   saveAddress,
 } from "@/lib/caelinex/shopper";
-import { countryByCode } from "@/lib/checkout/countries";
 import { getSessionToken } from "@/lib/session";
+import { addressInput } from "@/lib/validation/forms";
+import { addressId, check } from "@/lib/validation/schemas";
 
 const UNAVAILABLE = "We couldn’t reach our service. Try again in a minute.";
 
@@ -40,34 +41,22 @@ export async function saveAddressAction(
   ])
     typed[k] = text(form, k);
   const fail = (error: string): AddressState => ({ error, values: typed });
-  const country = text(form, "country").toUpperCase();
-  const c = countryByCode(country);
-  const input = {
+  const input = check(addressInput, {
     name: text(form, "name"),
-    phone: text(form, "phone") || undefined,
+    phone: text(form, "phone"),
     line1: text(form, "line1"),
-    line2: text(form, "line2") || undefined,
+    line2: text(form, "line2"),
     city: text(form, "city"),
-    region: text(form, "region") || undefined,
+    region: text(form, "region"),
     postalCode: text(form, "postalCode"),
-    country,
+    country: text(form, "country"),
     isDefault: form.get("isDefault") === "on" || undefined,
-  };
-  if (!input.name) return fail("Enter the name for this address.");
-  if (!input.line1) return fail("Enter the first line of the address.");
-  if (!input.city) return fail("Enter the city.");
-  if (c?.regions && !input.region)
-    return fail(`Choose a ${c.regionLabel?.toLowerCase() ?? "state"}.`);
-  if (!input.postalCode)
-    return fail(
-      `Enter the ${c?.postal?.label.toLowerCase() ?? "postal code"}.`,
-    );
-  if (c?.postal && !c.postal.pattern.test(input.postalCode))
-    return fail(
-      `Check the ${c.postal.label.toLowerCase()}. It looks like ${c.postal.example}.`,
-    );
+  });
+  if (!input.ok) return fail(input.message);
   const id = text(form, "id") || undefined;
-  const r = await saveAddress(token, input, id);
+  if (id && !addressId.safeParse(id).success)
+    return fail("That address can’t be found. Reload the page and try again.");
+  const r = await saveAddress(token, input.value, id);
   if (!r.ok) return fail(r.message ?? UNAVAILABLE);
   revalidatePath("/account/details");
   return { saved: true };
@@ -75,12 +64,13 @@ export async function saveAddressAction(
 
 export async function makeDefaultAction(id: string) {
   const token = await getSessionToken();
-  if (token) await makeDefaultAddress(token, id);
+  if (token && addressId.safeParse(id).success)
+    await makeDefaultAddress(token, id);
   revalidatePath("/account/details");
 }
 
 export async function removeAddressAction(id: string) {
   const token = await getSessionToken();
-  if (token) await deleteAddress(token, id);
+  if (token && addressId.safeParse(id).success) await deleteAddress(token, id);
   revalidatePath("/account/details");
 }

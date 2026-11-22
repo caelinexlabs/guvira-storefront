@@ -4,6 +4,7 @@ import { syncCart, type WantedLine } from "@/lib/caelinex/cart-sync";
 import { getServiceability, getShippingQuote } from "@/lib/caelinex/shipping";
 import { countryByCode } from "@/lib/checkout/countries";
 import { regionCode } from "@/lib/checkout/gst-state";
+import { deliveryQuery } from "@/lib/validation/forms";
 
 export type DeliveryCheck =
   | { status: "ok"; minDays: number | null; maxDays: number | null }
@@ -17,8 +18,11 @@ export async function checkDelivery(
   country: string,
   postal: string,
 ): Promise<DeliveryCheck> {
-  const c = countryByCode(country);
-  const code = postal.trim();
+  const asked = deliveryQuery
+    .pick({ country: true, postal: true })
+    .safeParse({ country, postal });
+  const c = asked.success ? countryByCode(country) : undefined;
+  const code = asked.success ? asked.data.postal : "";
   if (!c) return { status: "bad-code", message: "Choose a country first." };
   if (c.postal && !c.postal.pattern.test(code))
     return {
@@ -61,6 +65,8 @@ export async function quoteDelivery(
   address: { country: string; region: string; postal: string },
   lines: WantedLine[],
 ): Promise<DeliveryQuote> {
+  const asked = deliveryQuery.safeParse(address);
+  if (!asked.success) return { status: "no-service" };
   // The quote is for the cart, so make the cart match the bag first.
   const synced = await syncCart(lines);
   if (synced.status !== "ok") return { status: "no-cart" };

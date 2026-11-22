@@ -6,6 +6,8 @@ import {
   removePromoCode,
 } from "@/lib/caelinex/promo";
 import { getCartToken } from "@/lib/session";
+import { promoInput } from "@/lib/validation/forms";
+import { check } from "@/lib/validation/schemas";
 
 export type PromoResult =
   | { status: "applied"; cart: PromoCart }
@@ -17,12 +19,11 @@ export type PromoResult =
 const UNAVAILABLE = { status: "unavailable" } as const;
 
 export async function applyPromo(code: string): Promise<PromoResult> {
-  const clean = code.replace(/\s+/g, "");
-  if (!clean || clean.length > 40)
-    return { status: "rejected", message: "Enter your code." };
+  const clean = check(promoInput, code);
+  if (!clean.ok) return { status: "rejected", message: clean.message };
   const token = await getCartToken();
   if (!token) return { status: "no-cart" };
-  const r = await applyPromoCode(token, clean);
+  const r = await applyPromoCode(token, clean.value);
   if (r.ok) return { status: "applied", cart: r.value };
   return r.reason === "invalid"
     ? {

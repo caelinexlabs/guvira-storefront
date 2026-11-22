@@ -18,8 +18,18 @@ import {
   internationalPhone,
   validateDetails,
 } from "@/lib/checkout/validate";
-import { cleanIdentifier, isEmail } from "@/lib/identity";
 import { getCartToken, setSessionToken } from "@/lib/session";
+import {
+  checkoutLimits,
+  placeOrderInput,
+  signUpInput,
+} from "@/lib/validation/forms";
+import {
+  check,
+  orderToken,
+  signInCode,
+  signInIdentifier,
+} from "@/lib/validation/schemas";
 
 /* ---------- Step 1: sign in or create an account, without leaving checkout ---------- */
 
@@ -64,10 +74,9 @@ export async function checkoutAccount(
     return { step: "form", mode: prev.mode };
 
   if (intent === "check" && prev.step === "code") {
-    const code = text(form, "code").replace(/\D/g, "");
-    if (code.length !== 6)
-      return { ...prev, resent: false, error: "Enter the six-digit code." };
-    const r = await verifySignInCode(prev.identifier, code);
+    const code = check(signInCode, form.get("code"));
+    if (!code.ok) return { ...prev, resent: false, error: code.message };
+    const r = await verifySignInCode(prev.identifier, code.value);
     if (!r.ok)
       return {
         ...prev,
@@ -101,15 +110,10 @@ export async function checkoutAccount(
 
   // "send": the first form of either path.
   if (mode === "signin") {
-    const identifier = cleanIdentifier(form.get("identifier"));
+    const asked = check(signInIdentifier, form.get("identifier"));
     const values = { identifier: text(form, "identifier") };
-    if (!identifier)
-      return {
-        step: "form",
-        mode,
-        values,
-        error: "Enter the email address or mobile number you shop with.",
-      };
+    if (!asked.ok) return { step: "form", mode, values, error: asked.message };
+    const identifier = asked.value;
     const r = await requestSignInCode(identifier);
     if (!r.ok)
       return {
@@ -126,16 +130,9 @@ export async function checkoutAccount(
     email: text(form, "email").toLowerCase(),
     phone: text(form, "phone").replace(/[\s()-]/g, ""),
   };
-  const error =
-    values.name.length < 2
-      ? "Enter your full name."
-      : !isEmail(values.email)
-        ? "Enter an email address like name@example.com."
-        : values.phone.replace(/\D/g, "").length < 8
-          ? "Enter a mobile number with at least 8 digits."
-          : undefined;
-  if (error) return { step: "form", mode, values, error };
-  const profile: Customer = values;
+  const signUp = check(signUpInput, values);
+  if (!signUp.ok) return { step: "form", mode, values, error: signUp.message };
+  const profile: Customer = signUp.value;
   const r = await requestSignInCode(values.email);
   if (!r.ok)
     return {
@@ -198,17 +195,26 @@ export async function placeOrder(
   /** The same attempt again (a closed payment window): Caelinex replays the order. */
   replay = false,
 ): Promise<PlaceOrderResult> {
+  const tooLong = checkoutLimits.safeParse(details);
+  if (!tooLong.success) {
+    const errors: FieldErrors = {};
+    for (const issue of tooLong.error.issues) {
+      const field = issue.path[0];
+      if (typeof field === "string")
+        errors[field as keyof CheckoutDetails] ??= issue.message;
+    }
+    return Object.keys(errors).length
+      ? { status: "invalid", errors }
+      : { status: "retry" };
+  }
   const errors = validateDetails(details);
   if (Object.keys(errors).length) return { status: "invalid", errors };
-  if (typeof idempotencyKey !== "string" || idempotencyKey.length < 8)
-    return { status: "retry" };
-  if (method !== "online" && method !== "cod") return { status: "retry" };
-  if (
-    shippingRateId !== undefined &&
-    (typeof shippingRateId !== "string" ||
-      !/^[\w-]{1,64}$/.test(shippingRateId))
-  )
-    return { status: "retry" };
+  const sent = placeOrderInput.safeParse({
+    method,
+    shippingRateId,
+    idempotencyKey,
+  });
+  if (!sent.success) return { status: "retry" };
   // Cash on delivery is for Indian addresses; the page hides it elsewhere, so
   // a request that asks for it anyway has been tampered with.
   if (!methodAvailable(method, details.country))
@@ -293,7 +299,7 @@ export async function placeOrder(
  * frees the stock at once, so the pieces can go back into a bag.
  */
 export async function cancelWaitingOrder(token: string): Promise<boolean> {
-  if (!/^[\w-]{10,100}$/.test(token)) return false;
+  if (!orderToken.safeParse(token).success) return false;
   const r = await cancelOrder(token);
   if (r.ok) await forgetCart();
   return r.ok;
