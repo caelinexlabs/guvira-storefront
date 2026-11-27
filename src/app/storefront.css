@@ -27,7 +27,6 @@
   /* Gap between the screen edge and full-bleed pieces (hero film, dark panels). */
   --edge: clamp(12px, 1.7vw, 24px);
   --ease: cubic-bezier(0.23, 1, 0.32, 1);
-  --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 
   /* ----- Colour: semantic additions ----- */
   --on-accent: #fff; /* text and icons on ink, emerald or gold fills */
@@ -154,7 +153,7 @@
   --z-toast: 90;
   --z-skip: 100;
 
-  /* ----- Motion durations (easing: --ease, --spring) ----- */
+  /* ----- Motion durations (easing: --ease) ----- */
   --dur-fast: 160ms; /* presses, tiny state changes */
   --dur-base: 220ms; /* hovers, colour changes */
   --dur-medium: 300ms;
@@ -386,7 +385,7 @@ select {
 .logo {
   display: inline-flex;
   align-items: center;
-  padding: 7px 20px 7px 16px;
+  padding: 8px 20px 8px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
   background: var(--card);
@@ -400,7 +399,7 @@ select {
 .links {
   display: flex;
   gap: var(--space-8);
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
 }
 .links a {
@@ -456,7 +455,7 @@ select {
   flex: none;
   width: 18px;
   height: 18px;
-  transition: transform var(--dur-slow) var(--spring);
+  transition: transform var(--dur-slow) var(--ease);
 }
 .search-pill-text {
   display: inline-flex;
@@ -493,7 +492,7 @@ select {
     transition-delay: 80ms;
   }
   .search-pill:hover .ico {
-    transform: rotate(-14deg) scale(1.06);
+    transform: scale(1.06);
   }
 }
 .search-pill.icon-btn {
@@ -514,7 +513,7 @@ select {
   background: var(--card);
   color: inherit;
   font: inherit;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
   cursor: pointer;
   transition: border-color var(--dur-base) ease;
@@ -575,7 +574,7 @@ select {
   background: var(--sand);
 }
 .currency-code {
-  font-weight: 700;
+  font-weight: 500;
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-wide);
 }
@@ -584,7 +583,7 @@ select {
 }
 .currency-item[data-selected] .currency-name {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
 }
 .currency-tick {
   display: grid;
@@ -606,7 +605,7 @@ select {
     animation: icon-beat var(--dur-brand) var(--ease);
   }
   .icon-btn-bag:hover .ico {
-    animation: icon-lift var(--dur-slower) var(--spring);
+    animation: icon-lift var(--dur-slower) var(--ease);
   }
   .menu-btn:hover .ico {
     animation: icon-slide var(--dur-slower) var(--ease);
@@ -640,7 +639,7 @@ select {
   }
 }
 .icon-btn .count {
-  animation: pop var(--dur-slow) var(--spring);
+  animation: pop var(--dur-slow) var(--ease);
 }
 .me-dot {
   position: absolute;
@@ -686,7 +685,7 @@ select {
   background: var(--emerald);
   color: var(--on-accent);
   font-size: var(--text-3xs);
-  font-weight: 700;
+  font-weight: 600;
   display: grid;
   place-items: center;
 }
@@ -762,7 +761,7 @@ select {
   display: grid;
   gap: var(--space-3-5);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--soft);
 }
 .proof span {
@@ -783,7 +782,7 @@ select {
   border-radius: var(--radius-pill);
   background: var(--frost);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 500;
   opacity: 0;
   transform: translateY(6px);
   transition:
@@ -830,7 +829,7 @@ select {
   content: "";
   position: absolute;
   inset: 0 0 auto;
-  height: 150px;
+  height: 152px;
   z-index: -1;
   background: linear-gradient(
     rgb(var(--shade-rgb) / 0.34),
@@ -898,8 +897,8 @@ select {
   box-shadow: var(--shadow-lg);
 }
 .vhero-cta .dot {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   background: var(--gold);
   color: var(--ink);
 }
@@ -1010,7 +1009,7 @@ select {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-lg);
 }
 .tile .row .ico {
@@ -1024,10 +1023,10 @@ select {
 }
 @media (hover: hover) and (pointer: fine) {
   .tile:hover .arch img {
-    transform: scale(1.06);
+    transform: scale(1.04);
   }
   .tile:hover .arch svg {
-    transform: translateY(-6px) rotate(-6deg);
+    transform: translateY(-4px);
   }
   .tile:hover .row .ico {
     transform: translateX(4px);
@@ -1064,7 +1063,7 @@ select {
   padding: var(--space-2-5) var(--space-4-5);
   background: none;
   color: var(--on-dark);
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
   cursor: pointer;
   transition:
@@ -1113,14 +1112,14 @@ select {
     opacity: 1;
   }
   .card:hover .media > a img:first-child {
-    transform: scale(1.05);
+    transform: scale(1.04);
   }
 }
 .flag {
   position: absolute;
   z-index: var(--z-badge);
-  left: 14px;
-  top: 14px;
+  left: 16px;
+  top: 16px;
   padding: var(--space-1-5) var(--space-3);
   border-radius: var(--radius-pill);
   background: var(--card);
@@ -1131,8 +1130,8 @@ select {
 .wish {
   position: absolute;
   z-index: var(--z-badge);
-  right: 14px;
-  top: 14px;
+  right: 16px;
+  top: 16px;
   width: 40px;
   height: 40px;
   border: 0;
@@ -1154,7 +1153,7 @@ select {
 .wish[aria-pressed="true"] .ico {
   fill: var(--wish);
   stroke: var(--wish);
-  animation: pop var(--dur-slow) var(--spring);
+  animation: pop var(--dur-slow) var(--ease);
 }
 @keyframes pop {
   40% {
@@ -1164,8 +1163,8 @@ select {
 .quick {
   position: absolute;
   z-index: var(--z-badge);
-  right: 14px;
-  bottom: 14px;
+  right: 16px;
+  bottom: 16px;
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -1215,7 +1214,7 @@ select {
 }
 .info a {
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-lg);
   line-height: 1.3;
 }
@@ -1226,7 +1225,7 @@ select {
   opacity: 0.6;
 }
 .info .price {
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-lg);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -1344,7 +1343,7 @@ select {
   transition:
     background-color var(--dur-slow) ease,
     color var(--dur-slow) ease,
-    transform var(--dur-slower) var(--spring);
+    transform var(--dur-slower) var(--ease);
 }
 .steps li.on .ic {
   background: var(--emerald);
@@ -1357,7 +1356,7 @@ select {
 }
 .steps b {
   display: block;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-lg);
 }
 .steps span {
@@ -1426,7 +1425,7 @@ select {
 }
 .promise-strip b {
   display: block;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-base);
 }
 .promise-strip span {
@@ -1464,10 +1463,10 @@ select {
   border-radius: var(--radius-round);
   border: 1px solid var(--line);
   background: radial-gradient(circle at 34% 30%, var(--hi), var(--sw) 70%);
-  transition: transform var(--dur-slower) var(--spring);
+  transition: transform var(--dur-slower) var(--ease);
 } /* taste-skill-ignore: metal swatch needs a highlight */
 .finish-card b {
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-lg);
 }
 .finish-card p {
@@ -1477,7 +1476,7 @@ select {
 }
 .finish-card span {
   color: var(--emerald);
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
   padding-top: var(--space-2);
 }
@@ -1486,7 +1485,7 @@ select {
     transform: translateY(-6px);
   }
   .finish-card:hover i {
-    transform: rotate(-20deg) scale(1.08);
+    transform: scale(1.04);
   }
 }
 
@@ -1562,8 +1561,8 @@ select {
 }
 .strip span {
   position: absolute;
-  left: 14px;
-  bottom: 14px;
+  left: 16px;
+  bottom: 16px;
   display: inline-flex;
   align-items: center;
   gap: var(--space-1-5);
@@ -1571,7 +1570,7 @@ select {
   border-radius: var(--radius-pill);
   background: var(--frost);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
 }
 .strip span .ico {
   width: 14px;
@@ -1580,7 +1579,7 @@ select {
 }
 @media (hover: hover) and (pointer: fine) {
   .strip a:hover img {
-    transform: scale(1.06);
+    transform: scale(1.04);
   }
   .strip a:hover span .ico {
     transform: translateX(3px);
@@ -1608,7 +1607,7 @@ select {
   padding: var(--space-6) 0;
   list-style: none;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-lg);
 }
 .faq summary::-webkit-details-marker {
@@ -1722,7 +1721,7 @@ select {
   margin: 0 0 var(--space-4);
   color: var(--gold-light);
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: 500;
 }
 :where(.foot) ul {
   list-style: none;
@@ -1891,7 +1890,7 @@ select {
 }
 .foot-credit span {
   color: var(--gold);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* Bag drawer + toast (used by shared shop.js / app.js) */
@@ -1912,9 +1911,9 @@ select {
 }
 .drawer-panel {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  bottom: 10px;
+  top: 8px;
+  right: 8px;
+  bottom: 8px;
   width: min(440px, calc(100% - 20px));
   border-radius: var(--radius-xl);
   background: var(--paper);
@@ -1947,7 +1946,7 @@ select {
   background: var(--card);
   border-radius: var(--radius-pill);
   padding: var(--space-2) var(--space-4);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 .drawer ul {
@@ -1966,14 +1965,14 @@ select {
 }
 .bag-item img {
   width: 72px;
-  height: 90px;
+  height: 88px;
   object-fit: cover;
   border-radius: var(--radius-sm);
   grid-row: span 2;
 }
 .bag-item-name {
   margin: 0;
-  font-weight: 600;
+  font-weight: 500;
 }
 .bag-item-meta {
   margin: var(--space-0-5) 0 0;
@@ -1982,7 +1981,7 @@ select {
 }
 .bag-item-price {
   margin: 0;
-  font-weight: 600;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .bag-remove {
@@ -2009,7 +2008,7 @@ select {
 .drawer-total {
   display: flex;
   justify-content: space-between;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-lg);
   font-variant-numeric: tabular-nums;
 }
@@ -2036,7 +2035,7 @@ select {
   border-radius: var(--radius-pill);
   background: var(--ink);
   color: var(--on-dark);
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
   transform: translate(-50%, 160%);
   transition: transform var(--dur-slow) var(--ease);
@@ -2051,7 +2050,7 @@ select {
   padding: var(--space-2) var(--space-3-5);
   background: var(--card);
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -2227,14 +2226,14 @@ select {
 }
 .gallery .count {
   position: absolute;
-  right: 14px;
-  bottom: 14px;
+  right: 16px;
+  bottom: 16px;
   z-index: var(--z-above);
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-pill);
   background: var(--frost);
   font-size: var(--text-2xs);
-  font-weight: 600;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
   transition: opacity var(--dur-base) ease;
 }
@@ -2255,7 +2254,7 @@ select {
   border-radius: var(--radius-pill);
   background: var(--card);
   font-size: var(--text-2xs);
-  font-weight: 600;
+  font-weight: 500;
 }
 .buy {
   position: sticky;
@@ -2279,7 +2278,7 @@ select {
 }
 .price-row .price {
   font-size: var(--text-3xl);
-  font-weight: 600;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .opt-line {
@@ -2290,7 +2289,7 @@ select {
   padding: var(--space-3-5) 0;
   border-block: 1px solid var(--line);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
 }
 .swatch-inline {
   display: inline-flex;
@@ -2320,7 +2319,7 @@ select {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-md);
   padding: 0;
 }
@@ -2340,7 +2339,7 @@ select {
   border: 1px solid var(--ink);
   border-radius: var(--radius-pill);
   background: var(--card);
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
 }
 .swatch i {
@@ -2370,18 +2369,18 @@ select {
 .sizes span {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   font-size: var(--text-md);
   border: 1px solid var(--line);
   border-radius: var(--radius-round);
   background: var(--card);
-  font-weight: 600;
+  font-weight: 500;
   transition:
     background-color var(--dur-base) ease,
     border-color var(--dur-base) ease,
     color var(--dur-base) ease,
-    transform var(--dur-medium) var(--spring);
+    transform var(--dur-medium) var(--ease);
 }
 .sizes input:checked + span {
   background: var(--ink);
@@ -2410,7 +2409,7 @@ select {
 .cta .icon-btn[aria-pressed="true"] .ico {
   fill: var(--wish);
   stroke: var(--wish);
-  animation: pop var(--dur-slow) var(--spring);
+  animation: pop var(--dur-slow) var(--ease);
 }
 /* Delivery check: one quiet line, not a second call to action. */
 .deliver {
@@ -2431,14 +2430,14 @@ select {
 }
 .deliver label {
   flex: none;
-  font-weight: 600;
+  font-weight: 500;
 }
 .deliver select {
   flex: none;
   height: 40px;
   border: 0;
   background: none;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
   cursor: pointer;
 }
@@ -2459,7 +2458,7 @@ select {
   padding: 0 var(--space-4-5);
   background: var(--sand);
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color var(--dur-base) ease;
 }
@@ -2498,7 +2497,7 @@ select {
 .promises b {
   display: block;
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
 }
 .promises span {
   font-size: var(--text-sm);
@@ -2517,7 +2516,7 @@ select {
   padding: var(--space-4-5) 0;
   list-style: none;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
 }
 .acc summary::-webkit-details-marker {
   display: none;
@@ -2773,10 +2772,10 @@ select {
     gap: var(--space-2-5);
   }
   .logo {
-    padding: 6px 16px 6px 12px;
+    padding: 8px 16px 8px 12px;
   }
   .logo img {
-    height: 34px;
+    height: 32px;
   }
   .tools {
     gap: var(--space-1-5);
@@ -2813,8 +2812,8 @@ select {
     height: 32px;
   }
   .wish .ico {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
   }
   .quick {
     right: 8px;
@@ -2910,8 +2909,8 @@ select {
 .sheet {
   position: fixed;
   z-index: var(--z-dialog);
-  top: 10px;
-  bottom: 10px;
+  top: 8px;
+  bottom: 8px;
   width: min(440px, calc(100% - 20px));
   border-radius: var(--radius-xl);
   background: var(--paper);
@@ -2924,12 +2923,12 @@ select {
   outline: none;
 }
 .sheet-left {
-  left: 10px;
+  left: 8px;
 }
 /* Mini cart: a bottom sheet, centred on wide screens. */
 .sheet-bottom {
   top: auto;
-  bottom: 10px;
+  bottom: 8px;
   left: 50%;
   translate: -50% 0;
   width: min(640px, calc(100% - 20px));
@@ -2988,7 +2987,7 @@ select {
   align-items: center;
   margin-top: auto;
   padding: var(--space-5) var(--space-6) var(--space-7);
-  font-weight: 600;
+  font-weight: 500;
 }
 .sheet-me {
   display: flex;
@@ -3008,7 +3007,7 @@ select {
 .sheet-me b {
   display: block;
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: 500;
 }
 .sheet-me small {
   display: block;
@@ -3024,12 +3023,12 @@ select {
   flex: none;
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-round);
   background: var(--ink);
   color: var(--on-dark);
-  font-weight: 600;
+  font-weight: 500;
 }
 .sheet-me-ic .ico {
   width: 20px;
@@ -3136,7 +3135,7 @@ select {
   margin: var(--space-3) var(--space-2-5) var(--space-1-5);
   color: var(--soft);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 500;
 }
 .cmd-row {
   display: flex;
@@ -3219,7 +3218,7 @@ select {
   font-size: var(--text-xs);
 }
 .cmd-price {
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
   font-variant-numeric: tabular-nums;
 }
@@ -3276,7 +3275,7 @@ select {
   grid-row: auto;
 }
 .bag-item-name {
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
 }
 .bag-item-side {
@@ -3306,8 +3305,8 @@ select {
 .stepper button {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border: 0;
   border-radius: var(--radius-round);
   background: none;
@@ -3317,8 +3316,8 @@ select {
   background: var(--sand);
 }
 .stepper .ico {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 .stepper output {
   min-width: 22px;
@@ -3341,7 +3340,7 @@ select {
   background: var(--ink) !important;
   color: var(--on-dark) !important;
   border: 0 !important;
-  font: 600 var(--text-sm) var(--ui) !important;
+  font: 500 var(--text-sm) var(--ui) !important;
   padding: var(--space-2-5) var(--space-2-5) var(--space-2-5) var(--space-4-5) !important;
   box-shadow: var(--shadow-lg) !important;
 }
@@ -3390,13 +3389,13 @@ select {
 .chips a {
   display: inline-flex;
   align-items: center;
-  height: 42px;
+  height: 44px;
   padding: 0 var(--space-4-5);
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
   background: var(--card);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
   transition:
     background-color var(--dur-base) ease,
@@ -3466,7 +3465,7 @@ select {
 .shop-empty-picks h3 {
   margin: 0 0 var(--space-6);
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 500;
 }
 .shop-grid .info a {
   color: var(--ink);
@@ -3595,7 +3594,7 @@ fieldset.stepper {
   border-radius: var(--radius-pill);
   background: var(--ink);
   color: var(--on-dark);
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
   transform: translateY(-160%);
   transition: transform var(--dur-base) var(--ease);
@@ -3623,7 +3622,7 @@ fieldset.stepper {
 }
 .field > label,
 .field > span {
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--text-sm);
 }
 .field input,
@@ -3695,7 +3694,7 @@ fieldset.stepper {
   border-radius: var(--radius-md) 0 0 var(--radius-md);
   background: var(--sand);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
 }
 .phone input {
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
@@ -3723,7 +3722,7 @@ fieldset.stepper {
   background: none;
   color: var(--ink);
   font: inherit;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
@@ -3737,7 +3736,7 @@ fieldset.stepper {
   align-items: center;
   gap: var(--space-1);
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
   text-underline-offset: 3px;
 }
 .text-link .ico {
@@ -3845,7 +3844,7 @@ fieldset.stepper {
 .co-step-head h2 {
   margin: 0;
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 500;
 }
 .co-step-head p {
   margin: var(--space-1) 0 0;
@@ -3859,8 +3858,8 @@ fieldset.stepper {
   flex: none;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-round);
   border: 1px solid var(--line);
   font-weight: 600;
@@ -3904,7 +3903,7 @@ fieldset.stepper {
   margin: 0;
   color: var(--emerald);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
 }
 .co-filled .ico {
   width: 16px;
@@ -3963,7 +3962,7 @@ fieldset.stepper {
 .who-option b {
   display: block;
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: 500;
 }
 .who-option small {
   display: block;
@@ -3974,8 +3973,8 @@ fieldset.stepper {
 }
 .who-option .tick {
   position: absolute;
-  top: 18px;
-  right: 18px;
+  top: 16px;
+  right: 16px;
   width: 18px;
   height: 18px;
   border-radius: var(--radius-round);
@@ -4036,7 +4035,7 @@ fieldset.stepper {
   color: var(--ink);
   font: inherit;
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition:
     background-color var(--dur-base) ease,
@@ -4087,8 +4086,8 @@ fieldset.stepper {
   content: "";
   position: absolute;
   left: -1px;
-  top: 14px;
-  bottom: 14px;
+  top: 16px;
+  bottom: 16px;
   width: 3px;
   border-radius: 0 var(--radius-2xs) var(--radius-2xs) 0;
   background: var(--ink);
@@ -4097,7 +4096,7 @@ fieldset.stepper {
 }
 .pay-method b {
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
 }
 .pay-method small {
   color: var(--soft);
@@ -4152,7 +4151,7 @@ fieldset.stepper {
   border-radius: var(--radius-xs);
   background: var(--sand);
   font-size: var(--text-2xs);
-  font-weight: 700;
+  font-weight: 600;
   opacity: 0;
   scale: 0.9;
   transition:
@@ -4234,8 +4233,8 @@ fieldset.stepper {
   background: var(--sand);
 }
 .result-mark .ico {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
 }
 .result-mark.ok {
   background: var(--emerald);
@@ -4301,8 +4300,8 @@ fieldset.stepper {
   z-index: var(--z-above);
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius-round);
   border: 1.5px solid var(--line);
   background: var(--paper);
@@ -4310,7 +4309,7 @@ fieldset.stepper {
 .result-track li + li::before {
   content: "";
   position: absolute;
-  top: 13px;
+  top: 14px;
   right: 50%;
   width: 100%;
   height: 1.5px;
@@ -4318,7 +4317,7 @@ fieldset.stepper {
 }
 .result-track li.on {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
 }
 .result-track li.on > span:first-child {
   border-color: var(--emerald);
@@ -4350,7 +4349,7 @@ fieldset.stepper {
 .result-card h2 {
   margin: 0;
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--soft);
 }
 .result-card h2 + * {
@@ -4380,11 +4379,11 @@ fieldset.stepper {
   gap: var(--space-3-5);
   align-items: center;
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
 }
 .result-items img {
   width: 56px;
-  height: 70px;
+  height: 72px;
   object-fit: cover;
   border-radius: var(--radius-sm);
 }
@@ -4422,7 +4421,7 @@ fieldset.stepper {
 .result-sub {
   margin: var(--space-3) 0 0;
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 500;
 }
 .result-tips {
   display: grid;
@@ -4463,7 +4462,7 @@ fieldset.stepper {
 .co-summary h2 {
   margin: 0 0 var(--space-4);
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 500;
 }
 .co-summary h2 span {
   color: var(--soft);
@@ -4517,7 +4516,7 @@ fieldset.stepper {
 }
 .co-summary .what {
   display: grid;
-  font-weight: 600;
+  font-weight: 500;
 }
 .co-summary .what small {
   font-weight: 400;
@@ -4572,7 +4571,7 @@ fieldset.stepper {
 .help-nav a[aria-current="page"] {
   color: var(--ink);
   background: var(--sand);
-  font-weight: 600;
+  font-weight: 500;
 }
 .help-body {
   max-width: 64ch;
@@ -4610,7 +4609,7 @@ fieldset.stepper {
 .help-body h2 {
   margin: 0 0 var(--space-2);
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 500;
 }
 .help-body p {
   margin: 0 0 var(--space-3);
@@ -4828,7 +4827,7 @@ summary {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  height: 42px;
+  height: 44px;
   padding: 0 var(--space-4-5);
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
@@ -4871,14 +4870,14 @@ summary {
 }
 .sort-menu nav a[aria-current="true"] {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
 }
 @media (max-width: 860px) {
   .sort-menu {
     margin-left: 0;
   }
   .sort-menu summary {
-    height: 38px;
+    height: 40px;
   }
 }
 
@@ -4890,7 +4889,7 @@ summary {
   justify-content: space-between;
   align-items: center;
   gap: var(--space-3);
-  min-height: 42px;
+  min-height: 44px;
 }
 .results-row .result-count:empty {
   display: none;
@@ -4918,7 +4917,7 @@ summary {
   .foot-help a,
   .text-link {
     display: inline-block;
-    padding-block: 11px;
+    padding-block: 12px;
   }
   .crumbs {
     align-items: center;
@@ -4963,7 +4962,7 @@ summary {
   outline-offset: 2px;
 }
 .ship-rate b {
-  font-weight: 600;
+  font-weight: 500;
 }
 .ship-rate .when {
   flex-basis: 100%;
@@ -5066,7 +5065,7 @@ summary {
   padding: 0 var(--space-5);
   background: var(--sand);
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 .promo-form button:disabled {
@@ -5211,7 +5210,7 @@ summary {
 }
 .nav .logo {
   font:
-    700 30px / 1 var(--font-serif),
+    600 30px / 1 var(--font-serif),
     Georgia,
     serif;
   letter-spacing: 0.26em;
@@ -5335,7 +5334,7 @@ summary {
   margin: 0 0 var(--space-5);
   color: var(--soft);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
 }
 .mega-cats {
   list-style: none;
@@ -5415,7 +5414,7 @@ summary {
 .mega-feat b {
   display: block;
   font-size: clamp(var(--text-md), 1.5cqw, var(--text-xl));
-  font-weight: 600;
+  font-weight: 500;
   text-transform: capitalize;
 }
 .mega-feat small {
@@ -5427,7 +5426,7 @@ summary {
   display: inline-block;
   margin-top: var(--space-2);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   text-underline-offset: 3px;
 }
 @media (max-width: 1180px) {
@@ -5467,7 +5466,7 @@ summary {
   padding: 0 0 var(--stack-fluid);
 }
 .nav.over + main .vhero-frame {
-  max-width: 1710px;
+  max-width: 1712px;
   height: max(560px, 100svh);
   max-height: none;
   border-radius: 0 0 var(--radius-panel) var(--radius-panel);
@@ -5480,7 +5479,7 @@ summary {
 }
 /* The announcement strip lines up with the film's edges. */
 .nav.over:not(.scrolled) .nav-note {
-  margin-inline: max(0px, calc((100% - 1710px) / 2));
+  margin-inline: max(0px, calc((100% - 1712px) / 2));
 }
 
 /* Over the film the bar stays clear. A soft, eased fade at the top edge of the
@@ -5532,7 +5531,7 @@ summary {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  height: 38px;
+  height: 40px;
   padding: 0 var(--space-2-5) 0 var(--space-3-5);
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
@@ -5793,7 +5792,7 @@ summary {
   margin: 0 0 var(--space-2-5);
   color: var(--soft);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
 }
 .dock-type {
   flex: 1 1 220px;
@@ -5904,7 +5903,7 @@ summary {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  height: 38px;
+  height: 40px;
   padding: 0 var(--space-3-5);
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
@@ -5940,7 +5939,7 @@ summary {
   display: inline-block;
   margin-top: var(--space-4);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
